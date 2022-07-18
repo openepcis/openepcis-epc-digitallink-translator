@@ -23,13 +23,10 @@
     <parent>
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
-        <version>0.9.1</version>
+        <version>0.9.0-SNAPSHOT</version>
         <relativePath>../openepcis-bom</relativePath>
     </parent>
-
     <artifactId>openepcis-epc-digitallink-translator</artifactId>
-    <version>0.9.1</version>
-
     <name>openepcis-epc-digitallink-translator</name>
     <description>openEPCIS EPC GS1 Digital Link Translation Tools</description>
     <url>https://github.com/openepcis/openepcis-epc-digitallink-translator</url>
