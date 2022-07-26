@@ -24,6 +24,7 @@
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
         <version>0.9.1-SNAPSHOT</version>
+        <relativePath></relativePath>
     </parent>
     <artifactId>openepcis-epc-digitallink-translator</artifactId>
     <name>openepcis-epc-digitallink-translator</name>
