@@ -24,7 +24,6 @@
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
         <version>0.9.1-SNAPSHOT</version>
-        <relativePath>../openepcis-bom</relativePath>
     </parent>
     <artifactId>openepcis-epc-digitallink-translator</artifactId>
     <name>openepcis-epc-digitallink-translator</name>
@@ -58,15 +57,6 @@
         <developerConnection>scm:git:ssh://github.com:openepcis/openepcis-epc-digitallink-translator.git</developerConnection>
         <url>https://github.com/openepcis/openepcis-epc-digitallink-translator/tree/main</url>
     </scm>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
