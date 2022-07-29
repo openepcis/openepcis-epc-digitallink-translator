@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # Application Identifiers translator
 
 Every digital or physical object such as documents, locations, products, assets, etc. is identified by the universal identifiers. These universal Identifiers can be represented
@@ -100,6 +102,6 @@ System.out.println(ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.or
 
 #### Technologies and Libraries used:
 
-- Java 11 (For all the Validation and Conversion)
+- Java 17 (For all the Validation and Conversion)
 - net.sf.barcode4j (For Check digit calculation)
 - org.apache.commons (For String manipulation)
