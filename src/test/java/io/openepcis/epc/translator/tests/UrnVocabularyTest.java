@@ -16,6 +16,7 @@
 package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import io.openepcis.epc.translator.ConverterUtil;
 import org.junit.Test;
@@ -39,6 +40,10 @@ public class UrnVocabularyTest {
     bizStep = "https://example.com/department/My_Own_BizStep";
     assertEquals(
         "https://example.com/department/My_Own_BizStep", ConverterUtil.toUrnVocabulary(bizStep));
+
+    assertEquals("", ConverterUtil.toUrnVocabulary(""));
+    assertEquals(" ", ConverterUtil.toUrnVocabulary(" "));
+    assertNull(ConverterUtil.toUrnVocabulary(null));
   }
 
   @Test

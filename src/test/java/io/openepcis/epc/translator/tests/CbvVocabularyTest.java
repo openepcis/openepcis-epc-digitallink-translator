@@ -16,6 +16,7 @@
 package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import io.openepcis.epc.translator.ConverterUtil;
 import org.junit.Test;
@@ -39,6 +40,11 @@ public class CbvVocabularyTest {
     assertEquals(
         "https://ref.gs1.org/voc/Bizstep-packing",
         ConverterUtil.toCbvVocabulary("packing", "bizStep", "webUri"));
+
+    assertEquals("", ConverterUtil.toCbvVocabulary("", "bizStep", ""));
+    assertEquals(" ", ConverterUtil.toCbvVocabulary(" ", "bizStep", "urn"));
+    assertNull(ConverterUtil.toCbvVocabulary(null, "bizStep", "webUri"));
+    assertEquals("shipping", ConverterUtil.toCbvVocabulary("shipping", null, "webUri"));
   }
 
   @Test

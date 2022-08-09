@@ -129,19 +129,25 @@ public class ConverterUtil {
   // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event
   // hash generator.
   public static String toWebURIVocabulary(final String urnVocabulary) {
-    return EventVocabularyFormatter.canonicalWebURIVocabulary(urnVocabulary);
+    return urnVocabulary == null || urnVocabulary.trim().equals("")
+        ? urnVocabulary
+        : EventVocabularyFormatter.canonicalWebURIVocabulary(urnVocabulary);
   }
 
   // Method to convert the CBV WebURI formatted vocabularies into URN vocabulary. Used during
   // JSON/JSON-LD conversion to XML.
   public static String toUrnVocabulary(final String webUriVocabulary) {
-    return EventVocabularyFormatter.canonicalString(webUriVocabulary);
+    return webUriVocabulary == null || webUriVocabulary.trim().equals("")
+        ? webUriVocabulary
+        : EventVocabularyFormatter.canonicalString(webUriVocabulary);
   }
 
   // Method to convert the CBV URN/WebURI formatted vocabularies into BareString vocabulary. Used
   // during XML -> JSON/JSON-LD conversion.
   public static String toBareStringVocabulary(final String eventVocabulary) {
-    return EventVocabularyFormatter.bareString(eventVocabulary);
+    return eventVocabulary == null || eventVocabulary.trim().equals("")
+        ? eventVocabulary
+        : EventVocabularyFormatter.bareString(eventVocabulary);
   }
 
   /**
@@ -156,6 +162,8 @@ public class ConverterUtil {
    */
   public static String toCbvVocabulary(
       final String bareString, final String fieldName, final String format) {
-    return EventVocabularyFormatter.cbvVocabulary(bareString, fieldName, format);
+    return bareString == null || bareString.trim().equals("") || fieldName == null
+        ? bareString
+        : EventVocabularyFormatter.cbvVocabulary(bareString, fieldName, format);
   }
 }

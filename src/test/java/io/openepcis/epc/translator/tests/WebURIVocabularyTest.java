@@ -16,6 +16,7 @@
 package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import io.openepcis.epc.translator.ConverterUtil;
 import org.junit.Test;
@@ -44,6 +45,10 @@ public class WebURIVocabularyTest {
     assertEquals(
         "urn:example:department:bizstep:custom_business",
         ConverterUtil.toWebURIVocabulary(bizStep));
+
+    assertEquals("", ConverterUtil.toWebURIVocabulary(""));
+    assertEquals(" ", ConverterUtil.toWebURIVocabulary(" "));
+    assertNull(ConverterUtil.toWebURIVocabulary(null));
   }
 
   @Test

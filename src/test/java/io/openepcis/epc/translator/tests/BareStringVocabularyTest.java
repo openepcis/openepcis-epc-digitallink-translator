@@ -16,6 +16,7 @@
 package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import io.openepcis.epc.translator.ConverterUtil;
 import org.junit.Test;
@@ -43,6 +44,10 @@ public class BareStringVocabularyTest {
     assertEquals(
         "urn:example:department:bizstep:my_own_vocabulary",
         ConverterUtil.toBareStringVocabulary(bizStep));
+
+    assertEquals("", ConverterUtil.toBareStringVocabulary(""));
+    assertEquals(" ", ConverterUtil.toBareStringVocabulary(" "));
+    assertNull(ConverterUtil.toBareStringVocabulary(null));
   }
 
   @Test
@@ -167,5 +172,9 @@ public class BareStringVocabularyTest {
     assertEquals(
         "urn:example:error:reason:my_own_reason",
         ConverterUtil.toBareStringVocabulary(errorReason));
+
+    assertEquals("", ConverterUtil.toBareStringVocabulary(""));
+    assertEquals(" ", ConverterUtil.toBareStringVocabulary(" "));
+    assertNull(ConverterUtil.toBareStringVocabulary(null));
   }
 }
