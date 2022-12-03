@@ -87,7 +87,11 @@ public class GIAIConverter implements Converter {
   // Convert the provided Digital Link URI to respective URN of GIAI Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(giai);
+
+    // GIAI always starts with the "pure" GCP - only pass 13 characters
+    int gcpLength =
+        GCPLengthProvider.getInstance()
+            .getGcpLength(giai.length() > 13 ? giai.substring(0, 13) : giai);
 
     // Call the Validator class for the GIAI to check the DLURI syntax
     GIAI_VALIDATOR.validateURI(dlURI, gcpLength);
