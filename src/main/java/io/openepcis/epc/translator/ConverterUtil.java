@@ -16,6 +16,7 @@
 package io.openepcis.epc.translator;
 
 import io.openepcis.epc.translator.converter.*;
+import io.openepcis.epc.translator.validation.UnsupportedGS1IdentifierException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +66,7 @@ public class ConverterUtil {
         return uri.convertToDigitalLink(urn);
       }
     }
-    throw new ValidationException(
+    throw new UnsupportedGS1IdentifierException(
         String.format(
             "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s",
             urn));
@@ -78,7 +79,7 @@ public class ConverterUtil {
         return inputuri.convertToURN(dlURI, gcpLength);
       }
     }
-    throw new ValidationException(String.format(INVALID_URI_MESSAGE, dlURI));
+    throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
   // Check through each class and find DL URI belongs to which particular class
@@ -88,7 +89,7 @@ public class ConverterUtil {
         return inputuri.convertToURN(dlURI);
       }
     }
-    throw new ValidationException(String.format(INVALID_URI_MESSAGE, dlURI));
+    throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
   // Check through each class and find URN belongs to which particular class
@@ -98,7 +99,7 @@ public class ConverterUtil {
         return uri.convertToDigitalLink(urn);
       }
     }
-    throw new ValidationException(
+    throw new UnsupportedGS1IdentifierException(
         String.format(
             "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s",
             urn));
@@ -112,7 +113,7 @@ public class ConverterUtil {
         return inputuri.convertToURN(dlURI);
       }
     }
-    throw new ValidationException(String.format(INVALID_URI_MESSAGE, dlURI));
+    throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
   // Check through each class and find DL URI belongs to which particular class
@@ -123,7 +124,7 @@ public class ConverterUtil {
         return inputuri.convertToURN(dlURI, gcpLength);
       }
     }
-    throw new ValidationException(String.format(INVALID_URI_MESSAGE, dlURI));
+    throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
   // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event

@@ -16,6 +16,7 @@
 package io.openepcis.epc.translator;
 
 import io.openepcis.epc.translator.converter.StandardVocabElements;
+import io.openepcis.epc.translator.validation.UnsupportedGS1IdentifierException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +28,12 @@ public class StandardVocabConvertorUtil {
       if (element.supportsDL(urn)) {
         return element.convertToDigitalLink(urn);
       }
+    }
+    if (urn.startsWith("http://") || urn.startsWith("https://")) {
+      throw new UnsupportedGS1IdentifierException(
+          String.format(
+              "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s",
+              urn));
     }
     throw new ValidationException(
         String.format(
@@ -40,6 +47,12 @@ public class StandardVocabConvertorUtil {
       if (element.supportsURN(dlURI)) {
         return element.convertToURN(dlURI);
       }
+    }
+    if (dlURI.startsWith("http://") || dlURI.startsWith("https://")) {
+      throw new UnsupportedGS1IdentifierException(
+          String.format(
+              "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s",
+              dlURI));
     }
     throw new ValidationException(
         String.format(
