@@ -13,7 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openepcis.epc.translator;
+package io.openepcis.epc.translator.exception;
 
 public class UrnDLTransformationException extends RuntimeException {
   public UrnDLTransformationException(String msg, Throwable cause) {

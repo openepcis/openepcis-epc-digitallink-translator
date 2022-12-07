@@ -18,163 +18,170 @@ package io.openepcis.epc.translator.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import io.openepcis.epc.translator.ConverterUtil;
+import io.openepcis.epc.translator.Converter;
+import org.junit.Before;
 import org.junit.Test;
 
 public class BareStringVocabularyTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
+
   @Test
   public void BizStepBareStringTest() {
     String bizStep = "https://ref.gs1.org/voc/Bizstep-departing";
-    assertEquals("departing", ConverterUtil.toBareStringVocabulary(bizStep));
+    assertEquals("departing", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "https://ref.gs1.org/voc/Bizstep-commissioning";
-    assertEquals("commissioning", ConverterUtil.toBareStringVocabulary(bizStep));
+    assertEquals("commissioning", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "https://example.com/voc/My-Own-Vocabulary";
     assertEquals(
-        "https://example.com/voc/My-Own-Vocabulary", ConverterUtil.toBareStringVocabulary(bizStep));
+        "https://example.com/voc/My-Own-Vocabulary", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "urn:epcglobal:cbv:bizstep:inspecting";
-    assertEquals("inspecting", ConverterUtil.toBareStringVocabulary(bizStep));
+    assertEquals("inspecting", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "urn:epcglobal:cbv:bizstep:receiving";
-    assertEquals("receiving", ConverterUtil.toBareStringVocabulary(bizStep));
+    assertEquals("receiving", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "urn:example:department:bizstep:my_own_vocabulary";
     assertEquals(
         "urn:example:department:bizstep:my_own_vocabulary",
-        ConverterUtil.toBareStringVocabulary(bizStep));
+        converter.toBareStringVocabulary(bizStep));
 
-    assertEquals("", ConverterUtil.toBareStringVocabulary(""));
-    assertEquals(" ", ConverterUtil.toBareStringVocabulary(" "));
-    assertNull(ConverterUtil.toBareStringVocabulary(null));
+    assertEquals("", converter.toBareStringVocabulary(""));
+    assertEquals(" ", converter.toBareStringVocabulary(" "));
+    assertNull(converter.toBareStringVocabulary(null));
   }
 
   @Test
   public void DispositionBareStringTest() {
     String disposition = "https://ref.gs1.org/voc/Disp-in_transit";
-    assertEquals("in_transit", ConverterUtil.toBareStringVocabulary(disposition));
+    assertEquals("in_transit", converter.toBareStringVocabulary(disposition));
 
     disposition = "https://ref.gs1.org/voc/Disp-recalled";
-    assertEquals("recalled", ConverterUtil.toBareStringVocabulary(disposition));
+    assertEquals("recalled", converter.toBareStringVocabulary(disposition));
 
     disposition = "https://example.com/My-Own-Disposition";
     assertEquals(
-        "https://example.com/My-Own-Disposition",
-        ConverterUtil.toBareStringVocabulary(disposition));
+        "https://example.com/My-Own-Disposition", converter.toBareStringVocabulary(disposition));
 
     disposition = "urn:epcglobal:cbv:disp:in_progress";
-    assertEquals("in_progress", ConverterUtil.toBareStringVocabulary(disposition));
+    assertEquals("in_progress", converter.toBareStringVocabulary(disposition));
 
     disposition = "urn:epcglobal:cbv:disp:needs_replacement";
-    assertEquals("needs_replacement", ConverterUtil.toBareStringVocabulary(disposition));
+    assertEquals("needs_replacement", converter.toBareStringVocabulary(disposition));
 
     disposition = "urn:example:department:bizstep:my_own_vocabulary";
     assertEquals(
         "urn:example:department:bizstep:my_own_vocabulary",
-        ConverterUtil.toBareStringVocabulary(disposition));
+        converter.toBareStringVocabulary(disposition));
   }
 
   @Test
   public void BizTransactionBareStringTest() {
     String bizTransactionType = "https://ref.gs1.org/voc/BTT-inv";
-    assertEquals("inv", ConverterUtil.toBareStringVocabulary(bizTransactionType));
+    assertEquals("inv", converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "https://ref.gs1.org/voc/BTT-desadv";
-    assertEquals("desadv", ConverterUtil.toBareStringVocabulary(bizTransactionType));
+    assertEquals("desadv", converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "https://ref.gs1.org/voc/BTT-po";
-    assertEquals("po", ConverterUtil.toBareStringVocabulary(bizTransactionType));
+    assertEquals("po", converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "https://example.com/department/My_Own_Biz_Type";
     assertEquals(
         "https://example.com/department/My_Own_Biz_Type",
-        ConverterUtil.toBareStringVocabulary(bizTransactionType));
+        converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "urn:epcglobal:cbv:btt:inv";
-    assertEquals("inv", ConverterUtil.toBareStringVocabulary(bizTransactionType));
+    assertEquals("inv", converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "urn:epcglobal:cbv:btt:desadv";
-    assertEquals("desadv", ConverterUtil.toBareStringVocabulary(bizTransactionType));
+    assertEquals("desadv", converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "urn:epcglobal:cbv:btt:po";
-    assertEquals("po", ConverterUtil.toBareStringVocabulary(bizTransactionType));
+    assertEquals("po", converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "urn:example:department:error:custom_error";
     assertEquals(
         "urn:example:department:error:custom_error",
-        ConverterUtil.toBareStringVocabulary(bizTransactionType));
+        converter.toBareStringVocabulary(bizTransactionType));
   }
 
   @Test
   public void SourceDestinationBareStringTest() {
     String srcDestinationString = "https://ref.gs1.org/voc/SDT-possessing_party";
-    assertEquals("possessing_party", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("possessing_party", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "https://ref.gs1.org/voc/SDT-owning_party";
-    assertEquals("owning_party", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("owning_party", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "https://ref.gs1.org/voc/SDT-location";
-    assertEquals("location", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("location", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "https://example.com/source/My_Own_Source";
     assertEquals(
         "https://example.com/source/My_Own_Source",
-        ConverterUtil.toBareStringVocabulary(srcDestinationString));
+        converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "myDestination";
-    assertEquals("myDestination", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("myDestination", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "urn:epcglobal:cbv:sdt:possessing_party";
-    assertEquals("possessing_party", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("possessing_party", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "urn:epcglobal:cbv:sdt:owning_party";
-    assertEquals("owning_party", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("owning_party", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "urn:epcglobal:cbv:sdt:location";
-    assertEquals("location", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("location", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "urn:example:department:source:custom_source";
     assertEquals(
         "urn:example:department:source:custom_source",
-        ConverterUtil.toBareStringVocabulary(srcDestinationString));
+        converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "mySource";
-    assertEquals("mySource", ConverterUtil.toBareStringVocabulary(srcDestinationString));
+    assertEquals("mySource", converter.toBareStringVocabulary(srcDestinationString));
   }
 
   @Test
   public void ErrorDeclarationReasonBareStringTest() {
     String errorReason = "https://ref.gs1.org/voc/ER-incorrect_data";
-    assertEquals("incorrect_data", ConverterUtil.toBareStringVocabulary(errorReason));
+    assertEquals("incorrect_data", converter.toBareStringVocabulary(errorReason));
 
     errorReason = "https://ref.gs1.org/voc/ER-did_not_occur";
-    assertEquals("did_not_occur", ConverterUtil.toBareStringVocabulary(errorReason));
+    assertEquals("did_not_occur", converter.toBareStringVocabulary(errorReason));
 
     errorReason = "https://ref.gs1.org/voc/ER-other";
-    assertEquals("other", ConverterUtil.toBareStringVocabulary(errorReason));
+    assertEquals("other", converter.toBareStringVocabulary(errorReason));
 
     errorReason = "https://example.com/myReason/ReasonDescription";
     assertEquals(
         "https://example.com/myReason/ReasonDescription",
-        ConverterUtil.toBareStringVocabulary(errorReason));
+        converter.toBareStringVocabulary(errorReason));
 
     errorReason = "urn:epcglobal:cbv:er:incorrect_data";
-    assertEquals("incorrect_data", ConverterUtil.toBareStringVocabulary(errorReason));
+    assertEquals("incorrect_data", converter.toBareStringVocabulary(errorReason));
 
     errorReason = "urn:epcglobal:cbv:er:did_not_occur";
-    assertEquals("did_not_occur", ConverterUtil.toBareStringVocabulary(errorReason));
+    assertEquals("did_not_occur", converter.toBareStringVocabulary(errorReason));
 
     errorReason = "urn:epcglobal:cbv:er:other";
-    assertEquals("other", ConverterUtil.toBareStringVocabulary(errorReason));
+    assertEquals("other", converter.toBareStringVocabulary(errorReason));
 
     errorReason = "urn:example:error:reason:my_own_reason";
     assertEquals(
-        "urn:example:error:reason:my_own_reason",
-        ConverterUtil.toBareStringVocabulary(errorReason));
+        "urn:example:error:reason:my_own_reason", converter.toBareStringVocabulary(errorReason));
 
-    assertEquals("", ConverterUtil.toBareStringVocabulary(""));
-    assertEquals(" ", ConverterUtil.toBareStringVocabulary(" "));
-    assertNull(ConverterUtil.toBareStringVocabulary(null));
+    assertEquals("", converter.toBareStringVocabulary(""));
+    assertEquals(" ", converter.toBareStringVocabulary(" "));
+    assertNull(converter.toBareStringVocabulary(null));
   }
 }

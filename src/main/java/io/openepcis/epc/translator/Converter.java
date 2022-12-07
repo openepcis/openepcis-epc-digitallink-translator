@@ -16,22 +16,21 @@
 package io.openepcis.epc.translator;
 
 import io.openepcis.epc.translator.converter.*;
+import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.UnsupportedGS1IdentifierException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConverterUtil {
+public class Converter {
 
-  private static final String INVALID_URI_MESSAGE =
+  private final String INVALID_URI_MESSAGE =
       "Provided URI format does not match with any of the GS1 identifiers format.%nPlease check the URI: %s";
-  private static final Set<Converter> DL = new HashSet<>();
-  private static final Set<Converter> CLASS_LEVEL_TRANSLATOR = new HashSet<>();
+  private final Set<io.openepcis.epc.translator.converter.Converter> DL = new HashSet<>();
+  private final Set<io.openepcis.epc.translator.converter.Converter> CLASS_LEVEL_TRANSLATOR =
+      new HashSet<>();
 
-  static {
+  public Converter() {
     // Add all EPC instance-level converter
     DL.add(new SGTINConverter());
     DL.add(new SSCCConverter());
@@ -60,8 +59,8 @@ public class ConverterUtil {
   }
 
   // Check through each class and find URN belongs to which particular class
-  public static String toURI(String urn) throws ValidationException {
-    for (Converter uri : DL) {
+  public String toURI(final String urn) throws ValidationException {
+    for (io.openepcis.epc.translator.converter.Converter uri : DL) {
       if (uri.supportsDigitalLinkURI(urn)) {
         return uri.convertToDigitalLink(urn);
       }
@@ -73,8 +72,9 @@ public class ConverterUtil {
   }
 
   // Check through each class and find DL URI belongs to which particular class
-  public static Map<String, String> toURN(String dlURI, int gcpLength) throws ValidationException {
-    for (Converter inputuri : DL) {
+  public Map<String, String> toURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : DL) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI, gcpLength);
       }
@@ -83,8 +83,8 @@ public class ConverterUtil {
   }
 
   // Check through each class and find DL URI belongs to which particular class
-  public static Map<String, String> toURN(String dlURI) throws ValidationException {
-    for (Converter inputuri : DL) {
+  public Map<String, String> toURN(final String dlURI) throws ValidationException {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : DL) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI);
       }
@@ -93,8 +93,8 @@ public class ConverterUtil {
   }
 
   // Check through each class and find URN belongs to which particular class
-  public static String toURIForClassLevelIdentifier(String urn) throws ValidationException {
-    for (Converter uri : CLASS_LEVEL_TRANSLATOR) {
+  public String toURIForClassLevelIdentifier(final String urn) throws ValidationException {
+    for (io.openepcis.epc.translator.converter.Converter uri : CLASS_LEVEL_TRANSLATOR) {
       if (uri.supportsDigitalLinkURI(urn)) {
         return uri.convertToDigitalLink(urn);
       }
@@ -106,9 +106,9 @@ public class ConverterUtil {
   }
 
   // Check through each class and find DL URI belongs to which particular class
-  public static Map<String, String> toURNForClassLevelIdentifier(String dlURI)
+  public Map<String, String> toURNForClassLevelIdentifier(final String dlURI)
       throws ValidationException {
-    for (Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI);
       }
@@ -117,9 +117,9 @@ public class ConverterUtil {
   }
 
   // Check through each class and find DL URI belongs to which particular class
-  public static Map<String, String> toURNForClassLevelIdentifier(String dlURI, int gcpLength)
+  public Map<String, String> toURNForClassLevelIdentifier(final String dlURI, int gcpLength)
       throws ValidationException {
-    for (Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI, gcpLength);
       }
@@ -129,7 +129,7 @@ public class ConverterUtil {
 
   // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event
   // hash generator.
-  public static String toWebURIVocabulary(final String urnVocabulary) {
+  public String toWebURIVocabulary(final String urnVocabulary) {
     return urnVocabulary == null || urnVocabulary.trim().equals("")
         ? urnVocabulary
         : EventVocabularyFormatter.canonicalWebURIVocabulary(urnVocabulary);
@@ -137,7 +137,7 @@ public class ConverterUtil {
 
   // Method to convert the CBV WebURI formatted vocabularies into URN vocabulary. Used during
   // JSON/JSON-LD conversion to XML.
-  public static String toUrnVocabulary(final String webUriVocabulary) {
+  public String toUrnVocabulary(final String webUriVocabulary) {
     return webUriVocabulary == null || webUriVocabulary.trim().equals("")
         ? webUriVocabulary
         : EventVocabularyFormatter.canonicalString(webUriVocabulary);
@@ -145,7 +145,7 @@ public class ConverterUtil {
 
   // Method to convert the CBV URN/WebURI formatted vocabularies into BareString vocabulary. Used
   // during XML -> JSON/JSON-LD conversion.
-  public static String toBareStringVocabulary(final String eventVocabulary) {
+  public String toBareStringVocabulary(final String eventVocabulary) {
     return eventVocabulary == null || eventVocabulary.trim().equals("")
         ? eventVocabulary
         : EventVocabularyFormatter.bareString(eventVocabulary);
@@ -161,7 +161,7 @@ public class ConverterUtil {
    *     destination, bizTransaction, etc.
    * @param format Type of formatting needed for the field either URN or WebURI.
    */
-  public static String toCbvVocabulary(
+  public String toCbvVocabulary(
       final String bareString, final String fieldName, final String format) {
     return bareString == null || bareString.trim().equals("") || fieldName == null
         ? bareString

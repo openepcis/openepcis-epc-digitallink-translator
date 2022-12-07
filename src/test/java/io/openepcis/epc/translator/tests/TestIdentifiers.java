@@ -17,35 +17,36 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertThrows;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
 
 public class TestIdentifiers {
 
+  private static final Converter converter = new Converter();
+
   public static ValidationException toDigitalLink(final String urn) {
-    return assertThrows(ValidationException.class, () -> ConverterUtil.toURI(urn));
+    return assertThrows(ValidationException.class, () -> converter.toURI(urn));
   }
 
   public static ValidationException toURN(final String uri, final int gcpLength) {
-    return assertThrows(ValidationException.class, () -> ConverterUtil.toURN(uri, gcpLength));
+    return assertThrows(ValidationException.class, () -> converter.toURN(uri, gcpLength));
   }
 
   // Throw error for validation of class level identifiers during the conversion from URN - Web URI
   public static ValidationException toURIForClassLevelIdentifier(final String urn) {
     return assertThrows(
-        ValidationException.class, () -> ConverterUtil.toURIForClassLevelIdentifier(urn));
+        ValidationException.class, () -> converter.toURIForClassLevelIdentifier(urn));
   }
 
   // Throw error for validation of class level identifiers during the conversion from Web URI - URN
   public static ValidationException toURNForClassLevelIdentifier(
       final String uri, final int gcpLength) {
     return assertThrows(
-        ValidationException.class,
-        () -> ConverterUtil.toURNForClassLevelIdentifier(uri, gcpLength));
+        ValidationException.class, () -> converter.toURNForClassLevelIdentifier(uri, gcpLength));
   }
 
   public static ValidationException toURNForClassLevelIdentifier(final String uri) {
     return assertThrows(
-        ValidationException.class, () -> ConverterUtil.toURNForClassLevelIdentifier(uri));
+        ValidationException.class, () -> converter.toURNForClassLevelIdentifier(uri));
   }
 }

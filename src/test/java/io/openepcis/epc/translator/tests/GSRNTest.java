@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GSRNTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void testGSRN() throws ValidationException {
@@ -44,16 +52,16 @@ public class GSRNTest {
 
     // Valid GSRN
     assertEquals(
-        ConverterUtil.toURI("urn:epc:id:gsrn:1234567890.1234567"),
+        converter.toURI("urn:epc:id:gsrn:1234567890.1234567"),
         "https://id.gs1.org/8018/123456789012345675");
     assertEquals(
-        ConverterUtil.toURI("urn:epc:id:gsrn:142512.45142152511"),
+        converter.toURI("urn:epc:id:gsrn:142512.45142152511"),
         "https://id.gs1.org/8018/142512451421525110");
     assertEquals(
-        ConverterUtil.toURI("urn:epc:id:gsrn:673674637437.47783"),
+        converter.toURI("urn:epc:id:gsrn:673674637437.47783"),
         "https://id.gs1.org/8018/673674637437477836");
     assertEquals(
-        ConverterUtil.toURI("urn:epc:id:gsrn:654683828.92302309"),
+        converter.toURI("urn:epc:id:gsrn:654683828.92302309"),
         "https://id.gs1.org/8018/654683828923023096");
 
     // GSRN URI with more than 18 characters
@@ -74,19 +82,19 @@ public class GSRNTest {
 
     // Valid GSRN URI
     assertEquals(
-        ConverterUtil.toURN("https://id.gs1.org/8018/123456789012345675", 10).get("asURN"),
+        converter.toURN("https://id.gs1.org/8018/123456789012345675", 10).get("asURN"),
         "urn:epc:id:gsrn:1234567890.1234567");
     assertEquals(
-        ConverterUtil.toURN("https://hp.com/laptop/8018/123456789012345675", 10).get("asURN"),
+        converter.toURN("https://hp.com/laptop/8018/123456789012345675", 10).get("asURN"),
         "urn:epc:id:gsrn:1234567890.1234567");
     assertEquals(
-        ConverterUtil.toURN("https://hp.com/laptop/8018/152152415245142514").get("asURN"),
+        converter.toURN("https://hp.com/laptop/8018/152152415245142514").get("asURN"),
         "urn:epc:id:gsrn:1521524.1524514251");
     assertEquals(
-        ConverterUtil.toURN("https://hp.com/laptop/8018/547657473828392839").get("asURN"),
+        converter.toURN("https://hp.com/laptop/8018/547657473828392839").get("asURN"),
         "urn:epc:id:gsrn:54765747.382839283");
     assertEquals(
-        ConverterUtil.toURN("https://hp.com/laptop/8018/654673483739829829", 11).get("asURN"),
+        converter.toURN("https://hp.com/laptop/8018/654673483739829829", 11).get("asURN"),
         "urn:epc:id:gsrn:65467348373.982982");
   }
 }

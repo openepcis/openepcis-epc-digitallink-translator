@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GCNTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void SGCN() throws ValidationException {
@@ -53,16 +61,16 @@ public class GCNTest {
     // Valid SGCN
     assertEquals(
         "https://id.gs1.org/255/12345678901281234",
-        ConverterUtil.toURI("urn:epc:id:sgcn:1234567890.12.1234"));
+        converter.toURI("urn:epc:id:sgcn:1234567890.12.1234"));
     assertEquals(
         "https://id.gs1.org/255/123456789012845678901234",
-        ConverterUtil.toURI("urn:epc:id:sgcn:1234567890.12.45678901234"));
+        converter.toURI("urn:epc:id:sgcn:1234567890.12.45678901234"));
     assertEquals(
         "https://id.gs1.org/255/43943943493924",
-        ConverterUtil.toURI("urn:epc:id:sgcn:439439434939..4"));
+        converter.toURI("urn:epc:id:sgcn:439439434939..4"));
     assertEquals(
         "https://id.gs1.org/255/548594859485295495849",
-        ConverterUtil.toURI("urn:epc:id:sgcn:5485948594.85.95495849"));
+        converter.toURI("urn:epc:id:sgcn:5485948594.85.95495849"));
 
     // SGCN URI with less than 14 digits
     sgcn = "https://id.gs1.org/255/1234567890123";
@@ -82,19 +90,19 @@ public class GCNTest {
 
     // Valid SGCN URI
     assertEquals(
-        ConverterUtil.toURN("https://id.gs1.org/255/12345678901234", 12).get("asURN"),
+        converter.toURN("https://id.gs1.org/255/12345678901234", 12).get("asURN"),
         "urn:epc:id:sgcn:123456789012..4");
     assertEquals(
-        ConverterUtil.toURN("https://gs1.in/255/12345678901234", 12).get("asURN"),
+        converter.toURN("https://gs1.in/255/12345678901234", 12).get("asURN"),
         "urn:epc:id:sgcn:123456789012..4");
     assertEquals(
-        ConverterUtil.toURN("https://id.gs1.org/255/43943943493924", 6).get("asURN"),
+        converter.toURN("https://id.gs1.org/255/43943943493924", 6).get("asURN"),
         "urn:epc:id:sgcn:439439.434939.4");
     assertEquals(
-        ConverterUtil.toURN("https://id.gs1.org/255/43943943493924", 12).get("asURN"),
+        converter.toURN("https://id.gs1.org/255/43943943493924", 12).get("asURN"),
         "urn:epc:id:sgcn:439439434939..4");
     assertEquals(
-        ConverterUtil.toURN("https://id.gs1.org/255/4384384394394839").get("asURN"),
+        converter.toURN("https://id.gs1.org/255/4384384394394839").get("asURN"),
         "urn:epc:id:sgcn:4384384.39439.839");
 
     /** Class level GCN identifier conversion */
@@ -129,23 +137,28 @@ public class GCNTest {
     // Valid class level GCN Web URI
     assertEquals(
         "urn:epc:idpat:sgcn:123456789.012.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890123", 9)
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890123", 9)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:sgcn:1234567890.12.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890123")
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890123")
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:sgcn:283892.329328.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/255/2838923293289", 6)
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/255/2838923293289", 6)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:sgcn:757845748574..*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/255/7578457485748", 12)
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/255/7578457485748", 12)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:sgcn:7578457.48574.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://example.com/255/7578457485748")
+        converter
+            .toURNForClassLevelIdentifier("https://example.com/255/7578457485748")
             .get("asURN"));
 
     // Class level URN to Web URI Conversion
@@ -185,15 +198,15 @@ public class GCNTest {
     // Valid class level GCN URN
     assertEquals(
         "https://id.gs1.org/255/1234567890128",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:12345678.9012.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:12345678.9012.*"));
     assertEquals(
         "https://id.gs1.org/255/4343884394893",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:434388.439489.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:434388.439489.*"));
     assertEquals(
         "https://id.gs1.org/255/7438748374382",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:743874837438..*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:743874837438..*"));
     assertEquals(
         "https://id.gs1.org/255/5787674634636",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:5787674634.63.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:sgcn:5787674634.63.*"));
   }
 }

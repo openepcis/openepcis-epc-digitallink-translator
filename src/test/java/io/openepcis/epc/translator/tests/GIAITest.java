@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GIAITest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void giaiTest() throws ValidationException {
@@ -49,15 +57,13 @@ public class GIAITest {
     // Valid GIAI
     assertEquals(
         "https://id.gs1.org/8004/123456789012123",
-        ConverterUtil.toURI("urn:epc:id:giai:123456789012.123"));
+        converter.toURI("urn:epc:id:giai:123456789012.123"));
+    assertEquals("https://id.gs1.org/8004/1234567", converter.toURI("urn:epc:id:giai:123456.7"));
     assertEquals(
-        "https://id.gs1.org/8004/1234567", ConverterUtil.toURI("urn:epc:id:giai:123456.7"));
-    assertEquals(
-        "https://id.gs1.org/8004/8394958495850",
-        ConverterUtil.toURI("urn:epc:id:giai:839495849585.0"));
+        "https://id.gs1.org/8004/8394958495850", converter.toURI("urn:epc:id:giai:839495849585.0"));
     assertEquals(
         "https://id.gs1.org/8004/8394958495850!\"/%_",
-        ConverterUtil.toURI("urn:epc:id:giai:839495849585.0!\"/%_"));
+        converter.toURI("urn:epc:id:giai:839495849585.0!\"/%_"));
 
     // GIAI with invalid URI format
     giai = "/8004/123456789012123";
@@ -77,15 +83,15 @@ public class GIAITest {
 
     assertEquals(
         "urn:epc:id:giai:1234567890.12123",
-        ConverterUtil.toURN("https://id.gs1.org/8004/123456789012123", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/8004/123456789012123", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:giai:1234567890.12123",
-        ConverterUtil.toURN("https://news.google.in/8004/123456789012123", 10).get("asURN"));
+        converter.toURN("https://news.google.in/8004/123456789012123", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:giai:8394958.495850!\"/%_",
-        ConverterUtil.toURN("https://id.gs1.org/8004/8394958495850!\"/%_").get("asURN"));
+        converter.toURN("https://id.gs1.org/8004/8394958495850!\"/%_").get("asURN"));
     assertEquals(
         "urn:epc:id:giai:732487.:;><=?",
-        ConverterUtil.toURN("https://id.gs1.org/8004/732487:;><=?").get("asURN"));
+        converter.toURN("https://id.gs1.org/8004/732487:;><=?").get("asURN"));
   }
 }

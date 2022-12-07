@@ -17,6 +17,7 @@ package io.openepcis.epc.translator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.openepcis.epc.translator.exception.UrnDLTransformationException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;

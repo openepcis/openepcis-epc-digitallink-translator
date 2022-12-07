@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 
 public enum StandardVocabElements {
   BIZ_STEP("urn:epcglobal:cbv:bizstep:", "https://ns.gs1.org/cbv/Bizstep-"),

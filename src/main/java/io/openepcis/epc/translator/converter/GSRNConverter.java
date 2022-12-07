@@ -16,7 +16,7 @@
 package io.openepcis.epc.translator.converter;
 
 import io.openepcis.epc.translator.GCPLengthProvider;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GSRNValidator;
 import java.util.HashMap;
 import java.util.Map;

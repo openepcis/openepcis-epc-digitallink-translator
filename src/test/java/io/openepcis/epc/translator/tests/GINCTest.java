@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GINCTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void GINC() throws ValidationException {
@@ -47,17 +55,16 @@ public class GINCTest {
     // Valid GINC URN
     assertEquals(
         "https://id.gs1.org/401/12345678901234",
-        ConverterUtil.toURI("urn:epc:id:ginc:1234567890.1234"));
-    assertEquals("https://id.gs1.org/401/4738473", ConverterUtil.toURI("urn:epc:id:ginc:473847.3"));
+        converter.toURI("urn:epc:id:ginc:1234567890.1234"));
+    assertEquals("https://id.gs1.org/401/4738473", converter.toURI("urn:epc:id:ginc:473847.3"));
     assertEquals(
-        "https://id.gs1.org/401/4849304738473",
-        ConverterUtil.toURI("urn:epc:id:ginc:484930473847.3"));
+        "https://id.gs1.org/401/4849304738473", converter.toURI("urn:epc:id:ginc:484930473847.3"));
     assertEquals(
         "https://id.gs1.org/401/4849304738473!\"%/%&'()*+,-.:=",
-        ConverterUtil.toURI("urn:epc:id:ginc:48493047.38473!\"%/%&'()*+,-.:="));
+        converter.toURI("urn:epc:id:ginc:48493047.38473!\"%/%&'()*+,-.:="));
     assertEquals(
         "https://id.gs1.org/401/4849304738473!\"\"%/%&'()*+,-.:=",
-        ConverterUtil.toURI("urn:epc:id:ginc:48493047.38473!\"\"%/%&'()*+,-.:="));
+        converter.toURI("urn:epc:id:ginc:48493047.38473!\"\"%/%&'()*+,-.:="));
 
     // GINC less than GCP Length
     ginc = "https://id.gs1.org/401/12345678901";
@@ -77,19 +84,18 @@ public class GINCTest {
 
     assertEquals(
         "urn:epc:id:ginc:1234567890.1234A",
-        ConverterUtil.toURN("https://id.gs1.org/401/12345678901234A", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/401/12345678901234A", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:ginc:1234567890.1234A",
-        ConverterUtil.toURN("https://eclipse.org/401/12345678901234A", 10).get("asURN"));
+        converter.toURN("https://eclipse.org/401/12345678901234A", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:ginc:48493047.38473!\"\"%/%&'()*+,-.:=",
-        ConverterUtil.toURN("https://id.gs1.org/401/4849304738473!\"\"%/%&'()*+,-.:=", 8)
-            .get("asURN"));
+        converter.toURN("https://id.gs1.org/401/4849304738473!\"\"%/%&'()*+,-.:=", 8).get("asURN"));
     assertEquals(
         "urn:epc:id:ginc:1234567890.12",
-        ConverterUtil.toURN("https://id.gs1.org/401/123456789012").get("asURN"));
+        converter.toURN("https://id.gs1.org/401/123456789012").get("asURN"));
     assertEquals(
         "urn:epc:id:ginc:123456789012.",
-        ConverterUtil.toURN("https://id.gs1.org/401/123456789012", 12).get("asURN"));
+        converter.toURN("https://id.gs1.org/401/123456789012", 12).get("asURN"));
   }
 }

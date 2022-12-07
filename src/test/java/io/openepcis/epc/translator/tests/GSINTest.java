@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GSINTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void GSIN() throws ValidationException {
@@ -51,13 +59,13 @@ public class GSINTest {
 
     // Valid GSIN
     assertEquals(
-        ConverterUtil.toURI("urn:epc:id:gsin:123456.7890123456"),
+        converter.toURI("urn:epc:id:gsin:123456.7890123456"),
         "https://id.gs1.org/402/12345678901234560");
     assertEquals(
-        ConverterUtil.toURI("urn:epc:id:gsin:483984.3984398439"),
+        converter.toURI("urn:epc:id:gsin:483984.3984398439"),
         "https://id.gs1.org/402/48398439843984392");
     assertEquals(
-        ConverterUtil.toURI("urn:epc:id:gsin:859485945045.0454"),
+        converter.toURI("urn:epc:id:gsin:859485945045.0454"),
         "https://id.gs1.org/402/85948594504504549");
 
     // GSIN URI with invalid characters
@@ -80,18 +88,18 @@ public class GSINTest {
     // Valid GSIN
     assertEquals(
         "urn:epc:id:gsin:1234567890.512345",
-        ConverterUtil.toURN("https://id.gs1.org/402/12345678905123456", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/402/12345678905123456", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:1234567890.512345",
-        ConverterUtil.toURN("https://benelog.com/horrem/402/12345678905123456", 10).get("asURN"));
+        converter.toURN("https://benelog.com/horrem/402/12345678905123456", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:843958935895.3939",
-        ConverterUtil.toURN("https://benelog.com/horrem/402/84395893589539394").get("asURN"));
+        converter.toURN("https://benelog.com/horrem/402/84395893589539394").get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:9549854.549583498",
-        ConverterUtil.toURN("https://benelog.com/horrem/402/95498545495834983").get("asURN"));
+        converter.toURN("https://benelog.com/horrem/402/95498545495834983").get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:954859.8495045904",
-        ConverterUtil.toURN("https://https://id.gs1.org/402/95485984950459045", 6).get("asURN"));
+        converter.toURN("https://https://id.gs1.org/402/95485984950459045", 6).get("asURN"));
   }
 }
