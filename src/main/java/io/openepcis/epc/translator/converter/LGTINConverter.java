@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.LGTINValidator;
 import java.util.HashMap;
@@ -108,7 +109,7 @@ public class LGTINConverter implements Converter {
         dlURI.substring(
             dlURI.indexOf(LGTIN_URI_PART) + LGTIN_URI_PART.length(),
             dlURI.indexOf(LGTIN_SERIAL_PART));
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(lgtin);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(lgtin);
 
     // Call the Validator class for the LGTIN to check the DLURI syntax
     LGTIN_VALIDATOR.validateURI(dlURI, gcpLength);

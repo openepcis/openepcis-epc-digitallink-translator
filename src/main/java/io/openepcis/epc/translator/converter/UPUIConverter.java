@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.UPUIValidator;
 import java.util.HashMap;
@@ -110,7 +111,7 @@ public class UPUIConverter implements Converter {
     String upui =
         dlURI.substring(
             dlURI.indexOf(UPUI_URI_PART) + UPUI_URI_PART.length(), dlURI.indexOf(UPUI_SERIAL_PART));
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(upui);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(upui);
 
     // Call the Validator class for the UPUI to check the DLURI syntax
     UPUI_VALIDATOR.validateURI(dlURI, gcpLength);

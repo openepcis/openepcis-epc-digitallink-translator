@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GIAIValidator;
 import java.util.HashMap;
@@ -90,7 +91,7 @@ public class GIAIConverter implements Converter {
 
     // GIAI always starts with the "pure" GCP - only pass 13 characters
     int gcpLength =
-        GCPLengthProvider.getInstance()
+        DefaultGCPLengthProvider.getInstance()
             .getGcpLength(giai.length() > 13 ? giai.substring(0, 13) : giai);
 
     // Call the Validator class for the GIAI to check the DLURI syntax

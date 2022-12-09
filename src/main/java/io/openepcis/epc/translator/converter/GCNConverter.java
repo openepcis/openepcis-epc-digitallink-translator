@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GCNValidator;
 import java.util.HashMap;
@@ -116,7 +117,7 @@ public class GCNConverter implements Converter {
   // Convert the provided Digital Link URI to respective URN of GCN Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(sgcn);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgcn);
 
     // Call the Validator class for the GCN to check the DLURI syntax
     if (isClassLevel) {

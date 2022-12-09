@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.SSCCValidator;
 import java.util.HashMap;
@@ -92,7 +93,7 @@ public class SSCCConverter implements Converter {
   // Convert the provided Digital Link URI to respective URN of SSCC Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     final String sscc = dlURI.substring(dlURI.indexOf(SSCC_URI_PART) + SSCC_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(sscc);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sscc);
     // Validate the URN to check if they match the SGTIN syntax
     SSCC_VALIDATOR.validateURI(dlURI, gcpLength);
 

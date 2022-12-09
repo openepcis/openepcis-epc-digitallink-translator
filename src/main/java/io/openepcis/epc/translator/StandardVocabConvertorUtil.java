@@ -15,9 +15,9 @@
  */
 package io.openepcis.epc.translator;
 
-import io.openepcis.epc.translator.converter.StandardVocabElements;
+import io.openepcis.epc.translator.constants.StandardVocabElements;
+import io.openepcis.epc.translator.exception.UnsupportedGS1IdentifierException;
 import io.openepcis.epc.translator.exception.ValidationException;
-import io.openepcis.epc.translator.validation.UnsupportedGS1IdentifierException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

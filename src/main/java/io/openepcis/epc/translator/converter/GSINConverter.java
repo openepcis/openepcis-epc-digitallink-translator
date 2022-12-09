@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GSINValidator;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class GSINConverter implements Converter {
   // Convert the provided Digital Link URI to respective URN of GSIN Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(gsin);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsin);
 
     // Call the Validator class for the GSIN to check the DLURI syntax
     gsinValidator.validateURI(dlURI, gcpLength);

@@ -16,8 +16,8 @@
 package io.openepcis.epc.translator;
 
 import io.openepcis.epc.translator.converter.*;
+import io.openepcis.epc.translator.exception.UnsupportedGS1IdentifierException;
 import io.openepcis.epc.translator.exception.ValidationException;
-import io.openepcis.epc.translator.validation.UnsupportedGS1IdentifierException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

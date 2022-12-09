@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.CPIValidator;
 import java.util.HashMap;
@@ -146,7 +147,7 @@ public class CPIConverter implements Converter {
               dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length(), dlURI.indexOf(CPI_SERIAL_PART));
     }
 
-    final int gcpLength = GCPLengthProvider.getInstance().getGcpLength(cpi);
+    final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(cpi);
 
     // Validate the DLURI to check if they match the CPI syntax
     if (isClassLevel) {

@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.PGLNValidator;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class PGLNConverter implements Converter {
   // Convert the provided Digital Link URI to respective URN of PGLN Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     final String pgln = dlURI.substring(dlURI.indexOf(PGLN_URI_PART) + PGLN_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(pgln);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(pgln);
 
     // Call the Validator class for the PGLN to check the DLURI syntax
     PGLN_VALIDATOR.validateURI(dlURI, gcpLength);

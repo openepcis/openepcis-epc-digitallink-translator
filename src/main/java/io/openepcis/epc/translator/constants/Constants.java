@@ -13,7 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openepcis.epc.translator.converter;
+package io.openepcis.epc.translator.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

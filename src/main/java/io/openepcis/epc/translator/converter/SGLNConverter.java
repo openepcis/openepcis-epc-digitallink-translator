@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.SGLNValidator;
 import java.util.HashMap;
@@ -131,7 +132,7 @@ public class SGLNConverter implements Converter {
           dlURI.substring(
               dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length(),
               dlURI.indexOf(SGLN_SERIAL_PART));
-      int gcpLength = GCPLengthProvider.getInstance().getGcpLength(sgln);
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgln);
       SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
       final String serial = dlURI.substring(dlURI.indexOf(SGLN_SERIAL_PART) + 5);
       asURN =
@@ -144,7 +145,7 @@ public class SGLNConverter implements Converter {
       buildURN.put("serial", serial);
     } else {
       sgln = dlURI.substring(dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length());
-      int gcpLength = GCPLengthProvider.getInstance().getGcpLength(sgln);
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgln);
       SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
       asURN =
           SGLN_URN_PREFIX

@@ -13,9 +13,8 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openepcis.epc.translator.validation;
+package io.openepcis.epc.translator.exception;
 
-import io.openepcis.epc.translator.exception.ValidationException;
 import java.io.Serial;
 
 public class UnsupportedGS1IdentifierException extends ValidationException {

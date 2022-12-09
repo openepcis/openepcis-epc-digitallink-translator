@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.SGTINValidator;
 import java.util.HashMap;
@@ -148,7 +149,7 @@ public class SGTINConverter implements Converter {
               dlURI.indexOf(SGTIN_SERIAL_PART));
     }
 
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(sgtin);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgtin);
 
     // Validate the URN to check if they match the SGTIN syntax
     if (isClassLevel) {

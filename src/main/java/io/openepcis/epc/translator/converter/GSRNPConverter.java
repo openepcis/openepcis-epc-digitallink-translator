@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GSRNPValidator;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class GSRNPConverter implements Converter {
   // Convert the provided Digital Link URI to respective URN of GSRNP Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     final String gsrnp = dlURI.substring(dlURI.indexOf(GSRNP_URI_PART) + GSRNP_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(gsrnp);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsrnp);
 
     // Call the Validator class for the GSRNP to check the DLURI syntax
     GSRNP_VALIDATOR.validateURI(dlURI, gcpLength);

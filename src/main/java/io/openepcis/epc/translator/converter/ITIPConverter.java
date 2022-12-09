@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.ITIPValidator;
 import java.util.HashMap;
@@ -177,7 +178,7 @@ public class ITIPConverter implements Converter {
               dlURI.indexOf(ITIP_SERIAL_PART));
     }
 
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(itip);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(itip);
 
     // Call the Validator class for the ITIP to check the DLURI syntax
     if (isClassLevel) {

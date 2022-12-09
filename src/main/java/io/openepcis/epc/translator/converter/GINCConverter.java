@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GINCValidator;
 import java.util.HashMap;
@@ -86,7 +87,7 @@ public class GINCConverter implements Converter {
   // Convert the provided Digital Link URI to respective URN of GINC Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     final String ginc = dlURI.substring(dlURI.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(ginc);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(ginc);
 
     // Call the Validator class for the GINC to check the DLURI syntax
     GINC_VALIDATOR.validateURI(dlURI, gcpLength);

@@ -15,7 +15,8 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GRAIValidator;
 import java.util.HashMap;
@@ -130,7 +131,7 @@ public class GRAIConverter implements Converter {
               dlURI.indexOf(GRAI_URI_PART) + 19);
     }
 
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(grai);
+    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(grai);
 
     // Call the Validator class for the GRAI to check the DLURI syntax
     if (isClassLevel) {
