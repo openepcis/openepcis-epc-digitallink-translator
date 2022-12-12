@@ -45,11 +45,10 @@ public class CPIValidator implements PatternValidator {
     URN_MATCHERS.add(
         new Matcher(
             "urn:epc:id:cpi:[\\x23\\x2D\\x2F\\x30-\\x39\\x41-\\x5A]{6,12}\\.[\\x23\\x2D\\x2F\\x30-\\x39\\x41-\\x5A]{1,24}\\.[0-9]{1,12}",
-            "Invalid CPI, CPI must be between 7 and 30 digits followed by Serial with 1-12 digits (Ex: urn:epc:id:cpi:123456789.0123459.1234).%nPlease check the provided "
-                + "URN: %s") {
+            "Invalid CPI, CPI must be between 7 and 30 digits followed by Serial with 1-12 digits (Ex: urn:epc:id:cpi:123456789.0123459.1234).%nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             String cpi = urn.substring(urn.lastIndexOf(":"), urn.lastIndexOf("."));
             if (cpi.length() < 7 || cpi.length() > 31) {
@@ -73,11 +72,10 @@ public class CPIValidator implements PatternValidator {
     URN_WITHOUT_SERIAL_MATCHERS.add(
         new Matcher(
             "urn:epc:idpat:cpi:[\\x23\\x2D\\x2F\\x30-\\x39\\x41-\\x5A]{6,12}\\.[\\x23\\x2D\\x2F\\x30-\\x39\\x41-\\x5A]{0,24}\\.\\*",
-            "Invalid CPI, Class level CPI must be between 7 and 30 digits with GCP 6-12 digits (Ex: urn:epc:idpat:cpi:123456789.0123459.*).%nPlease check the provided URN: "
-                + "%s") {
+            "Invalid CPI, Class level CPI must be between 7 and 30 digits with GCP 6-12 digits (Ex: urn:epc:idpat:cpi:123456789.0123459.*).%nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             String cpi = urn.substring(urn.lastIndexOf(":"), urn.lastIndexOf("."));
             if (cpi.length() < 7 || cpi.length() > 31) {
@@ -100,7 +98,8 @@ public class CPIValidator implements PatternValidator {
             "Invalid CPI, CPI must be between 7 and 30 digits (Ex: https://id.gs1.org/8010/1234567890123459/8011/1234).%nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String urn, int gcpLength) throws ValidationException {
+          protected void validate(final String urn, final int gcpLength)
+              throws ValidationException {
             super.validate(urn, gcpLength);
             final String cpi =
                 urn.substring(
@@ -140,7 +139,8 @@ public class CPIValidator implements PatternValidator {
             "Invalid CPI, Class level CPI must be between 7 and 30 digits (Ex: https://id.gs1.org/8010/1234567890123459).%nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String urn, int gcpLength) throws ValidationException {
+          protected void validate(final String urn, final int gcpLength)
+              throws ValidationException {
             super.validate(urn, gcpLength);
             final String cpi = urn.substring(urn.indexOf(CPI_URI_PART) + CPI_URI_PART.length());
 

@@ -32,89 +32,125 @@ public class LGTINConverter implements Converter {
   private static final String LGTIN_URN_PART = ":lgtin:";
 
   // Check if the provided URN is of LGTIN type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(LGTIN_URN_PART);
   }
 
   // Check if the provided Digital Link URI is of LGTIN Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     return Pattern.compile("(?=.*/01/)(?=.*/10/)").matcher(dlURI).find();
   }
 
   // Convert the provided URN to respective Digital Link URI of LGTIN type
-  public String convertToDigitalLink(String urn) throws ValidationException {
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Call the Validator class for the LGTIN to check the URN syntax
+      LGTIN_VALIDATOR.validateURN(urn);
 
-    // Call the Validator class for the LGTIN to check the URN syntax
-    LGTIN_VALIDATOR.validateURN(urn);
-
-    // If the URN passed the validation then convert the URN to URI
-    final String gcp =
-        urn.charAt(urn.indexOf('.') + 1)
-            + urn.substring(
-                urn.indexOf(LGTIN_URN_PART) + LGTIN_URN_PART.length(), urn.indexOf('.'));
-    String lgtin =
-        gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
-    lgtin = lgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(lgtin.substring(0, 13));
-    final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
-    return Constants.IDENTIFIERDOMAIN + LGTIN_URI_PART + lgtin + LGTIN_SERIAL_PART + serialNumber;
+      // If the URN passed the validation then convert the URN to URI
+      final String gcp =
+          urn.charAt(urn.indexOf('.') + 1)
+              + urn.substring(
+                  urn.indexOf(LGTIN_URN_PART) + LGTIN_URN_PART.length(), urn.indexOf('.'));
+      String lgtin =
+          gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
+      lgtin = lgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(lgtin.substring(0, 13));
+      final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
+      return Constants.IDENTIFIERDOMAIN + LGTIN_URI_PART + lgtin + LGTIN_SERIAL_PART + serialNumber;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of LGTIN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
   // Convert the provided Digital Link URI to respective URN of LGTIN Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
-    // Call the Validator class for the LGTIN to check the DLURI syntax
-    LGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      // Call the Validator class for the LGTIN to check the DLURI syntax
+      LGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
 
-    // If the URI passed the validation then convert the URI to URN
-    final String lgtin =
-        dlURI.substring(
-            dlURI.indexOf(LGTIN_URI_PART) + LGTIN_URI_PART.length(),
-            dlURI.indexOf(LGTIN_SERIAL_PART));
-    return getEPCMap(dlURI, gcpLength, lgtin);
+      // If the URI passed the validation then convert the URI to URN
+      final String lgtin =
+          dlURI.substring(
+              dlURI.indexOf(LGTIN_URI_PART) + LGTIN_URI_PART.length(),
+              dlURI.indexOf(LGTIN_SERIAL_PART));
+      return getEPCMap(dlURI, gcpLength, lgtin);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of LGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
   private Map<String, String> getEPCMap(String dlURI, int gcpLength, String lgtin) {
-    Map<String, String> buildURN = new HashMap<>();
-    final String serial =
-        dlURI.substring(dlURI.indexOf(LGTIN_SERIAL_PART) + LGTIN_SERIAL_PART.length());
-    final String asURN =
-        "urn:epc:class:lgtin:"
-            + lgtin.substring(1, gcpLength + 1)
-            + "."
-            + lgtin.charAt(0)
-            + lgtin.substring(gcpLength + 1, lgtin.length() - 1)
-            + "."
-            + serial;
+    try {
+      final Map<String, String> buildURN = new HashMap<>();
+      final String serial =
+          dlURI.substring(dlURI.indexOf(LGTIN_SERIAL_PART) + LGTIN_SERIAL_PART.length());
+      final String asURN =
+          "urn:epc:class:lgtin:"
+              + lgtin.substring(1, gcpLength + 1)
+              + "."
+              + lgtin.charAt(0)
+              + lgtin.substring(gcpLength + 1, lgtin.length() - 1)
+              + "."
+              + serial;
 
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
+      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
+        final String asCaptured =
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.DLDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, asCaptured);
+        buildURN.put(Constants.CANONICALDL, dlURI);
+      } else {
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.IDENTIFIERDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, dlURI);
+        buildURN.put(Constants.CANONICALDL, canonicalDL);
+      }
+      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put("lgtin", lgtin);
+      buildURN.put(Constants.SERIAL, serial);
+      return buildURN;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the LGTIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("lgtin", lgtin);
-    buildURN.put(Constants.SERIAL, serial);
-    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of LGTIN Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    final String lgtin =
-        dlURI.substring(
-            dlURI.indexOf(LGTIN_URI_PART) + LGTIN_URI_PART.length(),
-            dlURI.indexOf(LGTIN_SERIAL_PART));
-    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(lgtin);
+    try {
+      final String lgtin =
+          dlURI.substring(
+              dlURI.indexOf(LGTIN_URI_PART) + LGTIN_URI_PART.length(),
+              dlURI.indexOf(LGTIN_SERIAL_PART));
+      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(lgtin);
 
-    // Call the Validator class for the LGTIN to check the DLURI syntax
-    LGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
+      // Call the Validator class for the LGTIN to check the DLURI syntax
+      LGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
 
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, lgtin);
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, lgtin);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of LGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + "\n"
+              + exception.getMessage());
+    }
   }
 }

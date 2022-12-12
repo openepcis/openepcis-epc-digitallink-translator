@@ -115,8 +115,7 @@ public class GCNValidator implements PatternValidator {
             if (sgcn.length() != 13) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GCN, Class level GCN should consist of 13 digits (Ex: urn:epc:idpat:sgcn:123456.789012.*),\nPlease "
-                          + "check the provided URN: %s",
+                      "Invalid GCN, Class level GCN should consist of 13 digits (Ex: urn:epc:idpat:sgcn:123456.789012.*),\nPlease check the provided URN: %s",
                       urn));
             }
           }

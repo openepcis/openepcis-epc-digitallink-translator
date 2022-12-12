@@ -43,7 +43,7 @@ public class GRAIValidator implements PatternValidator {
             "Invalid GRAI, GRAI with Serial must be 14 digits followed by 1 to 16 alphanumeric characters (Ex: urn:epc:id:grai:1234567890.12.1ABC),\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             final String gcp =
                 urn.substring(
@@ -85,7 +85,7 @@ public class GRAIValidator implements PatternValidator {
             "Invalid GRAI,\n The first 14 characters of the GRAI with Serial must be digits (Ex: urn:epc:idpat:grai:1234567890.12.*).\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
             String grai;
@@ -99,8 +99,7 @@ public class GRAIValidator implements PatternValidator {
             if (grai.length() != 12) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GRAI Length, GRAI with Serial must be 14 digits followed by 1 to 16 alphanumeric characters (Ex: urn:epc:idpat:grai:1234567890.12.*),"
-                          + "\nPlease check the provided URN: %s",
+                      "Invalid GRAI Length, GRAI with Serial must be 14 digits followed by 1 to 16 alphanumeric characters (Ex: urn:epc:idpat:grai:1234567890.12.*),%nPlease check the provided URN: %s",
                       urn));
             }
           }
@@ -116,7 +115,8 @@ public class GRAIValidator implements PatternValidator {
             "(http|https)://.*/8003/[0-9]{13}[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,16}$",
             "Invalid GRAI, GRAI with Serial must be 14 digits followed by 1 to 16 alphanumeric characters (Ex: https://id.gs1.org/8003/0123456789012123ABCD),\nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GCP Length matches
@@ -139,7 +139,8 @@ public class GRAIValidator implements PatternValidator {
             "(http|https)://.*/8003/[0-9]{13}",
             "Invalid GRAI, GRAI must be 13 digits (Ex: https://id.gs1.org/8003/9524321890009),\nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GCP Length matches

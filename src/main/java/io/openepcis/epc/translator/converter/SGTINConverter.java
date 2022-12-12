@@ -41,12 +41,12 @@ public class SGTINConverter implements Converter {
   }
 
   // Check if the provided URN is SGTIN
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(SGTIN_URN_PART);
   }
 
   // Check if the provided DL URI is SGTIN
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     if (isClassLevel) {
       return Pattern.compile("(?=.*/01/)(?!.*/10/)").matcher(dlURI).find();
     } else {
@@ -55,109 +55,145 @@ public class SGTINConverter implements Converter {
   }
 
   // Convert to SGTIN Digital Link URI
-  public String convertToDigitalLink(String urn) throws ValidationException {
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Validate the URN to check if they match the SGTIN syntax
+      if (isClassLevel) {
+        SGTIN_VALIDATOR.validateClassLevelURN(urn);
+      } else {
+        SGTIN_VALIDATOR.validateURN(urn);
+      }
 
-    // Validate the URN to check if they match the SGTIN syntax
-    if (isClassLevel) {
-      SGTIN_VALIDATOR.validateClassLevelURN(urn);
-    } else {
-      SGTIN_VALIDATOR.validateURN(urn);
+      final String gcp =
+          urn.charAt(urn.indexOf('.') + 1)
+              + urn.substring(
+                  urn.indexOf(SGTIN_URN_PART) + SGTIN_URN_PART.length(), urn.indexOf('.'));
+      String sgtin =
+          gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
+      sgtin = sgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(sgtin.substring(0, 13));
+
+      if (isClassLevel) {
+        sgtin = Constants.IDENTIFIERDOMAIN + SGTIN_URI_PART + sgtin;
+      } else {
+        final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
+        sgtin =
+            Constants.IDENTIFIERDOMAIN + SGTIN_URI_PART + sgtin + SGTIN_SERIAL_PART + serialNumber;
+      }
+      return sgtin;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of SGTIN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
     }
-
-    final String gcp =
-        urn.charAt(urn.indexOf('.') + 1)
-            + urn.substring(
-                urn.indexOf(SGTIN_URN_PART) + SGTIN_URN_PART.length(), urn.indexOf('.'));
-    String sgtin =
-        gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
-    sgtin = sgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(sgtin.substring(0, 13));
-
-    if (isClassLevel) {
-      sgtin = Constants.IDENTIFIERDOMAIN + SGTIN_URI_PART + sgtin;
-    } else {
-      final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
-      sgtin =
-          Constants.IDENTIFIERDOMAIN + SGTIN_URI_PART + sgtin + SGTIN_SERIAL_PART + serialNumber;
-    }
-    return sgtin;
   }
 
   // Convert to SGTIN URN
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      String sgtin;
 
-    String sgtin;
+      // Validate the URN to check if they match the SGTIN syntax
+      if (isClassLevel) {
+        sgtin = dlURI.substring(dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length());
+        SGTIN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        sgtin =
+            dlURI.substring(
+                dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length(),
+                dlURI.indexOf(SGTIN_SERIAL_PART));
+        SGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
 
-    // Validate the URN to check if they match the SGTIN syntax
-    if (isClassLevel) {
-      sgtin = dlURI.substring(dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length());
-      SGTIN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      sgtin =
-          dlURI.substring(
-              dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length(),
-              dlURI.indexOf(SGTIN_SERIAL_PART));
-      SGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
+      return getEPCMap(dlURI, gcpLength, sgtin);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of SGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-
-    return getEPCMap(dlURI, gcpLength, sgtin);
   }
 
-  private Map<String, String> getEPCMap(String dlURI, int gcpLength, String sgtin) {
-    Map<String, String> buildURN = new HashMap<>();
-    final String sgtinUrn =
-        sgtin.substring(1, gcpLength + 1)
-            + "."
-            + sgtin.charAt(0)
-            + sgtin.substring(gcpLength + 1, sgtin.length() - 1);
+  private Map<String, String> getEPCMap(
+      final String dlURI, final int gcpLength, final String sgtin) {
+    try {
+      final Map<String, String> buildURN = new HashMap<>();
+      final String sgtinUrn =
+          sgtin.substring(1, gcpLength + 1)
+              + "."
+              + sgtin.charAt(0)
+              + sgtin.substring(gcpLength + 1, sgtin.length() - 1);
 
-    String asURN;
-    if (isClassLevel) {
-      asURN = "urn:epc:idpat:sgtin:" + sgtinUrn + ".*";
-    } else {
-      final String serial =
-          dlURI.substring(dlURI.indexOf(SGTIN_SERIAL_PART) + SGTIN_SERIAL_PART.length());
-      asURN = "urn:epc:id:sgtin:" + sgtinUrn + "." + serial;
-      buildURN.put(Constants.SERIAL, serial);
-    }
+      String asURN;
+      if (isClassLevel) {
+        asURN = "urn:epc:idpat:sgtin:" + sgtinUrn + ".*";
+      } else {
+        final String serial =
+            dlURI.substring(dlURI.indexOf(SGTIN_SERIAL_PART) + SGTIN_SERIAL_PART.length());
+        asURN = "urn:epc:id:sgtin:" + sgtinUrn + "." + serial;
+        buildURN.put(Constants.SERIAL, serial);
+      }
 
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(SGTIN_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(SGTIN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
+      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
+        final String asCaptured =
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(SGTIN_URI_PART)), Constants.DLDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, asCaptured);
+        buildURN.put(Constants.CANONICALDL, dlURI);
+      } else {
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(SGTIN_URI_PART)), Constants.IDENTIFIERDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, dlURI);
+        buildURN.put(Constants.CANONICALDL, canonicalDL);
+      }
+      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put("gtin", sgtin);
+      return buildURN;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the SGTIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("gtin", sgtin);
-    return buildURN;
   }
 
   // Convert to SGTIN URN
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    String sgtin;
-    if (isClassLevel) {
-      sgtin = dlURI.substring(dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length());
-    } else {
-      sgtin =
-          dlURI.substring(
-              dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length(),
-              dlURI.indexOf(SGTIN_SERIAL_PART));
+  public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    try {
+      String sgtin;
+      if (isClassLevel) {
+        sgtin = dlURI.substring(dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length());
+      } else {
+        sgtin =
+            dlURI.substring(
+                dlURI.indexOf(SGTIN_URI_PART) + SGTIN_URI_PART.length(),
+                dlURI.indexOf(SGTIN_SERIAL_PART));
+      }
+
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgtin);
+
+      // Validate the URN to check if they match the SGTIN syntax
+      if (isClassLevel) {
+        SGTIN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        SGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
+
+      return getEPCMap(dlURI, gcpLength, sgtin);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of SGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + "\n"
+              + exception.getMessage());
     }
-
-    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgtin);
-
-    // Validate the URN to check if they match the SGTIN syntax
-    if (isClassLevel) {
-      SGTIN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      SGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
-    }
-
-    return getEPCMap(dlURI, gcpLength, sgtin);
   }
 }

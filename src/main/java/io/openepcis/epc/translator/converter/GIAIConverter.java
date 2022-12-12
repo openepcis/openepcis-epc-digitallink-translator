@@ -29,75 +29,112 @@ public class GIAIConverter implements Converter {
   private static final GIAIValidator GIAI_VALIDATOR = new GIAIValidator();
 
   // Check if the provided URN is of GIAI type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(GIAI_URN_PART);
   }
 
   // Check if the provided Digital Link URI is of GIAI Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     return dlURI.contains(GIAI_URI_PART);
   }
 
   // Convert the provided URN to respective Digital Link URI of GIAI type
-  public String convertToDigitalLink(String urn) throws ValidationException {
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
 
-    // Call the Validator class for the GIAI to check the URN syntax
-    GIAI_VALIDATOR.validateURN(urn);
+      // Call the Validator class for the GIAI to check the URN syntax
+      GIAI_VALIDATOR.validateURN(urn);
 
-    // If the URN passed the validation then convert the URN to URI
-    final String gcp =
-        urn.substring(urn.indexOf(GIAI_URN_PART) + GIAI_URN_PART.length(), urn.indexOf('.'));
-    final String giai = gcp + urn.substring(urn.indexOf('.') + 1);
-    return Constants.IDENTIFIERDOMAIN + GIAI_URI_PART + giai;
-  }
-
-  // Convert the provided Digital Link URI to respective URN of GIAI Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
-
-    // Call the Validator class for the GIAI to check the DLURI syntax
-    GIAI_VALIDATOR.validateURI(dlURI, gcpLength);
-
-    // If the URI passed the validation then convert the URI to URN
-    final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
-    return getEPCMap(dlURI, gcpLength, giai);
-  }
-
-  private Map<String, String> getEPCMap(String dlURI, int gcpLength, String giai) {
-    Map<String, String> buildURN = new HashMap<>();
-    final String asURN =
-        "urn:epc:id:giai:" + giai.substring(0, gcpLength) + "." + giai.substring(gcpLength);
-
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(GIAI_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(GIAI_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
+      // If the URN passed the validation then convert the URN to URI
+      final String gcp =
+          urn.substring(urn.indexOf(GIAI_URN_PART) + GIAI_URN_PART.length(), urn.indexOf('.'));
+      final String giai = gcp + urn.substring(urn.indexOf('.') + 1);
+      return Constants.IDENTIFIERDOMAIN + GIAI_URI_PART + giai;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GIAI identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
     }
-
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("giai", giai);
-    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GIAI Type
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      // Call the Validator class for the GIAI to check the DLURI syntax
+      GIAI_VALIDATOR.validateURI(dlURI, gcpLength);
 
-    // GIAI always starts with the "pure" GCP - only pass 13 characters
-    int gcpLength =
-        DefaultGCPLengthProvider.getInstance()
-            .getGcpLength(giai.length() > 13 ? giai.substring(0, 13) : giai);
+      // If the URI passed the validation then convert the URI to URN
+      final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
+      return getEPCMap(dlURI, gcpLength, giai);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GIAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
+  }
 
-    // Call the Validator class for the GIAI to check the DLURI syntax
-    GIAI_VALIDATOR.validateURI(dlURI, gcpLength);
+  private Map<String, String> getEPCMap(
+      final String dlURI, final int gcpLength, final String giai) {
+    try {
+      final Map<String, String> buildURN = new HashMap<>();
+      final String asURN =
+          "urn:epc:id:giai:" + giai.substring(0, gcpLength) + "." + giai.substring(gcpLength);
 
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, giai);
+      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
+        final String asCaptured =
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(GIAI_URI_PART)), Constants.DLDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, asCaptured);
+        buildURN.put(Constants.CANONICALDL, dlURI);
+      } else {
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(GIAI_URI_PART)), Constants.IDENTIFIERDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, dlURI);
+        buildURN.put(Constants.CANONICALDL, canonicalDL);
+      }
+
+      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put("giai", giai);
+      return buildURN;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the GIAI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
+  }
+
+  // Convert the provided Digital Link URI to respective URN of GIAI Type
+  public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    try {
+      final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
+
+      // GIAI always starts with the "pure" GCP - only pass 13 characters
+      final int gcpLength =
+          DefaultGCPLengthProvider.getInstance()
+              .getGcpLength(giai.length() > 13 ? giai.substring(0, 13) : giai);
+
+      // Call the Validator class for the GIAI to check the DLURI syntax
+      GIAI_VALIDATOR.validateURI(dlURI, gcpLength);
+
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, giai);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GIAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + "\n"
+              + exception.getMessage());
+    }
   }
 }

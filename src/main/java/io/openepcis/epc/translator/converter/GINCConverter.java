@@ -29,70 +29,106 @@ public class GINCConverter implements Converter {
   private static final GINCValidator GINC_VALIDATOR = new GINCValidator();
 
   // Check if the provided URN is of GINC type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(GINC_URN_PART);
   }
 
   // Check if the provided Digital Link URI is of GINC Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     return dlURI.contains(GINC_URI_PART);
   }
 
   // Convert the provided URN to respective Digital Link URI of GINC type
-  public String convertToDigitalLink(String urn) throws ValidationException {
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Validate the URN to check if they match the GINC syntax
+      GINC_VALIDATOR.validateURN(urn);
 
-    // Validate the URN to check if they match the GINC syntax
-    GINC_VALIDATOR.validateURN(urn);
-
-    // If the URN passed the validation then convert the URN to URI
-    String ginc =
-        urn.substring(urn.indexOf(GINC_URN_PART) + GINC_URN_PART.length(), urn.indexOf("."));
-    ginc = ginc + urn.substring(urn.indexOf(".") + 1);
-    return Constants.IDENTIFIERDOMAIN + GINC_URI_PART + ginc;
-  }
-
-  // Convert the provided Digital Link URI to respective URN of GINC Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
-
-    // Call the Validator class for the GINC to check the DLURI syntax
-    GINC_VALIDATOR.validateURI(dlURI, gcpLength);
-
-    // If the URI passed the validation then convert the URI to URN
-    final String ginc = dlURI.substring(dlURI.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
-    return getEPCMap(dlURI, gcpLength, ginc);
-  }
-
-  private Map<String, String> getEPCMap(String dlURI, int gcpLength, String ginc) {
-    Map<String, String> buildURN = new HashMap<>();
-    final String asURN =
-        "urn:epc:id:ginc:" + ginc.substring(0, gcpLength) + "." + ginc.substring(gcpLength);
-
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(GINC_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(GINC_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
+      // If the URN passed the validation then convert the URN to URI
+      String ginc =
+          urn.substring(urn.indexOf(GINC_URN_PART) + GINC_URN_PART.length(), urn.indexOf("."));
+      ginc = ginc + urn.substring(urn.indexOf(".") + 1);
+      return Constants.IDENTIFIERDOMAIN + GINC_URI_PART + ginc;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GINC identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
     }
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("ginc", ginc);
-    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GINC Type
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    final String ginc = dlURI.substring(dlURI.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
-    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(ginc);
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      // Call the Validator class for the GINC to check the DLURI syntax
+      GINC_VALIDATOR.validateURI(dlURI, gcpLength);
 
-    // Call the Validator class for the GINC to check the DLURI syntax
-    GINC_VALIDATOR.validateURI(dlURI, gcpLength);
+      // If the URI passed the validation then convert the URI to URN
+      final String ginc = dlURI.substring(dlURI.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
+      return getEPCMap(dlURI, gcpLength, ginc);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GINC identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
+  }
 
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, ginc);
+  private Map<String, String> getEPCMap(
+      final String dlURI, final int gcpLength, final String ginc) {
+    try {
+      final Map<String, String> buildURN = new HashMap<>();
+      final String asURN =
+          "urn:epc:id:ginc:" + ginc.substring(0, gcpLength) + "." + ginc.substring(gcpLength);
+
+      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
+        final String asCaptured =
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(GINC_URI_PART)), Constants.DLDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, asCaptured);
+        buildURN.put(Constants.CANONICALDL, dlURI);
+      } else {
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(GINC_URI_PART)), Constants.IDENTIFIERDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, dlURI);
+        buildURN.put(Constants.CANONICALDL, canonicalDL);
+      }
+      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put("ginc", ginc);
+      return buildURN;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the GINC identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
+  }
+
+  // Convert the provided Digital Link URI to respective URN of GINC Type
+  public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    try {
+      final String ginc = dlURI.substring(dlURI.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
+      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(ginc);
+
+      // Call the Validator class for the GINC to check the DLURI syntax
+      GINC_VALIDATOR.validateURI(dlURI, gcpLength);
+
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, ginc);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GINC identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + "\n"
+              + exception.getMessage());
+    }
   }
 }

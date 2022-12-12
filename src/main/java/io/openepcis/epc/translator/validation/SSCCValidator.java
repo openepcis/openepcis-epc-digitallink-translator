@@ -40,7 +40,7 @@ public class SSCCValidator implements PatternValidator {
             "Invalid SSCC, SSCC should be 18 digits with GCP 6-12 digits(Ex: urn:epc:id:sscc:234567.18901234567).\nPlease check the provided URN : %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
 
             // Check if the SSCC contains 18 digits
@@ -66,7 +66,8 @@ public class SSCCValidator implements PatternValidator {
             "Invalid SSCC, SSCC should consist of 18 digits (Ex: https://id.gs1.org/00/012345678966638624),%nPlease check the DL URI : %s ") {
 
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GCP Length matches

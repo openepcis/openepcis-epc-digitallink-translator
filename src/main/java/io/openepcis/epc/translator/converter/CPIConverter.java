@@ -35,128 +35,166 @@ public class CPIConverter implements Converter {
     super();
   }
 
-  public CPIConverter(boolean isClassLevel) {
+  public CPIConverter(final boolean isClassLevel) {
     this.isClassLevel = isClassLevel;
   }
 
   // Check if the provided URN is of CPI type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(CPI_URN_PART);
   }
 
   // Check if the provided Digital Link URI is of CPI Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     if (isClassLevel) return Pattern.compile("(?=.*/8010/)").matcher(dlURI).find();
     else return Pattern.compile("(?=.*/8010/)(?=.*/8011/)").matcher(dlURI).find();
   }
 
   // Convert the provided URN to respective Digital Link URI of CPI type
-  public String convertToDigitalLink(String urn) throws ValidationException {
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Validate the URN to check if they match the CPI syntax
+      if (isClassLevel) {
+        CPI_VALIDATOR.validateClassLevelURN(urn);
+      } else {
+        CPI_VALIDATOR.validateURN(urn);
+      }
 
-    // Validate the URN to check if they match the CPI syntax
-    if (isClassLevel) {
-      CPI_VALIDATOR.validateClassLevelURN(urn);
-    } else {
-      CPI_VALIDATOR.validateURN(urn);
-    }
-
-    // If the URN passed the validation then convert the URN to URI
-    final String gcp =
-        urn.substring(urn.indexOf(CPI_URN_PART) + CPI_URN_PART.length(), urn.indexOf("."));
-    final String cpi =
-        gcp + urn.substring(urn.indexOf(".") + 1, urn.indexOf(".", urn.indexOf(".") + 1));
-    if (isClassLevel) {
-      return Constants.IDENTIFIERDOMAIN + CPI_URI_PART + cpi;
-    } else {
-      final String serialNumber = urn.substring(urn.lastIndexOf(".") + 1);
-      return Constants.IDENTIFIERDOMAIN + CPI_URI_PART + cpi + CPI_SERIAL_PART + serialNumber;
+      // If the URN passed the validation then convert the URN to URI
+      final String gcp =
+          urn.substring(urn.indexOf(CPI_URN_PART) + CPI_URN_PART.length(), urn.indexOf("."));
+      final String cpi =
+          gcp + urn.substring(urn.indexOf(".") + 1, urn.indexOf(".", urn.indexOf(".") + 1));
+      if (isClassLevel) {
+        return Constants.IDENTIFIERDOMAIN + CPI_URI_PART + cpi;
+      } else {
+        final String serialNumber = urn.substring(urn.lastIndexOf(".") + 1);
+        return Constants.IDENTIFIERDOMAIN + CPI_URI_PART + cpi + CPI_SERIAL_PART + serialNumber;
+      }
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of CPI identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
     }
   }
 
   // Convert the provided Digital Link URI to respective URN of CPI Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
 
-    // Validate the DLURI to check if they match the CPI syntax
-    if (isClassLevel) {
-      CPI_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      CPI_VALIDATOR.validateURI(dlURI, gcpLength);
-    }
+    try {
+      // Validate the DLURI to check if they match the CPI syntax
+      if (isClassLevel) {
+        CPI_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        CPI_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
 
-    // If the URI passed the validation then convert the URI to URN
-    String cpi;
-    if (isClassLevel) {
-      cpi = dlURI.substring(dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length());
-    } else {
-      cpi =
-          dlURI.substring(
-              dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length(), dlURI.indexOf(CPI_SERIAL_PART));
+      // If the URI passed the validation then convert the URI to URN
+      String cpi;
+      if (isClassLevel) {
+        cpi = dlURI.substring(dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length());
+      } else {
+        cpi =
+            dlURI.substring(
+                dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length(),
+                dlURI.indexOf(CPI_SERIAL_PART));
+      }
+      return getEPCMap(dlURI, gcpLength, cpi);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of CPI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-    return getEPCMap(dlURI, gcpLength, cpi);
   }
 
-  private Map<String, String> getEPCMap(String dlURI, int gcpLength, String cpi) {
-    Map<String, String> buildURN = new HashMap<>();
-    String asURN;
-    if (isClassLevel) {
-      asURN =
-          "urn:epc:idpat:cpi:"
-              + cpi.substring(0, gcpLength)
-              + "."
-              + cpi.substring(gcpLength)
-              + ".*";
-    } else {
-      final String serial =
-          dlURI.substring(dlURI.indexOf(CPI_SERIAL_PART) + CPI_SERIAL_PART.length());
-      asURN =
-          "urn:epc:id:cpi:"
-              + cpi.substring(0, gcpLength)
-              + "."
-              + cpi.substring(gcpLength)
-              + "."
-              + serial;
-      buildURN.put(Constants.SERIAL, serial);
-    }
+  private Map<String, String> getEPCMap(final String dlURI, final int gcpLength, final String cpi) {
+    try {
+      Map<String, String> buildURN = new HashMap<>();
+      String asURN;
+      if (isClassLevel) {
+        asURN =
+            "urn:epc:idpat:cpi:"
+                + cpi.substring(0, gcpLength)
+                + "."
+                + cpi.substring(gcpLength)
+                + ".*";
+      } else {
+        final String serial =
+            dlURI.substring(dlURI.indexOf(CPI_SERIAL_PART) + CPI_SERIAL_PART.length());
+        asURN =
+            "urn:epc:id:cpi:"
+                + cpi.substring(0, gcpLength)
+                + "."
+                + cpi.substring(gcpLength)
+                + "."
+                + serial;
+        buildURN.put(Constants.SERIAL, serial);
+      }
 
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(CPI_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(CPI_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
-    }
+      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
+        final String asCaptured =
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(CPI_URI_PART)), Constants.DLDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, asCaptured);
+        buildURN.put(Constants.CANONICALDL, dlURI);
+      } else {
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(CPI_URI_PART)), Constants.IDENTIFIERDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, dlURI);
+        buildURN.put(Constants.CANONICALDL, canonicalDL);
+      }
 
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("cpi", cpi);
-    return buildURN;
+      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put("cpi", cpi);
+      return buildURN;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the CPI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    String cpi;
+  public Map<String, String> convertToURN(final String dlURI) {
+    try {
+      String cpi;
 
-    if (isClassLevel) {
-      cpi = dlURI.substring(dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length());
-    } else {
-      cpi =
-          dlURI.substring(
-              dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length(), dlURI.indexOf(CPI_SERIAL_PART));
+      if (isClassLevel) {
+        cpi = dlURI.substring(dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length());
+      } else {
+        cpi =
+            dlURI.substring(
+                dlURI.indexOf(CPI_URI_PART) + CPI_URI_PART.length(),
+                dlURI.indexOf(CPI_SERIAL_PART));
+      }
+
+      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(cpi);
+
+      // Validate the DLURI to check if they match the CPI syntax
+      if (isClassLevel) {
+        CPI_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        CPI_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
+
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, cpi);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of CPI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + "\n"
+              + exception.getMessage());
     }
-
-    final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(cpi);
-
-    // Validate the DLURI to check if they match the CPI syntax
-    if (isClassLevel) {
-      CPI_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      CPI_VALIDATOR.validateURI(dlURI, gcpLength);
-    }
-
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, cpi);
   }
 }

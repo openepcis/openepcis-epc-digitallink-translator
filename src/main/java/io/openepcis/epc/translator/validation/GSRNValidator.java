@@ -39,7 +39,7 @@ public class GSRNValidator implements PatternValidator {
             "urn:epc:id:gsrn:[0-9]{6,12}\\.[0-9]{5,11}",
             "Invalid GSRN, GSRN should consist of 18 digits (Ex: urn:epc:id:gsrn:123456.78901234567).\nPlease check the provided URN: %s") {
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             String gsrn = urn.substring(urn.lastIndexOf(":") + 1);
             // GSRN should be of 18 digits
@@ -62,7 +62,8 @@ public class GSRNValidator implements PatternValidator {
             "(http|https)://.*./8018/[0-9]{18}",
             "Invalid GSRN, GSRN should consist of 18 digit GSRN (Ex: https://id.gs1.org/8018/123456789091429723),\nPlease check the URI: %s ") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GCP length is valid

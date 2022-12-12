@@ -37,157 +37,192 @@ public class ITIPConverter implements Converter {
     super();
   }
 
-  public ITIPConverter(boolean isClassLevel) {
+  public ITIPConverter(final boolean isClassLevel) {
     this.isClassLevel = isClassLevel;
   }
 
   // Check if the provided URN is of ITIP type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(ITIP_URN_PART);
   }
 
   // Check if the provided Digital Link URI is of ITIP Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     return Pattern.compile("(?=.*/8006/)").matcher(dlURI).find();
   }
 
   // Convert the provided URN to respective Digital Link URI of ITIP type
-  public String convertToDigitalLink(String urn) throws ValidationException {
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Call the Validator class for the ITIP to check the URN syntax
+      if (isClassLevel) {
+        ITIP_VALIDATOR.validateClassLevelURN(urn);
+      } else {
+        ITIP_VALIDATOR.validateURN(urn);
+      }
 
-    // Call the Validator class for the ITIP to check the URN syntax
-    if (isClassLevel) {
-      ITIP_VALIDATOR.validateClassLevelURN(urn);
-    } else {
-      ITIP_VALIDATOR.validateURN(urn);
-    }
+      // If the URN passed the validation then convert the URN to URI
+      String itip =
+          urn.charAt(urn.indexOf('.') + 1)
+              + urn.substring(
+                  urn.indexOf(ITIP_URN_PART) + ITIP_URN_PART.length(),
+                  StringUtils.ordinalIndexOf(urn, ".", 1));
+      itip =
+          itip
+              + urn.substring(
+                  StringUtils.ordinalIndexOf(urn, ".", 1) + 2,
+                  StringUtils.ordinalIndexOf(urn, ".", 2));
+      itip =
+          itip
+              + urn.substring(
+                  StringUtils.ordinalIndexOf(urn, ".", 2) + 1,
+                  StringUtils.ordinalIndexOf(urn, ".", 3));
+      itip =
+          itip
+              + urn.substring(
+                  StringUtils.ordinalIndexOf(urn, ".", 3) + 1,
+                  StringUtils.ordinalIndexOf(urn, ".", 4));
+      itip =
+          itip.substring(0, 13)
+              + UPCEANLogicImpl.calcChecksum(itip.substring(0, 13))
+              + itip.substring(13);
 
-    // If the URN passed the validation then convert the URN to URI
-    String itip =
-        urn.charAt(urn.indexOf('.') + 1)
-            + urn.substring(
-                urn.indexOf(ITIP_URN_PART) + ITIP_URN_PART.length(),
-                StringUtils.ordinalIndexOf(urn, ".", 1));
-    itip =
-        itip
-            + urn.substring(
-                StringUtils.ordinalIndexOf(urn, ".", 1) + 2,
-                StringUtils.ordinalIndexOf(urn, ".", 2));
-    itip =
-        itip
-            + urn.substring(
-                StringUtils.ordinalIndexOf(urn, ".", 2) + 1,
-                StringUtils.ordinalIndexOf(urn, ".", 3));
-    itip =
-        itip
-            + urn.substring(
-                StringUtils.ordinalIndexOf(urn, ".", 3) + 1,
-                StringUtils.ordinalIndexOf(urn, ".", 4));
-    itip =
-        itip.substring(0, 13)
-            + UPCEANLogicImpl.calcChecksum(itip.substring(0, 13))
-            + itip.substring(13);
-
-    if (isClassLevel) {
-      return Constants.IDENTIFIERDOMAIN + ITIP_URI_PART + itip;
-    } else {
-      final String serialNumber = urn.substring(StringUtils.ordinalIndexOf(urn, ".", 4) + 1);
-      return Constants.IDENTIFIERDOMAIN + ITIP_URI_PART + itip + ITIP_SERIAL_PART + serialNumber;
+      if (isClassLevel) {
+        return Constants.IDENTIFIERDOMAIN + ITIP_URI_PART + itip;
+      } else {
+        final String serialNumber = urn.substring(StringUtils.ordinalIndexOf(urn, ".", 4) + 1);
+        return Constants.IDENTIFIERDOMAIN + ITIP_URI_PART + itip + ITIP_SERIAL_PART + serialNumber;
+      }
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of ITIP identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
     }
   }
 
   // Convert the provided Digital Link URI to respective URN of ITIP Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      // Call the Validator class for the ITIP to check the DLURI syntax
+      if (isClassLevel) {
+        ITIP_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        ITIP_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
 
-    // Call the Validator class for the ITIP to check the DLURI syntax
-    if (isClassLevel) {
-      ITIP_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      ITIP_VALIDATOR.validateURI(dlURI, gcpLength);
+      // If the URI passed the validation then convert the URI to URN
+      String itip;
+      if (isClassLevel) {
+        itip = dlURI.substring(dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length());
+      } else {
+        itip =
+            dlURI.substring(
+                dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length(),
+                dlURI.indexOf(ITIP_SERIAL_PART));
+      }
+      return getEPCMap(dlURI, gcpLength, itip);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of ITIP identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-
-    // If the URI passed the validation then convert the URI to URN
-    String itip;
-    if (isClassLevel) {
-      itip = dlURI.substring(dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length());
-    } else {
-      itip =
-          dlURI.substring(
-              dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length(),
-              dlURI.indexOf(ITIP_SERIAL_PART));
-    }
-    return getEPCMap(dlURI, gcpLength, itip);
   }
 
   private Map<String, String> getEPCMap(String dlURI, int gcpLength, String itip) {
-    Map<String, String> buildURN = new HashMap<>();
+    try {
+      final Map<String, String> buildURN = new HashMap<>();
 
-    String asURN;
-    if (isClassLevel) {
-      asURN = "urn:epc:idpat:itip:" + itip.substring(1, gcpLength + 1) + "." + itip.charAt(0);
-      asURN =
-          asURN
-              + itip.substring(gcpLength + 1, 13)
-              + "."
-              + itip.substring(14, 16)
-              + "."
-              + itip.substring(16, 18)
-              + ".*";
-    } else {
-      asURN = "urn:epc:id:itip:" + itip.substring(1, gcpLength + 1) + "." + itip.charAt(0);
-      final String serial =
-          dlURI.substring(dlURI.indexOf(ITIP_SERIAL_PART) + ITIP_SERIAL_PART.length());
-      asURN =
-          asURN
-              + itip.substring(gcpLength + 1, 13)
-              + "."
-              + itip.substring(14, 16)
-              + "."
-              + itip.substring(16, 18)
-              + "."
-              + serial;
-      buildURN.put(Constants.SERIAL, serial);
-    }
+      String asURN;
+      if (isClassLevel) {
+        asURN = "urn:epc:idpat:itip:" + itip.substring(1, gcpLength + 1) + "." + itip.charAt(0);
+        asURN =
+            asURN
+                + itip.substring(gcpLength + 1, 13)
+                + "."
+                + itip.substring(14, 16)
+                + "."
+                + itip.substring(16, 18)
+                + ".*";
+      } else {
+        asURN = "urn:epc:id:itip:" + itip.substring(1, gcpLength + 1) + "." + itip.charAt(0);
+        final String serial =
+            dlURI.substring(dlURI.indexOf(ITIP_SERIAL_PART) + ITIP_SERIAL_PART.length());
+        asURN =
+            asURN
+                + itip.substring(gcpLength + 1, 13)
+                + "."
+                + itip.substring(14, 16)
+                + "."
+                + itip.substring(16, 18)
+                + "."
+                + serial;
+        buildURN.put(Constants.SERIAL, serial);
+      }
 
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(ITIP_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(ITIP_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
+      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
+        final String asCaptured =
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(ITIP_URI_PART)), Constants.DLDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, asCaptured);
+        buildURN.put(Constants.CANONICALDL, dlURI);
+      } else {
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(ITIP_URI_PART)), Constants.IDENTIFIERDOMAIN);
+        buildURN.put(Constants.ASCAPTURED, dlURI);
+        buildURN.put(Constants.CANONICALDL, canonicalDL);
+      }
+      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put("itip", itip);
+      return buildURN;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the ITIP identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("itip", itip);
-    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of ITIP Type
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    String itip;
+  public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    try {
+      String itip;
 
-    if (isClassLevel) {
-      itip = dlURI.substring(dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length());
-    } else {
-      itip =
-          dlURI.substring(
-              dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length(),
-              dlURI.indexOf(ITIP_SERIAL_PART));
+      if (isClassLevel) {
+        itip = dlURI.substring(dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length());
+      } else {
+        itip =
+            dlURI.substring(
+                dlURI.indexOf(ITIP_URI_PART) + ITIP_URI_PART.length(),
+                dlURI.indexOf(ITIP_SERIAL_PART));
+      }
+
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(itip);
+
+      // Call the Validator class for the ITIP to check the DLURI syntax
+      if (isClassLevel) {
+        ITIP_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        ITIP_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
+
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, itip);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of ITIP identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + "\n"
+              + exception.getMessage());
     }
-
-    int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(itip);
-
-    // Call the Validator class for the ITIP to check the DLURI syntax
-    if (isClassLevel) {
-      ITIP_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      ITIP_VALIDATOR.validateURI(dlURI, gcpLength);
-    }
-
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, itip);
   }
 }

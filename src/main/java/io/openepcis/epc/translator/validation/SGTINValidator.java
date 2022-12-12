@@ -44,7 +44,7 @@ public class SGTINValidator implements PatternValidator {
             "urn:epc:id:sgtin:[0-9]{6,12}\\.[0-9]{1,7}.*",
             "Invalid SGTIN, SGTIN should be of 14 digits with GCP of 6-12 digits (Ex: urn:epc:id:sgtin:234567890.1123.9999).%nPlease check the provided URN: %s") {
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
 
             // Check if the SGTIN has 14 digits
@@ -63,8 +63,7 @@ public class SGTINValidator implements PatternValidator {
             } else {
               throw new ValidationException(
                   String.format(
-                      "Invalid SGTIN, SGTIN should be followed by serial numbers (Ex: urn:epc:id:sgtin:234567890.1123.9999).%nPlease check the provided "
-                          + "URN: %s",
+                      "Invalid SGTIN, SGTIN should be followed by serial numbers (Ex: urn:epc:id:sgtin:234567890.1123.9999).%nPlease check the provided URN: %s",
                       urn));
             }
 
@@ -95,7 +94,7 @@ public class SGTINValidator implements PatternValidator {
             "urn:epc:idpat:sgtin:[0-9]{6,12}\\.[0-9]{1,7}\\.\\*",
             "Invalid GTIN, Class level GTIN should be of 14 digits with GCP of 6-12 digits (Ex: urn:epc:idpat:sgtin:234567890.1123.*).%nPlease check the provided URN: %s") {
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
 
             // Check if the SGTIN has 14 digits
@@ -114,8 +113,7 @@ public class SGTINValidator implements PatternValidator {
             } else {
               throw new ValidationException(
                   String.format(
-                      "Invalid SGTIN, SGTIN should be followed by serial numbers (Ex: urn:epc:id:sgtin:234567890.1123.9999).%nPlease check the provided "
-                          + "URN: %s",
+                      "Invalid SGTIN, SGTIN should be followed by serial numbers (Ex: urn:epc:id:sgtin:234567890.1123.9999).%nPlease check the provided URN: %s",
                       urn));
             }
 
@@ -165,7 +163,8 @@ public class SGTINValidator implements PatternValidator {
             "(http|https)://.*./01/[0-9]{14}.*",
             "Invalid GTIN, DL URI should consist of 14 digits (Ex: https://id.gs1.org/01/12345678901234),%nPlease check the DL URI : %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GTIN is of 14 digits
@@ -173,8 +172,7 @@ public class SGTINValidator implements PatternValidator {
                 != 14) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GTIN, DL URI should consist of 14 digits (Ex: https://id.gs1.org/01/12345678901234). %nPlease check the "
-                          + "provided URI : %s",
+                      "Invalid GTIN, DL URI should consist of 14 digits (Ex: https://id.gs1.org/01/12345678901234). %nPlease check the provided URI : %s",
                       uri));
             }
 

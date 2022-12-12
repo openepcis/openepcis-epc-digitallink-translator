@@ -194,11 +194,4 @@ public class SGTINTest {
         "https://id.gs1.org/01/93489348394895",
         converter.toURIForClassLevelIdentifier("urn:epc:idpat:sgtin:3489348.939489.*"));
   }
-
-  @Test
-  public void testGcpLength() {
-    System.out.println(
-        converter.toURN("https://lidl.de/food/frozen/01/86945894894506/21/94304903"));
-    ;
-  }
 }

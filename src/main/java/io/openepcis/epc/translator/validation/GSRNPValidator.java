@@ -39,10 +39,10 @@ public class GSRNPValidator implements PatternValidator {
             "urn:epc:id:gsrnp:[0-9]{6,12}\\.[0-9]{5,11}",
             "Invalid GSRNP, GSRNP should be of 18 digits (Ex: urn:epc:id:gsrnp:123456.78901234567).\nPlease check the provided URN: %s") {
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
-            String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
-            String gsrnp = gcp + urn.substring(urn.indexOf('.') + 1);
+            final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
+            final String gsrnp = gcp + urn.substring(urn.indexOf('.') + 1);
 
             if (gsrnp.length() != 17) {
               throw new ValidationException(
@@ -63,7 +63,8 @@ public class GSRNPValidator implements PatternValidator {
             "(http|https)://.*./8017/[0-9]{18}",
             "Invalid GSRNP, GSRNP URI should consist of 18 digit GSRNP (Ex: https://id.gs1.org/8017/123456789091429723),\nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
