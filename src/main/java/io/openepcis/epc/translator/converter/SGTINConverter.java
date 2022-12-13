@@ -73,11 +73,15 @@ public class SGTINConverter implements Converter {
       sgtin = sgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(sgtin.substring(0, 13));
 
       if (isClassLevel) {
-        sgtin = Constants.IDENTIFIERDOMAIN + SGTIN_URI_PART + sgtin;
+        sgtin = Constants.GS1_IDENTIFIER_DOMAIN + SGTIN_URI_PART + sgtin;
       } else {
         final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
         sgtin =
-            Constants.IDENTIFIERDOMAIN + SGTIN_URI_PART + sgtin + SGTIN_SERIAL_PART + serialNumber;
+            Constants.GS1_IDENTIFIER_DOMAIN
+                + SGTIN_URI_PART
+                + sgtin
+                + SGTIN_SERIAL_PART
+                + serialNumber;
       }
       return sgtin;
     } catch (Exception exception) {
@@ -139,19 +143,19 @@ public class SGTINConverter implements Converter {
         buildURN.put(Constants.SERIAL, serial);
       }
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(SGTIN_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(SGTIN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(SGTIN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
-      buildURN.put(Constants.ASURN, asURN);
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("gtin", sgtin);
       return buildURN;
     } catch (Exception exception) {

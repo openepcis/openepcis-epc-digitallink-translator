@@ -56,7 +56,11 @@ public class LGTINConverter implements Converter {
           gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
       lgtin = lgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(lgtin.substring(0, 13));
       final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
-      return Constants.IDENTIFIERDOMAIN + LGTIN_URI_PART + lgtin + LGTIN_SERIAL_PART + serialNumber;
+      return Constants.GS1_IDENTIFIER_DOMAIN
+          + LGTIN_URI_PART
+          + lgtin
+          + LGTIN_SERIAL_PART
+          + serialNumber;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of LGTIN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -104,19 +108,19 @@ public class LGTINConverter implements Converter {
               + "."
               + serial;
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
-      buildURN.put(Constants.ASURN, asURN);
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("lgtin", lgtin);
       buildURN.put(Constants.SERIAL, serial);
       return buildURN;

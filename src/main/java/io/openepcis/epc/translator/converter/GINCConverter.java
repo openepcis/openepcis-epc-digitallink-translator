@@ -48,7 +48,7 @@ public class GINCConverter implements Converter {
       String ginc =
           urn.substring(urn.indexOf(GINC_URN_PART) + GINC_URN_PART.length(), urn.indexOf("."));
       ginc = ginc + urn.substring(urn.indexOf(".") + 1);
-      return Constants.IDENTIFIERDOMAIN + GINC_URI_PART + ginc;
+      return Constants.GS1_IDENTIFIER_DOMAIN + GINC_URI_PART + ginc;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of GINC identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -86,19 +86,19 @@ public class GINCConverter implements Converter {
       final String asURN =
           "urn:epc:id:ginc:" + ginc.substring(0, gcpLength) + "." + ginc.substring(gcpLength);
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(GINC_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(GINC_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(GINC_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
-      buildURN.put(Constants.ASURN, asURN);
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("ginc", ginc);
       return buildURN;
     } catch (Exception exception) {

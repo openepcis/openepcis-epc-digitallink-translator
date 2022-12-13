@@ -61,9 +61,9 @@ public class SGLNConverter implements Converter {
       final String serial = urn.substring(StringUtils.ordinalIndexOf(urn, ".", 2) + 1);
 
       if (serial.length() == 0) {
-        return Constants.IDENTIFIERDOMAIN + SGLN_URI_PART + sgln;
+        return Constants.GS1_IDENTIFIER_DOMAIN + SGLN_URI_PART + sgln;
       } else {
-        return Constants.IDENTIFIERDOMAIN + SGLN_URI_PART + sgln + SGLN_SERIAL_PART + serial;
+        return Constants.GS1_IDENTIFIER_DOMAIN + SGLN_URI_PART + sgln + SGLN_SERIAL_PART + serial;
       }
     } catch (Exception exception) {
       throw new ValidationException(
@@ -110,19 +110,19 @@ public class SGLNConverter implements Converter {
                 + ".0";
       }
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(SGLN_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(SGLN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(SGLN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
-      buildURN.put(Constants.ASURN, asURN);
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("sgln", sgln);
       return buildURN;
     } catch (Exception exception) {
@@ -171,19 +171,19 @@ public class SGLNConverter implements Converter {
                 + ".0";
       }
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(SGLN_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(SGLN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(SGLN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
-      buildURN.put(Constants.ASURN, asURN);
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("sgln", sgln);
       return buildURN;
     } catch (Exception exception) {

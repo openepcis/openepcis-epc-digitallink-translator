@@ -49,7 +49,7 @@ public class GIAIConverter implements Converter {
       final String gcp =
           urn.substring(urn.indexOf(GIAI_URN_PART) + GIAI_URN_PART.length(), urn.indexOf('.'));
       final String giai = gcp + urn.substring(urn.indexOf('.') + 1);
-      return Constants.IDENTIFIERDOMAIN + GIAI_URI_PART + giai;
+      return Constants.GS1_IDENTIFIER_DOMAIN + GIAI_URI_PART + giai;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of GIAI identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -87,20 +87,19 @@ public class GIAIConverter implements Converter {
       final String asURN =
           "urn:epc:id:giai:" + giai.substring(0, gcpLength) + "." + giai.substring(gcpLength);
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(GIAI_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(GIAI_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(GIAI_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
 
-      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("giai", giai);
       return buildURN;
     } catch (Exception exception) {

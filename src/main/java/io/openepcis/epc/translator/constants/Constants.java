@@ -20,10 +20,9 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Constants {
-  public static final String IDENTIFIERDOMAIN = "https://id.gs1.org";
-  public static final String DLDOMAIN = "https://example.com/path";
-  public static final String ASCAPTURED = "asCaptured";
-  public static final String CANONICALDL = "canonicalDL";
-  public static final String ASURN = "asURN";
+  public static final String GS1_IDENTIFIER_DOMAIN = "https://id.gs1.org";
+  public static final String AS_CAPTURED = "asCaptured";
+  public static final String CANONICAL_DL = "canonicalDL";
+  public static final String AS_URN = "asURN";
   public static final String SERIAL = "serial";
 }

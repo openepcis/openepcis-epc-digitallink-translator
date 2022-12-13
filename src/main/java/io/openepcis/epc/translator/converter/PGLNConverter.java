@@ -48,7 +48,7 @@ public class PGLNConverter implements Converter {
       final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
       String pgln = gcp + urn.substring(urn.indexOf(".") + 1);
       pgln = pgln.substring(0, 12) + UPCEANLogicImpl.calcChecksum(pgln.substring(0, 12));
-      return Constants.IDENTIFIERDOMAIN + PGLN_URI_PART + pgln;
+      return Constants.GS1_IDENTIFIER_DOMAIN + PGLN_URI_PART + pgln;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of PGLN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -89,19 +89,19 @@ public class PGLNConverter implements Converter {
               + "."
               + pgln.substring(gcpLength, pgln.length() - 1);
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(PGLN_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(PGLN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(PGLN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
-      buildURN.put(Constants.ASURN, asURN);
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("pgln", pgln);
       return buildURN;
     } catch (Exception exception) {

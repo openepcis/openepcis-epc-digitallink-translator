@@ -61,7 +61,11 @@ public class UPUIConverter implements Converter {
                   StringUtils.ordinalIndexOf(urn, ".", 2));
       upui = upui + UPCEANLogicImpl.calcChecksum(upui);
       final String serialNumber = urn.substring(StringUtils.ordinalIndexOf(urn, ".", 2) + 1);
-      return Constants.IDENTIFIERDOMAIN + UPUI_URI_PART + upui + UPUI_SERIAL_PART + serialNumber;
+      return Constants.GS1_IDENTIFIER_DOMAIN
+          + UPUI_URI_PART
+          + upui
+          + UPUI_SERIAL_PART
+          + serialNumber;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of UPUI identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -107,19 +111,19 @@ public class UPUIConverter implements Converter {
           dlURI.substring(dlURI.indexOf(UPUI_SERIAL_PART) + UPUI_SERIAL_PART.length());
       final String asURN = "urn:epc:id:upui:" + upui + "." + serial;
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(UPUI_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(UPUI_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(UPUI_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
-      buildURN.put(Constants.ASURN, asURN);
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("upui", upui);
       buildURN.put(Constants.SERIAL, serial);
       return buildURN;

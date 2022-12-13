@@ -12,3 +12,6 @@ target/
 .project
 .factorypath
 .classpath
+
+### Ignore the GCPLength file in the resources
+src/main/resources/gcpprefixformatlist.json

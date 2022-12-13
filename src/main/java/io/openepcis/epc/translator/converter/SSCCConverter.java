@@ -49,7 +49,7 @@ public class SSCCConverter implements Converter {
               + urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
       String sscc = gcp + urn.substring(urn.indexOf('.') + 2);
       sscc = sscc.substring(0, 17) + UPCEANLogicImpl.calcChecksum(sscc.substring(0, 17));
-      sscc = Constants.IDENTIFIERDOMAIN + SSCC_URI_PART + sscc;
+      sscc = Constants.GS1_IDENTIFIER_DOMAIN + SSCC_URI_PART + sscc;
       return sscc;
     } catch (Exception exception) {
       throw new ValidationException(
@@ -91,20 +91,19 @@ public class SSCCConverter implements Converter {
               + sscc.substring(gcpLength + 1, sscc.length() - 1);
       final String asURN = "urn:epc:id:sscc:" + ssccURN;
 
-      if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-        final String asCaptured =
-            dlURI.replace(dlURI.substring(0, dlURI.indexOf(SSCC_URI_PART)), Constants.DLDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, asCaptured);
-        buildURN.put(Constants.CANONICALDL, dlURI);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
       } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
             dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(SSCC_URI_PART)), Constants.IDENTIFIERDOMAIN);
-        buildURN.put(Constants.ASCAPTURED, dlURI);
-        buildURN.put(Constants.CANONICALDL, canonicalDL);
+                dlURI.substring(0, dlURI.indexOf(SSCC_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
       }
 
-      buildURN.put(Constants.ASURN, asURN);
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("sscc", sscc);
       return buildURN;
     } catch (Exception exception) {
