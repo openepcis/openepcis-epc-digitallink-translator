@@ -12,8 +12,9 @@ Every digital or physical object such as documents, locations, products, assets,
 represented using the URN (Uniform Resource Name) format. An example of an SSCC (Serial Shipping Container Code) represented using the URN format is as follows:
 
 <div align="center">
-<b> urn:epc:id:sscc:234567.18901234567 </b>
+    <b> urn:epc:id:sscc:234567.18901234567 </b>
 </div>
+&nbsp;
 
 Digital Link URI (Uniform Resource Identifier) is a newly introduced format with EPCIS 2.0 in which identifiers can also be represented using the Web URI format. The above SSCC identifier example can 
 be represented in Digital Link URI format as follows: 
@@ -21,6 +22,7 @@ be represented in Digital Link URI format as follows:
 <div align="center">
 <b> https://id.gs1.org/00/123456789012345675 </b>
 </div>
+&nbsp;
 
 In certain scenarios' organization likes to make use of both formats for better visibility and accessibility, so they need the option to translate the from URN to DL URI and vice versa. Hence, 
 this OpenEPCIS utility has been developed which can convert the standard EPCIS application identifiers from URN to Digital Link WebURI format and vice versa. It can be used independently, or as 
@@ -130,11 +132,11 @@ System.out.println(ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.or
 - net.sf.barcode4j (For Check digit calculation)
 - org.apache.commons (For String manipulation)
 
-## Quick Links
+## Quick Links and References
 
 * [Web application](https://tools.openepcis.io/openepcis-ui/Identifiersconverter)
 * [Documentation](https://openepcis.io/docs/identifier-converter/)
 * [More about OpenEPCIS](https://openepcis.io/)
-add link to Ralphs page.
+* [getGCPLengthDemo](https://github.com/RalphTro/getGCPLengthDemo)
 
 </div>

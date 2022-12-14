@@ -81,6 +81,22 @@ public class SGLNConverter implements Converter {
       // Validate the URI to check if they match the SGLN syntax
       SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
 
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, dlURI);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of SGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + " GCP Length : "
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
+  }
+
+  private Map<String, String> getEPCMap(
+      final String dlURI, final int gcpLength, final String pgln) {
+    try {
       final Map<String, String> buildURN = new HashMap<>();
       String sgln;
       String asURN;
@@ -127,7 +143,7 @@ public class SGLNConverter implements Converter {
       return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
-          "Exception occurred during the conversion of SGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+          "The conversion of the SGLN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
               + " GCP Length : "
               + gcpLength
@@ -138,57 +154,18 @@ public class SGLNConverter implements Converter {
 
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
     try {
+      // Find the GCP Length from GS1 provided list
+      final int gcpLength =
+          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
+
       // Validate the URI to check if they match the SGLN syntax
-      final Map<String, String> buildURN = new HashMap<>();
-      String sgln;
-      String asURN;
+      SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
 
-      if (dlURI.contains(SGLN_SERIAL_PART)) {
-        sgln =
-            dlURI.substring(
-                dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length(),
-                dlURI.indexOf(SGLN_SERIAL_PART));
-        int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
-        SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
-        final String serial = dlURI.substring(dlURI.indexOf(SGLN_SERIAL_PART) + 5);
-        asURN =
-            SGLN_URN_PREFIX
-                + sgln.substring(0, gcpLength)
-                + "."
-                + sgln.substring(gcpLength, sgln.length() - 1)
-                + "."
-                + serial;
-        buildURN.put("serial", serial);
-      } else {
-        sgln = dlURI.substring(dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length());
-        int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
-        SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
-        asURN =
-            SGLN_URN_PREFIX
-                + sgln.substring(0, gcpLength)
-                + "."
-                + sgln.substring(gcpLength, sgln.length() - 1)
-                + ".0";
-      }
-
-      // If dlURI contains GS1 domain then captured and canonical are same
-      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
-        buildURN.put(Constants.CANONICAL_DL, dlURI);
-      } else {
-        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
-        final String canonicalDL =
-            dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(SGLN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
-        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
-      }
-
-      buildURN.put(Constants.AS_CAPTURED, dlURI);
-      buildURN.put(Constants.AS_URN, asURN);
-      buildURN.put("sgln", sgln);
-      return buildURN;
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, dlURI);
     } catch (Exception exception) {
       throw new ValidationException(
-          "The conversion of the SGLN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+          "Exception occurred during the conversion of SGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
               + "\n"
               + exception.getMessage());
