@@ -20,10 +20,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.openepcis.epc.translator.exception.UrnDLTransformationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -35,7 +32,13 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
                   a.length() != b.length()
                       ? Integer.compare(a.length(), b.length())
                       : a.compareTo(b)));
+
   private static DefaultGCPLengthProvider gcpLengthProviderInstance;
+
+  private final List<String> keyStartsWithGCP =
+      Arrays.asList(
+          "/8010/", "/255/", "/253/", "/8004/", "/401/", "/402/", "/8018/", "/8017/", "/417/",
+          "/414/");
 
   /** Constructor to load the GCPLengthFormat file from resource folder to the sorted TreeMap */
   private DefaultGCPLengthProvider() {
@@ -68,18 +71,22 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
   /**
    * Method to loop over the Map to find the matching id and its associated GCP Length
    *
-   * @param id The value for which the GCP length needed.
+   * @param dlURI The digital link WebURI for which the GCP length needed.
+   * @param prefix The prefix of the identifiers such as /8010/, /255/, etc.
    * @return returns the GCP length if found matching value in Map else returns 7 as GCP Length
    */
-  public int getGcpLength(String id) {
+  public int getGcpLength(String dlURI, final String prefix) {
+    // Extract the identifiers excluding the prefix
+    dlURI = dlURI.substring(dlURI.indexOf(prefix) + prefix.length());
 
-    if (id.length() > 13) {
-      id = id.substring(1);
+    // Check if prefix is present within keyStartsWithGCP if so append 0 after extracting.
+    if (keyStartsWithGCP.contains(prefix)) {
+      dlURI = "0" + dlURI;
     }
 
     // Loop over the sorted values to find the matching GCP and its GCP Length
     for (final Map.Entry<String, Integer> e : sortedGcpLengthList.entrySet()) {
-      if (id.startsWith(e.getKey())) {
+      if (dlURI.startsWith(e.getKey())) {
         return e.getValue();
       }
     }

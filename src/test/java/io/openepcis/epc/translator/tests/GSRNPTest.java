@@ -99,10 +99,10 @@ public class GSRNPTest {
         "urn:epc:id:gsrnp:6434637.6437473634",
         converter.toURN("https://google.com/8017/643463764374736343").get("asURN"));
     assertEquals(
-        "urn:epc:id:gsrnp:231231.23121312123",
-        converter.toURN("https://google.com/8017/231231231213121231").get("asURN"));
+        "urn:epc:id:gsrnp:6288339324.1312123",
+        converter.toURN("https://google.com/8017/628833932413121231").get("asURN"));
     assertEquals(
-        "urn:epc:id:gsrnp:231231231213.12123",
-        converter.toURN("https://google.com/8017/231231231213121237", 12).get("asURN"));
+        "urn:epc:id:gsrnp:667602231213.12123",
+        converter.toURN("https://google.com/8017/667602231213121237", 12).get("asURN"));
   }
 }

@@ -93,7 +93,7 @@ public class GSINTest {
         "urn:epc:id:gsin:1234567890.512345",
         converter.toURN("https://benelog.com/horrem/402/12345678905123456", 10).get("asURN"));
     assertEquals(
-        "urn:epc:id:gsin:843958935895.3939",
+        "urn:epc:id:gsin:84395893.58953939",
         converter.toURN("https://benelog.com/horrem/402/84395893589539394").get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:9549854.549583498",

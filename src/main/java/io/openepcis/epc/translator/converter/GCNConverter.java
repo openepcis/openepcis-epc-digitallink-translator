@@ -147,7 +147,8 @@ public class GCNConverter implements Converter {
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
     try {
       final String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
-      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgcn);
+      final int gcpLength =
+          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GCN_URI_PART);
 
       // Call the Validator class for the GCN to check the DLURI syntax
       if (isClassLevel) {

@@ -142,7 +142,8 @@ public class LGTINConverter implements Converter {
           dlURI.substring(
               dlURI.indexOf(LGTIN_URI_PART) + LGTIN_URI_PART.length(),
               dlURI.indexOf(LGTIN_SERIAL_PART));
-      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(lgtin);
+      final int gcpLength =
+          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, LGTIN_URI_PART);
 
       // Call the Validator class for the LGTIN to check the DLURI syntax
       LGTIN_VALIDATOR.validateURI(dlURI, gcpLength);

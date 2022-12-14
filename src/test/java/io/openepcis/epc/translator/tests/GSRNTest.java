@@ -89,10 +89,10 @@ public class GSRNTest {
         "urn:epc:id:gsrn:1234567890.1234567");
     assertEquals(
         converter.toURN("https://hp.com/laptop/8018/152152415245142514").get("asURN"),
-        "urn:epc:id:gsrn:1521524.1524514251");
+        "urn:epc:id:gsrn:152152415245.14251");
     assertEquals(
-        converter.toURN("https://hp.com/laptop/8018/547657473828392839").get("asURN"),
-        "urn:epc:id:gsrn:54765747.382839283");
+        converter.toURN("https://hp.com/laptop/8018/667608473828392839").get("asURN"),
+        "urn:epc:id:gsrn:6676084.7382839283");
     assertEquals(
         converter.toURN("https://hp.com/laptop/8018/654673483739829829", 11).get("asURN"),
         "urn:epc:id:gsrn:65467348373.982982");

@@ -119,7 +119,7 @@ public class SSCCConverter implements Converter {
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
     try {
       final String sscc = dlURI.substring(dlURI.indexOf(SSCC_URI_PART) + SSCC_URI_PART.length());
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sscc);
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SSCC_URI_PART);
       // Validate the URN to check if they match the SGTIN syntax
       SSCC_VALIDATOR.validateURI(dlURI, gcpLength);
       return getEPCMap(dlURI, gcpLength, sscc);

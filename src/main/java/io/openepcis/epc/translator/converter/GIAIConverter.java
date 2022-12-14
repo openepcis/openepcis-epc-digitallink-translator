@@ -118,10 +118,9 @@ public class GIAIConverter implements Converter {
     try {
       final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
 
-      // GIAI always starts with the "pure" GCP - only pass 13 characters
+      // Get the gcpLength from the GS1 provided list
       final int gcpLength =
-          DefaultGCPLengthProvider.getInstance()
-              .getGcpLength(giai.length() > 13 ? giai.substring(0, 13) : giai);
+          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GIAI_URI_PART);
 
       // Call the Validator class for the GIAI to check the DLURI syntax
       GIAI_VALIDATOR.validateURI(dlURI, gcpLength);

@@ -148,7 +148,7 @@ public class SGLNConverter implements Converter {
             dlURI.substring(
                 dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length(),
                 dlURI.indexOf(SGLN_SERIAL_PART));
-        int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgln);
+        int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
         SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
         final String serial = dlURI.substring(dlURI.indexOf(SGLN_SERIAL_PART) + 5);
         asURN =
@@ -161,7 +161,7 @@ public class SGLNConverter implements Converter {
         buildURN.put("serial", serial);
       } else {
         sgln = dlURI.substring(dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length());
-        int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgln);
+        int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
         SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
         asURN =
             SGLN_URN_PREFIX

@@ -98,11 +98,11 @@ public class PGLNTest {
         "urn:epc:id:pgln:123456.789012",
         converter.toURN("https://horrem.kerpen.de/417/1234567890128", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:pgln:5457456.74657",
-        converter.toURN("https://horrem.kerpen.de/417/5457456746574").get("asURN"));
+        "urn:epc:id:pgln:742189674657.",
+        converter.toURN("https://horrem.kerpen.de/417/7421896746574").get("asURN"));
     assertEquals(
-        "urn:epc:id:pgln:4524637.82938",
-        converter.toURN("https://horrem.kerpen.de/417/4524637829387").get("asURN"));
+        "urn:epc:id:pgln:7337677.82938",
+        converter.toURN("https://horrem.kerpen.de/417/7337677829387").get("asURN"));
     assertEquals(
         "urn:epc:id:pgln:534536435643.",
         converter.toURN("https://horrem.kerpen.de/417/5345364356436", 12).get("asURN"));

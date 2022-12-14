@@ -121,11 +121,11 @@ public class SGLNTest {
         "urn:epc:id:sgln:7857834.38478.0",
         converter.toURN("https://id.gs1.org/414/7857834384782").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:5893849.38493.4390493",
-        converter.toURN("https://id.gs1.org/414/5893849384938/254/4390493").get("asURN"));
+        "urn:epc:id:sgln:6880009.38493.4390493",
+        converter.toURN("https://id.gs1.org/414/6880009384938/254/4390493").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:589384938493..0",
-        converter.toURN("https://id.gs1.org/414/5893849384938", 12).get("asURN"));
+        "urn:epc:id:sgln:688000938493..0",
+        converter.toURN("https://id.gs1.org/414/6880009384938", 12).get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:4374736473.64.0",
         converter.toURN("https://id.gs1.org/414/4374736473640", 10).get("asURN"));

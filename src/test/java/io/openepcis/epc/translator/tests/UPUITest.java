@@ -98,7 +98,7 @@ public class UPUITest {
         "urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az",
         converter.toURN("https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:upui:857834838473.7.8398439",
+        "urn:epc:id:upui:8578348.738473.8398439",
         converter.toURN("https://id.gs1.org/01/78578348384737/235/8398439").get("asURN"));
     assertEquals(
         "urn:epc:id:upui:5362325.532635.0230293",

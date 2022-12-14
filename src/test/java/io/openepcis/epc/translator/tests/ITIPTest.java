@@ -108,11 +108,11 @@ public class ITIPTest {
             .toURN("https://id.gs1.org/8006/646734858938493844/21/!\"%&'()*+,-./1:;<=>=", 6)
             .get("asURN"));
     assertEquals(
-        "urn:epc:id:itip:356453.6653564.35.64.85945894",
-        converter.toURN("https://id.gs1.org/8006/635645365356453564/21/85945894").get("asURN"));
+        "urn:epc:id:itip:0843442.563564.35.64.85945894",
+        converter.toURN("https://id.gs1.org/8006/508434426356463564/21/85945894").get("asURN"));
     assertEquals(
-        "urn:epc:id:itip:8394802.932323.83.93.547564756",
-        converter.toURN("https://id.gs1.org/8006/983948023232328393/21/547564756").get("asURN"));
+        "urn:epc:id:itip:9044841523.523.83.93.547564756",
+        converter.toURN("https://id.gs1.org/8006/590448415232328393/21/547564756").get("asURN"));
 
     /** Class level ITIP identifiers conversion */
 

@@ -119,7 +119,8 @@ public class PGLNConverter implements Converter {
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
     try {
       final String pgln = dlURI.substring(dlURI.indexOf(PGLN_URI_PART) + PGLN_URI_PART.length());
-      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(pgln);
+      final int gcpLength =
+          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, PGLN_URI_PART);
 
       // Call the Validator class for the PGLN to check the DLURI syntax
       PGLN_VALIDATOR.validateURI(dlURI, gcpLength);

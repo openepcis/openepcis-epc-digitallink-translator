@@ -210,7 +210,7 @@ public class ITIPConverter implements Converter {
                 dlURI.indexOf(ITIP_SERIAL_PART));
       }
 
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(itip);
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, ITIP_URI_PART);
 
       // Call the Validator class for the ITIP to check the DLURI syntax
       if (isClassLevel) {

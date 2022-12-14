@@ -143,7 +143,7 @@ public class UPUIConverter implements Converter {
           dlURI.substring(
               dlURI.indexOf(UPUI_URI_PART) + UPUI_URI_PART.length(),
               dlURI.indexOf(UPUI_SERIAL_PART));
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(upui);
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, UPUI_URI_PART);
 
       // Call the Validator class for the UPUI to check the DLURI syntax
       UPUI_VALIDATOR.validateURI(dlURI, gcpLength);

@@ -126,7 +126,7 @@ public class LGTINTest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/01/74778478489849/10//777474", 10)
             .get("asURN"));
     assertEquals(
-        "urn:epc:class:lgtin:7837283.472873./8484892%",
+        "urn:epc:class:lgtin:783728372.4873./8484892%",
         converter
             .toURNForClassLevelIdentifier("https://id.gs1.org/01/47837283728732/10//8484892%")
             .get("asURN"));
@@ -144,7 +144,7 @@ public class LGTINTest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/01/74778478489849/10//777474", 10)
             .get("asURN"));
     assertEquals(
-        "urn:epc:class:lgtin:7837283.472873./8484892%",
+        "urn:epc:class:lgtin:783728372.4873./8484892%",
         converter
             .toURNForClassLevelIdentifier("https://id.gs1.org/01/47837283728732/10//8484892%")
             .get("asURN"));

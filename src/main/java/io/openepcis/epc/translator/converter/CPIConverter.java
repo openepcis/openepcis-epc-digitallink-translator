@@ -181,7 +181,8 @@ public class CPIConverter implements Converter {
                 dlURI.indexOf(CPI_SERIAL_PART));
       }
 
-      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(cpi);
+      final int gcpLength =
+          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, CPI_URI_PART);
 
       // Validate the DLURI to check if they match the CPI syntax
       if (isClassLevel) {

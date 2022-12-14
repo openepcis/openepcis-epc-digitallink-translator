@@ -119,7 +119,7 @@ public class GSRNConverter implements Converter {
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
     try {
       final String gsrn = dlURI.substring(dlURI.indexOf(GSRN_URI_PART) + GSRN_URI_PART.length());
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsrn);
+      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSRN_URI_PART);
 
       // Call the Validator class for the GSRN to check the DLURI syntax
       GSRN_VALIDATOR.validateURI(dlURI, gcpLength);

@@ -93,7 +93,7 @@ public class GDTITest {
         "urn:epc:id:gdti:124757.578484.!",
         converter.toURN("https://id.gs1.org/253/1247575784846!", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:gdti:1849348.39444.8!\"%&\"+",
+        "urn:epc:id:gdti:1849348394.44.8!\"%&\"+",
         converter.toURN("https://id.gs1.org/253/18493483944448!\"%&\"+").get("asURN"));
 
     /** GDTI Class level identifiers conversion */
@@ -132,7 +132,7 @@ public class GDTITest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/253/1234567890123", 10)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:gdti:1234567890.12.*",
+        "urn:epc:idpat:gdti:1234567.89012.*",
         converter
             .toURNForClassLevelIdentifier("https://id.gs1.org/253/1234567890123")
             .get("asURN"));

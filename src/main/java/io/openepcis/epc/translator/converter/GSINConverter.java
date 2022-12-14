@@ -121,7 +121,8 @@ public class GSINConverter implements Converter {
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
     try {
       final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
-      final int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsin);
+      final int gcpLength =
+          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSIN_URI_PART);
 
       // Call the Validator class for the GSIN to check the DLURI syntax
       gsinValidator.validateURI(dlURI, gcpLength);
