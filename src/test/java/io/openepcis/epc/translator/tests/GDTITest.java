@@ -132,9 +132,9 @@ public class GDTITest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/253/1234567890123", 10)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:gdti:1234567.89012.*",
+        "urn:epc:idpat:gdti:656980789012..*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/253/1234567890123")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/253/6569807890123")
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:gdti:843848923823..*",

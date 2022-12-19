@@ -17,6 +17,7 @@ package io.openepcis.epc.translator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.openepcis.epc.translator.exception.UnsupportedGS1IdentifierException;
 import io.openepcis.epc.translator.exception.UrnDLTransformationException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,26 +72,33 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
   /**
    * Method to loop over the Map to find the matching id and its associated GCP Length
    *
-   * @param dlURI The digital link WebURI for which the GCP length needed.
-   * @param prefix The prefix of the identifiers such as /8010/, /255/, etc.
+   * @param gs1DigitalLinkURI The digital link WebURI for which the GCP length needed.
+   * @param gs1ApplicationIdentifier The gs1ApplicationIdentifier of the identifiers such as /8010/,
+   *     /255/, etc.
    * @return returns the GCP length if found matching value in Map else returns 7 as GCP Length
    */
-  public int getGcpLength(String dlURI, final String prefix) {
-    // Extract the identifiers excluding the prefix
-    dlURI = dlURI.substring(dlURI.indexOf(prefix) + prefix.length());
+  public int getGcpLength(String gs1DigitalLinkURI, final String gs1ApplicationIdentifier) {
+    // Extract the identifiers excluding the gs1ApplicationIdentifier
+    gs1DigitalLinkURI =
+        gs1DigitalLinkURI.substring(
+            gs1DigitalLinkURI.indexOf(gs1ApplicationIdentifier)
+                + gs1ApplicationIdentifier.length());
 
-    // Check if prefix is present within keyStartsWithGCP if so append 0 after extracting.
-    if (keyStartsWithGCP.contains(prefix)) {
-      dlURI = "0" + dlURI;
+    // Check if gs1ApplicationIdentifier is present within keyStartsWithGCP then append 0
+    if (keyStartsWithGCP.contains(gs1ApplicationIdentifier)) {
+      gs1DigitalLinkURI = "0" + gs1DigitalLinkURI;
     }
 
     // Loop over the sorted values to find the matching GCP and its GCP Length
     for (final Map.Entry<String, Integer> e : sortedGcpLengthList.entrySet()) {
-      if (dlURI.startsWith(e.getKey())) {
+      if (gs1DigitalLinkURI.startsWith(e.getKey())) {
         return e.getValue();
       }
     }
-    return 7;
+    throw new UnsupportedGS1IdentifierException(
+        "Could not find matching GCP Length for provided GS1 Digital link URI : "
+            + gs1DigitalLinkURI
+            + "\nTry GEPIR (https://gepir.gs1.org/) or contact local GS1 MO.");
   }
 
   /**

@@ -141,9 +141,9 @@ public class GCNTest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890123", 9)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:sgcn:1234567.89012.*",
+        "urn:epc:idpat:sgcn:6562567.89012.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890123")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/255/6562567890123")
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:sgcn:283892.329328.*",

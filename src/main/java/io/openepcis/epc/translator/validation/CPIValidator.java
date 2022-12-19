@@ -18,6 +18,7 @@ package io.openepcis.epc.translator.validation;
 import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CPIValidator implements PatternValidator {
 
@@ -50,11 +51,20 @@ public class CPIValidator implements PatternValidator {
           @Override
           public void validate(final String urn) throws ValidationException {
             super.validate(urn);
-            String cpi = urn.substring(urn.lastIndexOf(":"), urn.lastIndexOf("."));
+            final String cpi = urn.substring(urn.lastIndexOf(":"), urn.lastIndexOf("."));
             if (cpi.length() < 7 || cpi.length() > 31) {
               throw new ValidationException(
                   String.format(
                       "Invalid CPI, CPI must be between 7 and 30 digits (Ex: urn:epc:id:cpi:123456789.0123459.1234).%nPlease check the provided URN: %s",
+                      urn));
+            }
+
+            // Check if GCP contains any characters apart from decimal
+            final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
+            if (!Pattern.matches("^[0-9]*$", gcp)) {
+              throw new ValidationException(
+                  String.format(
+                      "Invalid CPI, CPI should consist of GCP with 6-12 digits,%nPlease check the provided URN: %s",
                       urn));
             }
           }
@@ -110,8 +120,8 @@ public class CPIValidator implements PatternValidator {
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "GCP Length should be between 6-12.%nPlease check the provided URI : %s",
-                      gcpLength));
+                      "GCP Length should be between 6-12 digits. Please check the provided URN : %s",
+                      urn));
             }
 
             // Check if CPI Length is more than GCP Length
@@ -139,16 +149,16 @@ public class CPIValidator implements PatternValidator {
             "Invalid CPI, Class level CPI must be between 7 and 30 digits (Ex: https://id.gs1.org/8010/1234567890123459).%nPlease check the URI: %s") {
 
           @Override
-          protected void validate(final String urn, final int gcpLength)
+          protected void validate(final String uri, final int gcpLength)
               throws ValidationException {
-            super.validate(urn, gcpLength);
-            final String cpi = urn.substring(urn.indexOf(CPI_URI_PART) + CPI_URI_PART.length());
+            super.validate(uri, gcpLength);
+            final String cpi = uri.substring(uri.indexOf(CPI_URI_PART) + CPI_URI_PART.length());
 
             // Check if the GCP Length is valid
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "GCP Length should be between 6-12.%nPlease check the provided URI : %s",
+                      "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
                       gcpLength));
             }
 
@@ -156,8 +166,8 @@ public class CPIValidator implements PatternValidator {
             if (gcpLength > cpi.length()) {
               throw new ValidationException(
                   String.format(
-                      "GCP Length cannot be more than the CPI length.%nPlease check the provided URI : %s",
-                      urn));
+                      "GCP Length cannot be more than the CPI length. Please check the provided URI : %s",
+                      uri));
             }
           }
         });

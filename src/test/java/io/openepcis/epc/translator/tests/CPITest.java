@@ -56,8 +56,8 @@ public class CPITest {
 
     // Valid CPI
     assertEquals(
-        converter.toURI("urn:epc:id:cpi:12345-6789.0#1294-5A.4893"),
-        "https://id.gs1.org/8010/12345-67890#1294-5A/8011/4893");
+        converter.toURI("urn:epc:id:cpi:3813667.83201294-5A.489332"),
+        "https://id.gs1.org/8010/381366783201294-5A/8011/489332");
     assertEquals(
         converter.toURI("urn:epc:id:cpi:123456.789012345.1111"),
         "https://id.gs1.org/8010/123456789012345/8011/1111");
@@ -65,8 +65,8 @@ public class CPITest {
         converter.toURI("urn:epc:id:cpi:0614141.123ABC.123456789"),
         "https://id.gs1.org/8010/0614141123ABC/8011/123456789");
     assertEquals(
-        converter.toURI("urn:epc:id:cpi:4748374/23.748#94/.94304"),
-        "https://id.gs1.org/8010/4748374/23748#94//8011/94304");
+        converter.toURI("urn:epc:id:cpi:6282274.234748947/.94304"),
+        "https://id.gs1.org/8010/6282274234748947//8011/94304");
 
     // Invlaid characters in CPI URI
     cpi = "https://id.gs1.org/8010/12345678901234A/8011/1111";
@@ -86,8 +86,8 @@ public class CPITest {
 
     // Valid CPI
     assertEquals(
-        "urn:epc:id:cpi:12345678A9.012.1010",
-        converter.toURN("https://id.gs1.org/8010/12345678A9012/8011/1010", 10).get("asURN"));
+        "urn:epc:id:cpi:12345678.A9012.1010",
+        converter.toURN("https://id.gs1.org/8010/12345678A9012/8011/1010", 8).get("asURN"));
     assertEquals(
         "urn:epc:id:cpi:1234567890.12.1010",
         converter.toURN("https://id.gs1.org/8010/123456789012/8011/1010", 10).get("asURN"));
@@ -98,8 +98,8 @@ public class CPITest {
         "urn:epc:id:cpi:1234567890.ANC.124",
         converter.toURN("https://benelog.com/8010/1234567890ANC/8011/124", 10).get("asURN"));
     assertEquals(
-        "urn:epc:id:cpi:4748374/23.748#94/.94304",
-        converter.toURN("https://id.gs1.org/8010/4748374/23748#94//8011/94304", 10).get("asURN"));
+        "urn:epc:id:cpi:4748374./23748#94/.94304",
+        converter.toURN("https://id.gs1.org/8010/4748374/23748#94//8011/94304", 7).get("asURN"));
     assertEquals(
         "urn:epc:id:cpi:300568.-67890#1294-5A.4893",
         converter.toURN("https://id.gs1.org/8010/300568-67890#1294-5A/8011/4893").get("asURN"));

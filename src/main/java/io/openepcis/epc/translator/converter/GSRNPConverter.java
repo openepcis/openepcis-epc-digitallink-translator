@@ -81,9 +81,10 @@ public class GSRNPConverter implements Converter {
 
   private Map<String, String> getEPCMap(
       final String dlURI, final int gcpLength, final String gsrnp) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
     try {
-      final Map<String, String> buildURN = new HashMap<>();
-      final String asURN =
+      asURN =
           "urn:epc:id:gsrnp:"
               + gsrnp.substring(0, gcpLength)
               + "."
@@ -103,7 +104,6 @@ public class GSRNPConverter implements Converter {
       buildURN.put(Constants.AS_CAPTURED, dlURI);
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("gsrnp", gsrnp);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the GSRNP identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -113,14 +113,19 @@ public class GSRNPConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    GSRNP_VALIDATOR.validateURN(asURN);
+
+    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GSRNP Type
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
     try {
       final String gsrnp = dlURI.substring(dlURI.indexOf(GSRNP_URI_PART) + GSRNP_URI_PART.length());
-      final int gcpLength =
-          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSRNP_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSRNP_URI_PART);
 
       // Call the Validator class for the GSRNP to check the DLURI syntax
       GSRNP_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -131,6 +136,8 @@ public class GSRNPConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GSRNP identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

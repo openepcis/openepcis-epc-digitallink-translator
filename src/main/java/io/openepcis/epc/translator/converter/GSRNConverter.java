@@ -81,9 +81,10 @@ public class GSRNConverter implements Converter {
 
   private Map<String, String> getEPCMap(
       final String dlURI, final int gcpLength, final String gsrn) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
     try {
-      Map<String, String> buildURN = new HashMap<>();
-      final String asURN =
+      asURN =
           "urn:epc:id:gsrn:"
               + gsrn.substring(0, gcpLength)
               + "."
@@ -103,7 +104,6 @@ public class GSRNConverter implements Converter {
       buildURN.put(Constants.AS_CAPTURED, dlURI);
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("gsrn", gsrn);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the GSRN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -113,13 +113,19 @@ public class GSRNConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    GSRN_VALIDATOR.validateURN(asURN);
+
+    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GSRN Type
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
     try {
       final String gsrn = dlURI.substring(dlURI.indexOf(GSRN_URI_PART) + GSRN_URI_PART.length());
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSRN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSRN_URI_PART);
 
       // Call the Validator class for the GSRN to check the DLURI syntax
       GSRN_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -130,6 +136,8 @@ public class GSRNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GSRN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

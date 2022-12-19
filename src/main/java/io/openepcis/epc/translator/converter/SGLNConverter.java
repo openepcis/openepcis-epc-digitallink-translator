@@ -82,7 +82,7 @@ public class SGLNConverter implements Converter {
       SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
 
       // If the URI passed the validation then convert the URI to URN
-      return getEPCMap(dlURI, gcpLength, dlURI);
+      return getEPCMap(dlURI, gcpLength);
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of SGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
@@ -94,12 +94,12 @@ public class SGLNConverter implements Converter {
     }
   }
 
-  private Map<String, String> getEPCMap(
-      final String dlURI, final int gcpLength, final String pgln) {
+  private Map<String, String> getEPCMap(final String dlURI, final int gcpLength) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
+
     try {
-      final Map<String, String> buildURN = new HashMap<>();
       String sgln;
-      String asURN;
 
       if (dlURI.contains(SGLN_SERIAL_PART)) {
         sgln =
@@ -140,7 +140,6 @@ public class SGLNConverter implements Converter {
       buildURN.put(Constants.AS_CAPTURED, dlURI);
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("sgln", sgln);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the SGLN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -150,23 +149,30 @@ public class SGLNConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // Validate the URN to check if they match the SGLN syntax
+    SGLN_VALIDATOR.validateURN(asURN);
+
+    return buildURN;
   }
 
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
     try {
       // Find the GCP Length from GS1 provided list
-      final int gcpLength =
-          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
 
       // Validate the URI to check if they match the SGLN syntax
       SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
 
       // If the URI passed the validation then convert the URI to URN
-      return getEPCMap(dlURI, gcpLength, dlURI);
+      return getEPCMap(dlURI, gcpLength);
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of SGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

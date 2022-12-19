@@ -58,7 +58,17 @@ public class Converter {
     CLASS_LEVEL_TRANSLATOR.add(new ITIPConverter(true));
   }
 
-  // Check through each class and find URN belongs to which particular class
+  /**
+   * Method to convert the instance level GS1 formatted application identifiers from URN to digital
+   * link WebURI format.
+   *
+   * @param urn instance level application identifier in URN format ex:
+   *     urn:epc:id:sgtin:234567890.1123.9999
+   * @return returns the instance level application identifier in WebURI format ex:
+   *     https://id.gs1.org/01/12345678901231/21/9999
+   * @throws ValidationException throws the exception with appropriate information if some error
+   *     occurred during the conversion
+   */
   public String toURI(final String urn) throws ValidationException {
     for (io.openepcis.epc.translator.converter.Converter uri : DL) {
       if (uri.supportsDigitalLinkURI(urn)) {
@@ -71,7 +81,19 @@ public class Converter {
             urn));
   }
 
-  // Check through each class and find DL URI belongs to which particular class
+  /**
+   * Method to convert the instance level GS1 formatted application identifiers from Digital Link
+   * WebURI to URN format. It will search through each class and find DL URI belongs to which
+   * particular class and accordingly convert to appropriate URN.
+   *
+   * @param dlURI Instance level DigitalLink URI that needs to be converted ex:
+   *     https://id.gs1.org/01/12345678901231/21/9999
+   * @param gcpLength GCP Length based on which URN needs to be generated (6-12 digit). Ex: 9
+   * @return returns the Map with all the converted information including the URN ex:
+   *     urn:epc:id:sgtin:234567890.1123.9999
+   * @throws ValidationException throws the exception with appropriate information if some error
+   *     occurred during the conversion
+   */
   public Map<String, String> toURN(final String dlURI, final int gcpLength)
       throws ValidationException {
     for (io.openepcis.epc.translator.converter.Converter inputuri : DL) {
@@ -82,7 +104,17 @@ public class Converter {
     throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
-  // Check through each class and find DL URI belongs to which particular class
+  /**
+   * Method to convert the instance level GS1 formatted application identifiers from Digital Link
+   * WebURI to URN format by searching for GCP length from GS1 provided list.
+   *
+   * @param dlURI Instance level DigitalLink URI that needs to be converted ex:
+   *     https://id.gs1.org/01/12345678901231/21/9999
+   * @return returns the Map with all the converted information including the URN ex:
+   *     urn:epc:id:sgtin:234567890.1123.9999
+   * @throws ValidationException throws the exception with appropriate information if some error
+   *     occurred during the conversion
+   */
   public Map<String, String> toURN(final String dlURI) throws ValidationException {
     for (io.openepcis.epc.translator.converter.Converter inputuri : DL) {
       if (inputuri.supportsURN(dlURI)) {
@@ -92,7 +124,17 @@ public class Converter {
     throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
-  // Check through each class and find URN belongs to which particular class
+  /**
+   * Method to convert the class level GS1 formatted application identifiers from URN to digital
+   * link WebURI format.
+   *
+   * @param urn class level application identifier in URN format ex:
+   *     urn:epc:idpat:sgtin:234567.1890123.*
+   * @return returns the application identifier in WebURI format ex:
+   *     https://id.gs1.org/01/12345678901234
+   * @throws ValidationException throws the exception with appropriate information if some error
+   *     occurred during the conversion
+   */
   public String toURIForClassLevelIdentifier(final String urn) throws ValidationException {
     for (io.openepcis.epc.translator.converter.Converter uri : CLASS_LEVEL_TRANSLATOR) {
       if (uri.supportsDigitalLinkURI(urn)) {
@@ -105,7 +147,17 @@ public class Converter {
             urn));
   }
 
-  // Check through each class and find DL URI belongs to which particular class
+  /**
+   * Method to convert the class level GS1 formatted class application identifiers from Digital Link
+   * WebURI to URN format by searching for GCP length from GS1 provided list.
+   *
+   * @param dlURI Class level DigitalLink Class URI that needs to be converted ex:
+   *     https://id.gs1.org/01/12345678901234
+   * @return returns the Map with all the converted information including the URN ex:
+   *     urn:epc:idpat:sgtin:234567.1890123.*
+   * @throws ValidationException throws the exception with appropriate information if some error
+   *     occurred during the conversion
+   */
   public Map<String, String> toURNForClassLevelIdentifier(final String dlURI)
       throws ValidationException {
     for (io.openepcis.epc.translator.converter.Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
@@ -116,7 +168,19 @@ public class Converter {
     throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
-  // Check through each class and find DL URI belongs to which particular class
+  /**
+   * Method to convert the class level GS1 formatted class application identifiers from Digital Link
+   * WebURI to URN format. It will search through each class and find DL URI belongs to which
+   * particular class and accordingly convert to appropriate URN.
+   *
+   * @param dlURI Class level DigitalLink Class URI that needs to be converted ex:
+   *     https://id.gs1.org/01/12345678901234
+   * @param gcpLength GCP Length based on which URN needs to be generated (6-12 digit). Ex: 10
+   * @return returns the Map with all the converted information including the URN ex:
+   *     urn:epc:idpat:sgtin:234567.1890123.*
+   * @throws ValidationException throws the exception with appropriate information if some error
+   *     occurred during the conversion
+   */
   public Map<String, String> toURNForClassLevelIdentifier(final String dlURI, int gcpLength)
       throws ValidationException {
     for (io.openepcis.epc.translator.converter.Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
@@ -127,24 +191,41 @@ public class Converter {
     throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
   }
 
-  // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event
-  // hash generator.
+  /**
+   * Method to convert the CBV formatted URN vocabularies into CBV formatted WebURI vocabulary.
+   *
+   * @param urnVocabulary CBV formatted URN vocabulary ex: urn:epcglobal:cbv:bizstep:departing or
+   *     urn:epcglobal:cbv:btt:po.
+   * @return returns CBV formatted WebURI vocabulary ex: https://ref.gs1.org/voc/Bizstep-departing
+   *     or https://ref.gs1.org/voc/BTT-po
+   */
   public String toWebURIVocabulary(final String urnVocabulary) {
     return urnVocabulary == null || urnVocabulary.trim().equals("")
         ? urnVocabulary
         : EventVocabularyFormatter.canonicalWebURIVocabulary(urnVocabulary);
   }
 
-  // Method to convert the CBV WebURI formatted vocabularies into URN vocabulary. Used during
-  // JSON/JSON-LD conversion to XML.
+  /**
+   * Method to convert the CBV formatted WebURI vocabularies into CBV formatted URN vocabulary.
+   *
+   * @param webUriVocabulary CBV formatted WebURI vocabulary ex:
+   *     https://ref.gs1.org/voc/Bizstep-departing or https://ref.gs1.org/voc/BTT-po
+   * @return returns the CBV formatted URN vocabulary ex: urn:epcglobal:cbv:bizstep:departing or
+   *     urn:epcglobal:cbv:btt:po.
+   */
   public String toUrnVocabulary(final String webUriVocabulary) {
     return webUriVocabulary == null || webUriVocabulary.trim().equals("")
         ? webUriVocabulary
         : EventVocabularyFormatter.canonicalString(webUriVocabulary);
   }
 
-  // Method to convert the CBV URN/WebURI formatted vocabularies into BareString vocabulary. Used
-  // during XML -> JSON/JSON-LD conversion.
+  /**
+   * Method to convert the CBV formatted URN/WebURI vocabularies into BareString vocabulary.
+   *
+   * @param eventVocabulary CBV Vocabulary that needs to be converted to bare string ex:
+   *     https://ref.gs1.org/voc/Bizstep-departing or urn:epcglobal:cbv:bizstep:receiving.
+   * @return returns the converted bare string vocabulary ex: departing or receiving.
+   */
   public String toBareStringVocabulary(final String eventVocabulary) {
     return eventVocabulary == null || eventVocabulary.trim().equals("")
         ? eventVocabulary
@@ -152,8 +233,7 @@ public class Converter {
   }
 
   /**
-   * Method to convert the BareString vocabularies into CBV formatted URN/WebURI vocabulary. Used
-   * during JSON/JSON-LD -> XML conversion.
+   * Method to convert the BareString vocabularies into CBV formatted URN/WebURI vocabulary.
    *
    * @param bareString Vocabulary that needs to be converted to CBV format. Ex: shipping, po,
    *     in_transit, etc.

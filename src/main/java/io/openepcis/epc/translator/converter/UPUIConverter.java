@@ -100,8 +100,9 @@ public class UPUIConverter implements Converter {
   }
 
   private Map<String, String> getEPCMap(final String dlURI, final int gcpLength, String upui) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
     try {
-      final Map<String, String> buildURN = new HashMap<>();
       upui =
           upui.substring(1, gcpLength + 1)
               + "."
@@ -109,7 +110,7 @@ public class UPUIConverter implements Converter {
               + upui.substring(gcpLength + 1, upui.length() - 1);
       final String serial =
           dlURI.substring(dlURI.indexOf(UPUI_SERIAL_PART) + UPUI_SERIAL_PART.length());
-      final String asURN = "urn:epc:id:upui:" + upui + "." + serial;
+      asURN = "urn:epc:id:upui:" + upui + "." + serial;
 
       // If dlURI contains GS1 domain then captured and canonical are same
       if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
@@ -126,7 +127,6 @@ public class UPUIConverter implements Converter {
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("upui", upui);
       buildURN.put(Constants.SERIAL, serial);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the UPUI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -134,16 +134,23 @@ public class UPUIConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    UPUI_VALIDATOR.validateURN(asURN);
+
+    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of UPUI Type
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
+
     try {
       final String upui =
           dlURI.substring(
               dlURI.indexOf(UPUI_URI_PART) + UPUI_URI_PART.length(),
               dlURI.indexOf(UPUI_SERIAL_PART));
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, UPUI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, UPUI_URI_PART);
 
       // Call the Validator class for the UPUI to check the DLURI syntax
       UPUI_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -154,6 +161,8 @@ public class UPUIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of UPUI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

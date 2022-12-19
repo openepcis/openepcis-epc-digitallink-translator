@@ -108,11 +108,11 @@ public class SGTINTest {
         "urn:epc:id:sgtin:234567.1890123./19:;<=>?AZ_az",
         converter.toURN("https://id.gs1.org/01/12345678901231/21//19:;<=>?AZ_az", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:sgtin:3875837.784374.9302932",
-        converter.toURN("https://lidl.de/food/frozen/01/73875837843740/21/9302932").get("asURN"));
+        "urn:epc:id:sgtin:9046539203.574.9302932",
+        converter.toURN("https://lidl.de/food/frozen/01/59046539203740/21/9302932").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgtin:6945894.889450.94304903",
-        converter.toURN("https://lidl.de/food/frozen/01/86945894894506/21/94304903").get("asURN"));
+        "urn:epc:id:sgtin:00858598.69450.94304903",
+        converter.toURN("https://lidl.de/food/frozen/01/60085859894506/21/94304903").get("asURN"));
 
     /** Class level GTIN identifiers testing with valid and invalid scenarios */
 

@@ -96,8 +96,8 @@ public class GSINTest {
         "urn:epc:id:gsin:84395893.58953939",
         converter.toURN("https://benelog.com/horrem/402/84395893589539394").get("asURN"));
     assertEquals(
-        "urn:epc:id:gsin:9549854.549583498",
-        converter.toURN("https://benelog.com/horrem/402/95498545495834983").get("asURN"));
+        "urn:epc:id:gsin:6708245.495834983",
+        converter.toURN("https://benelog.com/horrem/402/67082454958349836").get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:954859.8495045904",
         converter.toURN("https://https://id.gs1.org/402/95485984950459045", 6).get("asURN"));

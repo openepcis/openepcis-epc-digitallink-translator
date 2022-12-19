@@ -101,14 +101,14 @@ public class LGTINTest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/01/59850359038590/10/2z32746", 10)
             .get("asURN"));
     assertEquals(
-        "urn:epc:class:lgtin:9850359.503859.2z32746",
+        "urn:epc:class:lgtin:904647753.5859.2z32746",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/01/59850359038590/10/2z32746")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/01/59046477538590/10/2z32746")
             .get("asURN"));
     assertEquals(
-        "urn:epc:class:lgtin:0614141.712345.998877",
+        "urn:epc:class:lgtin:90465370034.55.998877",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/01/70614141123451/10/998877")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/01/59046537003451/10/998877")
             .get("asURN"));
     assertEquals(
         "urn:epc:class:lgtin:234567.1890123.9999",

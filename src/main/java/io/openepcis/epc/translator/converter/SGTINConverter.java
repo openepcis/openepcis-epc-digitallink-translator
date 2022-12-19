@@ -125,15 +125,16 @@ public class SGTINConverter implements Converter {
 
   private Map<String, String> getEPCMap(
       final String dlURI, final int gcpLength, final String sgtin) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
+
     try {
-      final Map<String, String> buildURN = new HashMap<>();
       final String sgtinUrn =
           sgtin.substring(1, gcpLength + 1)
               + "."
               + sgtin.charAt(0)
               + sgtin.substring(gcpLength + 1, sgtin.length() - 1);
 
-      String asURN;
       if (isClassLevel) {
         asURN = "urn:epc:idpat:sgtin:" + sgtinUrn + ".*";
       } else {
@@ -157,7 +158,6 @@ public class SGTINConverter implements Converter {
       buildURN.put(Constants.AS_CAPTURED, dlURI);
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("gtin", sgtin);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the SGTIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -167,10 +167,21 @@ public class SGTINConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    if (isClassLevel) {
+      SGTIN_VALIDATOR.validateClassLevelURN(asURN);
+    } else {
+      SGTIN_VALIDATOR.validateURN(asURN);
+    }
+
+    return buildURN;
   }
 
   // Convert to SGTIN URN
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
+
     try {
       String sgtin;
       if (isClassLevel) {
@@ -182,7 +193,7 @@ public class SGTINConverter implements Converter {
                 dlURI.indexOf(SGTIN_SERIAL_PART));
       }
 
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGTIN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGTIN_URI_PART);
 
       // Validate the URN to check if they match the SGTIN syntax
       if (isClassLevel) {
@@ -196,6 +207,8 @@ public class SGTINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of SGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

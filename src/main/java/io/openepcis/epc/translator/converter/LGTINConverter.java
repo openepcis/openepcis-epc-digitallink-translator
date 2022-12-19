@@ -95,11 +95,13 @@ public class LGTINConverter implements Converter {
   }
 
   private Map<String, String> getEPCMap(String dlURI, int gcpLength, String lgtin) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
+
     try {
-      final Map<String, String> buildURN = new HashMap<>();
       final String serial =
           dlURI.substring(dlURI.indexOf(LGTIN_SERIAL_PART) + LGTIN_SERIAL_PART.length());
-      final String asURN =
+      asURN =
           "urn:epc:class:lgtin:"
               + lgtin.substring(1, gcpLength + 1)
               + "."
@@ -123,7 +125,6 @@ public class LGTINConverter implements Converter {
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("lgtin", lgtin);
       buildURN.put(Constants.SERIAL, serial);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the LGTIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -133,17 +134,22 @@ public class LGTINConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    LGTIN_VALIDATOR.validateURN(asURN);
+
+    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of LGTIN Type
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
+    int gcpLength = 0;
     try {
       final String lgtin =
           dlURI.substring(
               dlURI.indexOf(LGTIN_URI_PART) + LGTIN_URI_PART.length(),
               dlURI.indexOf(LGTIN_SERIAL_PART));
-      final int gcpLength =
-          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, LGTIN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, LGTIN_URI_PART);
 
       // Call the Validator class for the LGTIN to check the DLURI syntax
       LGTIN_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -154,6 +160,8 @@ public class LGTINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of LGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

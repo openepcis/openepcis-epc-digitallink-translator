@@ -108,8 +108,8 @@ public class ITIPTest {
             .toURN("https://id.gs1.org/8006/646734858938493844/21/!\"%&'()*+,-./1:;<=>=", 6)
             .get("asURN"));
     assertEquals(
-        "urn:epc:id:itip:0843442.563564.35.64.85945894",
-        converter.toURN("https://id.gs1.org/8006/508434426356463564/21/85945894").get("asURN"));
+        "urn:epc:id:itip:870618556.3565.56.65.85945894",
+        converter.toURN("https://id.gs1.org/8006/387061855656575665/21/85945894").get("asURN"));
     assertEquals(
         "urn:epc:id:itip:9044841523.523.83.93.547564756",
         converter.toURN("https://id.gs1.org/8006/590448415232328393/21/547564756").get("asURN"));
@@ -156,9 +156,9 @@ public class ITIPTest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/8006/123456789012345678", 10)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:itip:8394394.883948.94.83.*",
+        "urn:epc:idpat:itip:26072314098.48.65.44.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/883943948394839483")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/426072314098876544")
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:itip:439483.8934948.34.34.*",
@@ -171,9 +171,9 @@ public class ITIPTest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/8006/394354903094390493", 12)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:itip:9435490.330943.04.93.*",
+        "urn:epc:idpat:itip:904645263.5344.45.45.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/394354903094390493")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/590464526334474545")
             .get("asURN"));
 
     // URN to Web URI conversion

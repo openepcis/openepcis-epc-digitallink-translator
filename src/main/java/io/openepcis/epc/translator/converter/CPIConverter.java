@@ -119,9 +119,10 @@ public class CPIConverter implements Converter {
   }
 
   private Map<String, String> getEPCMap(final String dlURI, final int gcpLength, final String cpi) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
+
     try {
-      Map<String, String> buildURN = new HashMap<>();
-      String asURN;
       if (isClassLevel) {
         asURN =
             "urn:epc:idpat:cpi:"
@@ -156,7 +157,6 @@ public class CPIConverter implements Converter {
       buildURN.put(Constants.AS_CAPTURED, dlURI);
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("cpi", cpi);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the CPI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -166,9 +166,19 @@ public class CPIConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    if (isClassLevel) {
+      CPI_VALIDATOR.validateClassLevelURN(asURN);
+    } else {
+      CPI_VALIDATOR.validateURN(asURN);
+    }
+
+    return buildURN;
   }
 
   public Map<String, String> convertToURN(final String dlURI) {
+    int gcpLength = 0;
     try {
       String cpi;
 
@@ -181,8 +191,7 @@ public class CPIConverter implements Converter {
                 dlURI.indexOf(CPI_SERIAL_PART));
       }
 
-      final int gcpLength =
-          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, CPI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, CPI_URI_PART);
 
       // Validate the DLURI to check if they match the CPI syntax
       if (isClassLevel) {
@@ -197,6 +206,8 @@ public class CPIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of CPI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

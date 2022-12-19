@@ -82,14 +82,16 @@ public class SSCCConverter implements Converter {
 
   private Map<String, String> getEPCMap(
       final String dlURI, final int gcpLength, final String sscc) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
+
     try {
-      final Map<String, String> buildURN = new HashMap<>();
       final String ssccURN =
           sscc.substring(1, gcpLength + 1)
               + "."
               + sscc.charAt(0)
               + sscc.substring(gcpLength + 1, sscc.length() - 1);
-      final String asURN = "urn:epc:id:sscc:" + ssccURN;
+      asURN = "urn:epc:id:sscc:" + ssccURN;
 
       // If dlURI contains GS1 domain then captured and canonical are same
       if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
@@ -105,7 +107,6 @@ public class SSCCConverter implements Converter {
       buildURN.put(Constants.AS_CAPTURED, dlURI);
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("sscc", sscc);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the SSCC identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -113,20 +114,30 @@ public class SSCCConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    SSCC_VALIDATOR.validateURN(asURN);
+
+    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of SSCC Type
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
     try {
       final String sscc = dlURI.substring(dlURI.indexOf(SSCC_URI_PART) + SSCC_URI_PART.length());
-      int gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SSCC_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SSCC_URI_PART);
+
       // Validate the URN to check if they match the SGTIN syntax
       SSCC_VALIDATOR.validateURI(dlURI, gcpLength);
+
       return getEPCMap(dlURI, gcpLength, sscc);
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of SSCC identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

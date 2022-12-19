@@ -82,10 +82,10 @@ public class GIAIConverter implements Converter {
 
   private Map<String, String> getEPCMap(
       final String dlURI, final int gcpLength, final String giai) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
     try {
-      final Map<String, String> buildURN = new HashMap<>();
-      final String asURN =
-          "urn:epc:id:giai:" + giai.substring(0, gcpLength) + "." + giai.substring(gcpLength);
+      asURN = "urn:epc:id:giai:" + giai.substring(0, gcpLength) + "." + giai.substring(gcpLength);
 
       // If dlURI contains GS1 domain then captured and canonical are same
       if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
@@ -101,7 +101,6 @@ public class GIAIConverter implements Converter {
       buildURN.put(Constants.AS_CAPTURED, dlURI);
       buildURN.put(Constants.AS_URN, asURN);
       buildURN.put("giai", giai);
-      return buildURN;
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the GIAI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
@@ -111,16 +110,22 @@ public class GIAIConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+
+    // After generating the URN validate it again and ensure GCP validates
+    GIAI_VALIDATOR.validateURN(asURN);
+
+    return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GIAI Type
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
+
     try {
       final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
 
       // Get the gcpLength from the GS1 provided list
-      final int gcpLength =
-          DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GIAI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GIAI_URI_PART);
 
       // Call the Validator class for the GIAI to check the DLURI syntax
       GIAI_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -131,6 +136,8 @@ public class GIAIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GIAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
+              + " GCP Length : "
+              + gcpLength
               + "\n"
               + exception.getMessage());
     }

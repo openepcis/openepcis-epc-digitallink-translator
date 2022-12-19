@@ -113,7 +113,7 @@ public class SSCCTest {
         "urn:epc:id:sscc:587584758457.78485",
         converter.toURN("https://marriot.in/blr/123/00/758758475845784857").get("asURN"));
     assertEquals(
-        "urn:epc:id:sscc:7346734.6667373473",
-        converter.toURN("https://marriot.in/blr/123/00/673467346673734737").get("asURN"));
+        "urn:epc:id:sscc:0584234.8667373473",
+        converter.toURN("https://marriot.in/blr/123/00/805842346673734737").get("asURN"));
   }
 }
