@@ -38,8 +38,7 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
 
   private final List<String> keyStartsWithGCP =
       Arrays.asList(
-          "/8010/", "/255/", "/253/", "/8004/", "/401/", "/402/", "/8018/", "/8017/", "/417/",
-          "/414/");
+          "/8010/", "/255/", "/253/", "/401/", "/402/", "/8018/", "/8017/", "/417/", "/414/");
 
   /** Constructor to load the GCPLengthFormat file from resource folder to the sorted TreeMap */
   private DefaultGCPLengthProvider() {

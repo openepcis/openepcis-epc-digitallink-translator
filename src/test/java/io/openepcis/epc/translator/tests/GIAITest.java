@@ -88,10 +88,10 @@ public class GIAITest {
         "urn:epc:id:giai:1234567890.12123",
         converter.toURN("https://news.google.in/8004/123456789012123", 10).get("asURN"));
     assertEquals(
-        "urn:epc:id:giai:839495849.5850!\"/%_",
+        "urn:epc:id:giai:8394958.495850!\"/%_",
         converter.toURN("https://id.gs1.org/8004/8394958495850!\"/%_").get("asURN"));
     assertEquals(
-        "urn:epc:id:giai:7324878.;><=?",
+        "urn:epc:id:giai:732487.8;><=?",
         converter.toURN("https://id.gs1.org/8004/7324878;><=?").get("asURN"));
   }
 }
