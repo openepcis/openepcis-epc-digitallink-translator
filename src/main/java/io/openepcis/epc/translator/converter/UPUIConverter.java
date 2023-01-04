@@ -92,7 +92,7 @@ public class UPUIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of UPUI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -150,7 +150,7 @@ public class UPUIConverter implements Converter {
           dlURI.substring(
               dlURI.indexOf(UPUI_URI_PART) + UPUI_URI_PART.length(),
               dlURI.indexOf(UPUI_SERIAL_PART));
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, UPUI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(upui);
 
       // Call the Validator class for the UPUI to check the DLURI syntax
       UPUI_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -161,7 +161,7 @@ public class UPUIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of UPUI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

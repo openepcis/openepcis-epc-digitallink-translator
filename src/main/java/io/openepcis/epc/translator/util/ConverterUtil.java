@@ -3,8 +3,11 @@ package io.openepcis.epc.translator.util;
 import io.openepcis.epc.translator.Converter;
 import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 // Class to use the Converter method in a static way.
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConverterUtil {
 
   private static final Converter converter;

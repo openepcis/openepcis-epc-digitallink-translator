@@ -24,6 +24,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StandardVocabConvertorUtil {
 
+  private static final String ERROR_MESSAGE =
+      "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s";
+
   public static String toURI(String urn) throws ValidationException {
     for (StandardVocabElements element : StandardVocabElements.values()) {
       if (element.supportsDL(urn)) {
@@ -31,15 +34,9 @@ public class StandardVocabConvertorUtil {
       }
     }
     if (urn.startsWith("http://") || urn.startsWith("https://")) {
-      throw new UnsupportedGS1IdentifierException(
-          String.format(
-              "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s",
-              urn));
+      throw new UnsupportedGS1IdentifierException(String.format(ERROR_MESSAGE, urn));
     }
-    throw new ValidationException(
-        String.format(
-            "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s",
-            urn));
+    throw new ValidationException(String.format(ERROR_MESSAGE, urn));
   }
 
   // Check through enum and find DL URI belongs to which particular value
@@ -50,10 +47,7 @@ public class StandardVocabConvertorUtil {
       }
     }
     if (dlURI.startsWith("http://") || dlURI.startsWith("https://")) {
-      throw new UnsupportedGS1IdentifierException(
-          String.format(
-              "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s",
-              dlURI));
+      throw new UnsupportedGS1IdentifierException(String.format(ERROR_MESSAGE, dlURI));
     }
     throw new ValidationException(
         String.format(

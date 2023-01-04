@@ -111,7 +111,7 @@ public class CPIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of CPI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -161,7 +161,7 @@ public class CPIConverter implements Converter {
       throw new ValidationException(
           "The conversion of the CPI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -191,7 +191,7 @@ public class CPIConverter implements Converter {
                 dlURI.indexOf(CPI_SERIAL_PART));
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, CPI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(cpi);
 
       // Validate the DLURI to check if they match the CPI syntax
       if (isClassLevel) {
@@ -206,7 +206,7 @@ public class CPIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of CPI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

@@ -115,14 +115,14 @@ public class SGLNTest {
             .toURN("https://deutscheBahn.de/train/414/1234567890123/254/1234", 6)
             .get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:7857834.38478.0394903",
-        converter.toURN("https://id.gs1.org/414/7857834384782/254/0394903").get("asURN"));
+        "urn:epc:id:sgln:93590743.8478.0394903",
+        converter.toURN("https://id.gs1.org/414/9359074384782/254/0394903").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:7857834.38478.0",
-        converter.toURN("https://id.gs1.org/414/7857834384782").get("asURN"));
+        "urn:epc:id:sgln:93590443.8478.0",
+        converter.toURN("https://id.gs1.org/414/9359044384782").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:6880009.38493.4390493",
-        converter.toURN("https://id.gs1.org/414/6880009384938/254/4390493").get("asURN"));
+        "urn:epc:id:sgln:93592393.8493.4390493",
+        converter.toURN("https://id.gs1.org/414/9359239384938/254/4390493").get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:688000938493..0",
         converter.toURN("https://id.gs1.org/414/6880009384938", 12).get("asURN"));

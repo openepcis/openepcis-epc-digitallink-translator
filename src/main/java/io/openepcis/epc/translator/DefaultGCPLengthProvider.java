@@ -36,10 +36,6 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
 
   private static DefaultGCPLengthProvider gcpLengthProviderInstance;
 
-  private final List<String> keyStartsWithGCP =
-      Arrays.asList(
-          "/8010/", "/255/", "/253/", "/401/", "/402/", "/8018/", "/8017/", "/417/", "/414/");
-
   /** Constructor to load the GCPLengthFormat file from resource folder to the sorted TreeMap */
   private DefaultGCPLengthProvider() {
     try {
@@ -72,20 +68,12 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
    * Method to loop over the Map to find the matching id and its associated GCP Length
    *
    * @param gs1DigitalLinkURI The digital link WebURI for which the GCP length needed.
-   * @param gs1ApplicationIdentifier The gs1ApplicationIdentifier of the identifiers such as /8010/,
-   *     /255/, etc.
    * @return returns the GCP length if found matching value in Map else returns 7 as GCP Length
    */
-  public int getGcpLength(String gs1DigitalLinkURI, final String gs1ApplicationIdentifier) {
-    // Extract the identifiers excluding the gs1ApplicationIdentifier
-    gs1DigitalLinkURI =
-        gs1DigitalLinkURI.substring(
-            gs1DigitalLinkURI.indexOf(gs1ApplicationIdentifier)
-                + gs1ApplicationIdentifier.length());
-
-    // Check if gs1ApplicationIdentifier is present within keyStartsWithGCP then append 0
-    if (keyStartsWithGCP.contains(gs1ApplicationIdentifier)) {
-      gs1DigitalLinkURI = "0" + gs1DigitalLinkURI;
+  public int getGcpLength(String gs1DigitalLinkURI) {
+    // For GTIN related identifiers consider from 2nd digit for finding gcp length
+    if (gs1DigitalLinkURI.length() > 13) {
+      gs1DigitalLinkURI = gs1DigitalLinkURI.substring(1);
     }
 
     // Loop over the sorted values to find the matching GCP and its GCP Length

@@ -74,7 +74,7 @@ public class GSINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GSIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -111,7 +111,7 @@ public class GSINConverter implements Converter {
       throw new ValidationException(
           "The conversion of the GSIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -128,7 +128,7 @@ public class GSINConverter implements Converter {
     int gcpLength = 0;
     try {
       final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSIN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsin);
 
       // Call the Validator class for the GSIN to check the DLURI syntax
       gsinValidator.validateURI(dlURI, gcpLength);
@@ -139,7 +139,7 @@ public class GSINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GSIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

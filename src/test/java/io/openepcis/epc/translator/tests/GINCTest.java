@@ -92,7 +92,7 @@ public class GINCTest {
         "urn:epc:id:ginc:48493047.38473!\"\"%/%&'()*+,-.:=",
         converter.toURN("https://id.gs1.org/401/4849304738473!\"\"%/%&'()*+,-.:=", 8).get("asURN"));
     assertEquals(
-        "urn:epc:id:ginc:6569877.89012",
+        "urn:epc:id:ginc:656987789012.",
         converter.toURN("https://id.gs1.org/401/656987789012").get("asURN"));
     assertEquals(
         "urn:epc:id:ginc:123456789012.d",

@@ -73,7 +73,7 @@ public class SSCCConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of SSCC identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -126,7 +126,7 @@ public class SSCCConverter implements Converter {
     int gcpLength = 0;
     try {
       final String sscc = dlURI.substring(dlURI.indexOf(SSCC_URI_PART) + SSCC_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SSCC_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sscc);
 
       // Validate the URN to check if they match the SGTIN syntax
       SSCC_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -136,7 +136,7 @@ public class SSCCConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of SSCC identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

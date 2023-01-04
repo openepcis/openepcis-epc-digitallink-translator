@@ -110,10 +110,10 @@ public class SSCCTest {
         "urn:epc:id:sscc:587584.77584578485",
         converter.toURN("https://marriot.in/blr/123/00/758758475845784857", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:sscc:587584758457.78485",
-        converter.toURN("https://marriot.in/blr/123/00/758758475845784857").get("asURN"));
+        "urn:epc:id:sscc:3665847.9584578485",
+        converter.toURN("https://marriot.in/blr/123/00/936658475845784857").get("asURN"));
     assertEquals(
-        "urn:epc:id:sscc:0584234.8667373473",
-        converter.toURN("https://marriot.in/blr/123/00/805842346673734737").get("asURN"));
+        "urn:epc:id:sscc:93594046.867373473",
+        converter.toURN("https://marriot.in/blr/123/00/893594046673734737").get("asURN"));
   }
 }

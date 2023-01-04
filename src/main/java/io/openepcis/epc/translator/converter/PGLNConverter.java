@@ -72,7 +72,7 @@ public class PGLNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of PGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -108,7 +108,7 @@ public class PGLNConverter implements Converter {
       throw new ValidationException(
           "The conversion of the PGLN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -125,7 +125,7 @@ public class PGLNConverter implements Converter {
     int gcpLength = 0;
     try {
       final String pgln = dlURI.substring(dlURI.indexOf(PGLN_URI_PART) + PGLN_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, PGLN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(pgln);
 
       // Call the Validator class for the PGLN to check the DLURI syntax
       PGLN_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -136,7 +136,7 @@ public class PGLNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of PGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

@@ -38,7 +38,7 @@ public class GINCValidator implements PatternValidator {
             "Invalid GINC, GINC should consist of GCP with 6-12 digits (Ex: urn:epc:id:ginc:1234567890.ABCDEF123456789),\nPlease check the provided URN: %s"));
     URN_MATCHERS.add(
         new Matcher(
-            "urn:epc:id:ginc:[0-9]{6,12}\\.[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,24}",
+            "urn:epc:id:ginc:[0-9]{6,12}\\.[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{0,24}",
             "Invalid GINC, GINC should be between 7 and 30 characters with GCP 6-12 digits (Ex: urn:epc:id:ginc:1234567890.ABCDEF123456789),\nPlease check the provided URN: %s") {
 
           @Override

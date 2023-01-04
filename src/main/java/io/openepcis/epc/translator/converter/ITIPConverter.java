@@ -132,7 +132,7 @@ public class ITIPConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of ITIP identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -188,7 +188,7 @@ public class ITIPConverter implements Converter {
       throw new ValidationException(
           "The conversion of the ITIP identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -219,7 +219,7 @@ public class ITIPConverter implements Converter {
                 dlURI.indexOf(ITIP_SERIAL_PART));
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, ITIP_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(itip);
 
       // Call the Validator class for the ITIP to check the DLURI syntax
       if (isClassLevel) {
@@ -234,7 +234,7 @@ public class ITIPConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of ITIP identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

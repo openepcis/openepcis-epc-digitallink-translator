@@ -87,7 +87,7 @@ public class SGLNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of SGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -144,7 +144,7 @@ public class SGLNConverter implements Converter {
       throw new ValidationException(
           "The conversion of the SGLN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -159,8 +159,19 @@ public class SGLNConverter implements Converter {
   public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
     int gcpLength = 0;
     try {
+      String sgln;
+
+      if (dlURI.contains(SGLN_SERIAL_PART)) {
+        sgln =
+            dlURI.substring(
+                dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length(),
+                dlURI.indexOf(SGLN_SERIAL_PART));
+      } else {
+        sgln = dlURI.substring(dlURI.indexOf(SGLN_URI_PART) + SGLN_URI_PART.length());
+      }
+
       // Find the GCP Length from GS1 provided list
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGLN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgln);
 
       // Validate the URI to check if they match the SGLN syntax
       SGLN_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -171,7 +182,7 @@ public class SGLNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of SGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

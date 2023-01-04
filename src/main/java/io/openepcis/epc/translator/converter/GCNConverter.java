@@ -92,7 +92,7 @@ public class GCNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GCN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -136,7 +136,7 @@ public class GCNConverter implements Converter {
       throw new ValidationException(
           "The conversion of the GCN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -158,7 +158,7 @@ public class GCNConverter implements Converter {
 
     try {
       final String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GCN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgcn);
 
       // Call the Validator class for the GCN to check the DLURI syntax
       if (isClassLevel) {
@@ -172,7 +172,7 @@ public class GCNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GCN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

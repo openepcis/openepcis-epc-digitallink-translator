@@ -72,7 +72,7 @@ public class GSRNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GSRN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -108,7 +108,7 @@ public class GSRNConverter implements Converter {
       throw new ValidationException(
           "The conversion of the GSRN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -125,7 +125,7 @@ public class GSRNConverter implements Converter {
     int gcpLength = 0;
     try {
       final String gsrn = dlURI.substring(dlURI.indexOf(GSRN_URI_PART) + GSRN_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GSRN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsrn);
 
       // Call the Validator class for the GSRN to check the DLURI syntax
       GSRN_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -136,7 +136,7 @@ public class GSRNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GSRN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

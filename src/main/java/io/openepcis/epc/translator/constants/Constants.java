@@ -25,4 +25,5 @@ public class Constants {
   public static final String CANONICAL_DL = "canonicalDL";
   public static final String AS_URN = "asURN";
   public static final String SERIAL = "serial";
+  public static final String GCP_LENGTH = " GCP Length : ";
 }

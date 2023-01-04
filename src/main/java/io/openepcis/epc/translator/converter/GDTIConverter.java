@@ -100,7 +100,7 @@ public class GDTIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GDTI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -143,7 +143,7 @@ public class GDTIConverter implements Converter {
       throw new ValidationException(
           "The conversion of the GDTI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -174,7 +174,7 @@ public class GDTIConverter implements Converter {
                 dlURI.indexOf(GDTI_URI_PART) + GDTI_URI_PART.length() + 13);
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GDTI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gdti);
 
       // Call the Validator class for the GDTI to check the DLURI syntax
       if (isClassLevel) {
@@ -189,7 +189,7 @@ public class GDTIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GDTI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

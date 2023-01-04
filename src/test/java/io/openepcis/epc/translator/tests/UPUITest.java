@@ -98,10 +98,10 @@ public class UPUITest {
         "urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az",
         converter.toURN("https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:upui:594048384.8737.8398439",
-        converter.toURN("https://id.gs1.org/01/85940483847373/235/8398439").get("asURN"));
+        "urn:epc:id:upui:93594438.84737.8398439",
+        converter.toURN("https://id.gs1.org/01/89359443847373/235/8398439").get("asURN"));
     assertEquals(
-        "urn:epc:id:upui:35115253.92635.0230293",
+        "urn:epc:id:upui:351152.9532635.0230293",
         converter.toURN("https://id.gs1.org/01/93511525326356/235/0230293").get("asURN"));
   }
 }

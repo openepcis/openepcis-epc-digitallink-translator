@@ -99,7 +99,7 @@ public class GRAIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GRAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -141,7 +141,7 @@ public class GRAIConverter implements Converter {
       throw new ValidationException(
           "The conversion of the GRAI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -172,7 +172,7 @@ public class GRAIConverter implements Converter {
                 dlURI.indexOf(GRAI_URI_PART) + 19);
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GRAI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(grai);
 
       // Call the Validator class for the GRAI to check the DLURI syntax
       if (isClassLevel) {
@@ -187,7 +187,7 @@ public class GRAIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GRAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

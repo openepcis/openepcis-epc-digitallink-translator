@@ -73,7 +73,7 @@ public class GIAIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GIAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -105,7 +105,7 @@ public class GIAIConverter implements Converter {
       throw new ValidationException(
           "The conversion of the GIAI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -125,7 +125,7 @@ public class GIAIConverter implements Converter {
       final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
 
       // Get the gcpLength from the GS1 provided list
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, GIAI_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(giai);
 
       // Call the Validator class for the GIAI to check the DLURI syntax
       GIAI_VALIDATOR.validateURI(dlURI, gcpLength);
@@ -136,7 +136,7 @@ public class GIAIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GIAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

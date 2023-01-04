@@ -116,7 +116,7 @@ public class SGTINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of SGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -162,7 +162,7 @@ public class SGTINConverter implements Converter {
       throw new ValidationException(
           "The conversion of the SGTIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -193,7 +193,7 @@ public class SGTINConverter implements Converter {
                 dlURI.indexOf(SGTIN_SERIAL_PART));
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, SGTIN_URI_PART);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgtin);
 
       // Validate the URN to check if they match the SGTIN syntax
       if (isClassLevel) {
@@ -207,7 +207,7 @@ public class SGTINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of SGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + " GCP Length : "
+              + Constants.GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

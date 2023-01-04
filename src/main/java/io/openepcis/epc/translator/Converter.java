@@ -24,38 +24,38 @@ import java.util.Set;
 
 public class Converter {
 
-  private final String INVALID_URI_MESSAGE =
+  private static final String INVALID_URI_MESSAGE =
       "Provided URI format does not match with any of the GS1 identifiers format.%nPlease check the URI: %s";
-  private final Set<io.openepcis.epc.translator.converter.Converter> DL = new HashSet<>();
-  private final Set<io.openepcis.epc.translator.converter.Converter> CLASS_LEVEL_TRANSLATOR =
+  private final Set<io.openepcis.epc.translator.converter.Converter> dl = new HashSet<>();
+  private final Set<io.openepcis.epc.translator.converter.Converter> classLevelTranslator =
       new HashSet<>();
 
   public Converter() {
     // Add all EPC instance-level converter
-    DL.add(new SGTINConverter());
-    DL.add(new SSCCConverter());
-    DL.add(new SGLNConverter());
-    DL.add(new GRAIConverter());
-    DL.add(new GIAIConverter());
-    DL.add(new GSRNConverter());
-    DL.add(new GSRNPConverter());
-    DL.add(new GDTIConverter());
-    DL.add(new CPIConverter());
-    DL.add(new GCNConverter());
-    DL.add(new GINCConverter());
-    DL.add(new GSINConverter());
-    DL.add(new ITIPConverter());
-    DL.add(new UPUIConverter());
-    DL.add(new PGLNConverter());
+    dl.add(new SGTINConverter());
+    dl.add(new SSCCConverter());
+    dl.add(new SGLNConverter());
+    dl.add(new GRAIConverter());
+    dl.add(new GIAIConverter());
+    dl.add(new GSRNConverter());
+    dl.add(new GSRNPConverter());
+    dl.add(new GDTIConverter());
+    dl.add(new CPIConverter());
+    dl.add(new GCNConverter());
+    dl.add(new GINCConverter());
+    dl.add(new GSINConverter());
+    dl.add(new ITIPConverter());
+    dl.add(new UPUIConverter());
+    dl.add(new PGLNConverter());
 
     // Add all EPC class-level converter
-    CLASS_LEVEL_TRANSLATOR.add(new LGTINConverter());
-    CLASS_LEVEL_TRANSLATOR.add(new SGTINConverter(true));
-    CLASS_LEVEL_TRANSLATOR.add(new GRAIConverter(true));
-    CLASS_LEVEL_TRANSLATOR.add(new GDTIConverter(true));
-    CLASS_LEVEL_TRANSLATOR.add(new GCNConverter(true));
-    CLASS_LEVEL_TRANSLATOR.add(new CPIConverter(true));
-    CLASS_LEVEL_TRANSLATOR.add(new ITIPConverter(true));
+    classLevelTranslator.add(new LGTINConverter());
+    classLevelTranslator.add(new SGTINConverter(true));
+    classLevelTranslator.add(new GRAIConverter(true));
+    classLevelTranslator.add(new GDTIConverter(true));
+    classLevelTranslator.add(new GCNConverter(true));
+    classLevelTranslator.add(new CPIConverter(true));
+    classLevelTranslator.add(new ITIPConverter(true));
   }
 
   /**
@@ -70,7 +70,7 @@ public class Converter {
    *     occurred during the conversion
    */
   public String toURI(final String urn) throws ValidationException {
-    for (io.openepcis.epc.translator.converter.Converter uri : DL) {
+    for (io.openepcis.epc.translator.converter.Converter uri : dl) {
       if (uri.supportsDigitalLinkURI(urn)) {
         return uri.convertToDigitalLink(urn);
       }
@@ -96,7 +96,7 @@ public class Converter {
    */
   public Map<String, String> toURN(final String dlURI, final int gcpLength)
       throws ValidationException {
-    for (io.openepcis.epc.translator.converter.Converter inputuri : DL) {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : dl) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI, gcpLength);
       }
@@ -116,7 +116,7 @@ public class Converter {
    *     occurred during the conversion
    */
   public Map<String, String> toURN(final String dlURI) throws ValidationException {
-    for (io.openepcis.epc.translator.converter.Converter inputuri : DL) {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : dl) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI);
       }
@@ -136,7 +136,7 @@ public class Converter {
    *     occurred during the conversion
    */
   public String toURIForClassLevelIdentifier(final String urn) throws ValidationException {
-    for (io.openepcis.epc.translator.converter.Converter uri : CLASS_LEVEL_TRANSLATOR) {
+    for (io.openepcis.epc.translator.converter.Converter uri : classLevelTranslator) {
       if (uri.supportsDigitalLinkURI(urn)) {
         return uri.convertToDigitalLink(urn);
       }
@@ -160,7 +160,7 @@ public class Converter {
    */
   public Map<String, String> toURNForClassLevelIdentifier(final String dlURI)
       throws ValidationException {
-    for (io.openepcis.epc.translator.converter.Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : classLevelTranslator) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI);
       }
@@ -183,7 +183,7 @@ public class Converter {
    */
   public Map<String, String> toURNForClassLevelIdentifier(final String dlURI, int gcpLength)
       throws ValidationException {
-    for (io.openepcis.epc.translator.converter.Converter inputuri : CLASS_LEVEL_TRANSLATOR) {
+    for (io.openepcis.epc.translator.converter.Converter inputuri : classLevelTranslator) {
       if (inputuri.supportsURN(dlURI)) {
         return inputuri.convertToURN(dlURI, gcpLength);
       }
