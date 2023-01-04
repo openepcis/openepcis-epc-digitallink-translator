@@ -88,10 +88,14 @@ public class GIAITest {
         "urn:epc:id:giai:1234567890.12123",
         converter.toURN("https://news.google.in/8004/123456789012123", 10).get("asURN"));
     assertEquals(
-        "urn:epc:id:giai:3575958.495850!\"/%_",
+        "urn:epc:id:giai:357595.8495850!\"/%_",
         converter.toURN("https://id.gs1.org/8004/3575958495850!\"/%_").get("asURN"));
     assertEquals(
         "urn:epc:id:giai:732487.8;><=?",
         converter.toURN("https://id.gs1.org/8004/7324878;><=?").get("asURN"));
+
+    assertEquals(
+        "urn:epc:id:giai:42512183..SENSOR.TR-07-AVE-583:1",
+        converter.toURN("https://id.gs1.org/8004/42512183.SENSOR.TR-07-AVE-583:1").get("asURN"));
   }
 }

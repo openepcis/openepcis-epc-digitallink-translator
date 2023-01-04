@@ -172,7 +172,7 @@ public class GRAIConverter implements Converter {
                 dlURI.indexOf(GRAI_URI_PART) + 19);
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(grai);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, grai, GRAI_URI_PART);
 
       // Call the Validator class for the GRAI to check the DLURI syntax
       if (isClassLevel) {

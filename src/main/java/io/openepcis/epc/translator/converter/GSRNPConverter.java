@@ -125,7 +125,7 @@ public class GSRNPConverter implements Converter {
     int gcpLength = 0;
     try {
       final String gsrnp = dlURI.substring(dlURI.indexOf(GSRNP_URI_PART) + GSRNP_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsrnp);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, gsrnp, GSRNP_URI_PART);
 
       // Call the Validator class for the GSRNP to check the DLURI syntax
       GSRNP_VALIDATOR.validateURI(dlURI, gcpLength);

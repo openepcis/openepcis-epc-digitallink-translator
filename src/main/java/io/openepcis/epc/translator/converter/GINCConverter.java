@@ -121,7 +121,7 @@ public class GINCConverter implements Converter {
     int gcpLength = 0;
     try {
       final String ginc = dlURI.substring(dlURI.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(ginc);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, ginc, GINC_URI_PART);
 
       // Call the Validator class for the GINC to check the DLURI syntax
       GINC_VALIDATOR.validateURI(dlURI, gcpLength);

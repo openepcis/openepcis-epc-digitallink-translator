@@ -158,7 +158,7 @@ public class GCNConverter implements Converter {
 
     try {
       final String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgcn);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, sgcn, GCN_URI_PART);
 
       // Call the Validator class for the GCN to check the DLURI syntax
       if (isClassLevel) {

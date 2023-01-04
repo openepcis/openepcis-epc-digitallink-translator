@@ -125,7 +125,7 @@ public class GIAIConverter implements Converter {
       final String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());
 
       // Get the gcpLength from the GS1 provided list
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(giai);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, giai, GIAI_URI_PART);
 
       // Call the Validator class for the GIAI to check the DLURI syntax
       GIAI_VALIDATOR.validateURI(dlURI, gcpLength);

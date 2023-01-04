@@ -93,11 +93,11 @@ public class GSINTest {
         "urn:epc:id:gsin:1234567890.512345",
         converter.toURN("https://benelog.com/horrem/402/12345678905123456", 10).get("asURN"));
     assertEquals(
-        "urn:epc:id:gsin:843958935895.3939",
+        "urn:epc:id:gsin:8439589358.953939",
         converter.toURN("https://benelog.com/horrem/402/84395893589539394").get("asURN"));
     assertEquals(
-        "urn:epc:id:gsin:670444.5495834983",
-        converter.toURN("https://benelog.com/horrem/402/67044454958349836").get("asURN"));
+        "urn:epc:id:gsin:302644.5495834983",
+        converter.toURN("https://benelog.com/horrem/402/30264454958349836").get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:969659.8495045904",
         converter.toURN("https://https://id.gs1.org/402/96965984950459045", 6).get("asURN"));

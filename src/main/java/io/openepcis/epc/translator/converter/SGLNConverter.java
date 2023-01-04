@@ -171,7 +171,7 @@ public class SGLNConverter implements Converter {
       }
 
       // Find the GCP Length from GS1 provided list
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgln);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, sgln, SGLN_URI_PART);
 
       // Validate the URI to check if they match the SGLN syntax
       SGLN_VALIDATOR.validateURI(dlURI, gcpLength);

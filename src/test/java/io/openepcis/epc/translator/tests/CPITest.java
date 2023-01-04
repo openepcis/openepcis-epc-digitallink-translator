@@ -101,7 +101,7 @@ public class CPITest {
         "urn:epc:id:cpi:4748374./23748#94/.94304",
         converter.toURN("https://id.gs1.org/8010/4748374/23748#94//8011/94304", 7).get("asURN"));
     assertEquals(
-        "urn:epc:id:cpi:3005686.7890#1294-5A.4893",
+        "urn:epc:id:cpi:30056867.890#1294-5A.4893",
         converter.toURN("https://id.gs1.org/8010/30056867890#1294-5A/8011/4893").get("asURN"));
 
     /** Conversion of class level identifiers */
@@ -153,7 +153,7 @@ public class CPITest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/8010/8585885039434/38", 12)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:cpi:95078850394.34/38.*",
+        "urn:epc:idpat:cpi:950788503943.4/38.*",
         converter
             .toURNForClassLevelIdentifier("https://id.gs1.org/8010/9507885039434/38")
             .get("asURN"));

@@ -96,10 +96,10 @@ public class GSRNPTest {
         "urn:epc:id:gsrnp:1234567890.1234567",
         converter.toURN("https://google.com/8017/123456789012345678", 10).get("asURN"));
     assertEquals(
-        "urn:epc:id:gsrnp:643963764374.73634",
+        "urn:epc:id:gsrnp:643963.76437473634",
         converter.toURN("https://google.com/8017/643963764374736343").get("asURN"));
     assertEquals(
-        "urn:epc:id:gsrnp:645933932.41312123",
+        "urn:epc:id:gsrnp:645933932413.12123",
         converter.toURN("https://google.com/8017/645933932413121231").get("asURN"));
     assertEquals(
         "urn:epc:id:gsrnp:667602231213.12123",

@@ -174,7 +174,7 @@ public class GDTIConverter implements Converter {
                 dlURI.indexOf(GDTI_URI_PART) + GDTI_URI_PART.length() + 13);
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gdti);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, gdti, GDTI_URI_PART);
 
       // Call the Validator class for the GDTI to check the DLURI syntax
       if (isClassLevel) {

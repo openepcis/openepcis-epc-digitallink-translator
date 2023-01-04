@@ -193,7 +193,7 @@ public class SGTINConverter implements Converter {
                 dlURI.indexOf(SGTIN_SERIAL_PART));
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sgtin);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, sgtin, SGTIN_URI_PART);
 
       // Validate the URN to check if they match the SGTIN syntax
       if (isClassLevel) {

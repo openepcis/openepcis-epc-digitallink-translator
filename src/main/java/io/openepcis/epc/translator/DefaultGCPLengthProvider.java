@@ -36,6 +36,11 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
 
   private static DefaultGCPLengthProvider gcpLengthProviderInstance;
 
+  private final List<String> keyStartsWithGCP =
+      Arrays.asList(
+          "/8010/", "/255/", "/253/", "/8004/", "/401/", "/402/", "/8018/", "/8017/", "/417/",
+          "/414/");
+
   /** Constructor to load the GCPLengthFormat file from resource folder to the sorted TreeMap */
   private DefaultGCPLengthProvider() {
     try {
@@ -45,10 +50,12 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
 
       // Deserialize the JSON contents to Map using Jackson ObjectMapper
       final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+      @SuppressWarnings("unchecked")
       final Map<String, Object> gcpPrefixFormatList =
           objectMapper.readValue(gcpPrefixFileContents, Map.class);
 
       // Read the ArrayList "entry" contents with GCPLength values
+      @SuppressWarnings("unchecked")
       final List<Map<String, Object>> list =
           (List<Map<String, Object>>)
               ((Map<String, Object>) gcpPrefixFormatList.get("GCPPrefixFormatList")).get("entry");
@@ -67,18 +74,27 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
   /**
    * Method to loop over the Map to find the matching id and its associated GCP Length
    *
-   * @param gs1DigitalLinkURI The digital link WebURI for which the GCP length needed.
+   * @param gs1DigitalLinkURI The digital link WebURI for which the GCP length needed ex:
+   *     https://id.gs1.org/01/12345678901231/21/9999
+   * @param gs1DigitalLinkURIIdentifier The identifier after stripping all GS1 standard prefixes'
+   *     ex: 12345678901231
    * @return returns the GCP length if found matching value in Map else returns 7 as GCP Length
    */
-  public int getGcpLength(String gs1DigitalLinkURI) {
-    // For GTIN related identifiers consider from 2nd digit for finding gcp length
-    if (gs1DigitalLinkURI.length() > 13) {
-      gs1DigitalLinkURI = gs1DigitalLinkURI.substring(1);
+  public int getGcpLength(
+      final String gs1DigitalLinkURI,
+      String gs1DigitalLinkURIIdentifier,
+      final String gs1IdentifierPrefix) {
+
+    // Check if identifier is not matching with keyStarts-map elements
+    if (!keyStartsWithGCP.contains(gs1IdentifierPrefix)
+        && gs1DigitalLinkURIIdentifier.length() > 13) {
+      // For GTIN related identifiers consider from 2nd digit for finding gcp length
+      gs1DigitalLinkURIIdentifier = gs1DigitalLinkURIIdentifier.substring(1);
     }
 
     // Loop over the sorted values to find the matching GCP and its GCP Length
     for (final Map.Entry<String, Integer> e : sortedGcpLengthList.entrySet()) {
-      if (gs1DigitalLinkURI.startsWith(e.getKey())) {
+      if (gs1DigitalLinkURIIdentifier.startsWith(e.getKey())) {
         return e.getValue();
       }
     }

@@ -128,7 +128,7 @@ public class GSINConverter implements Converter {
     int gcpLength = 0;
     try {
       final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(gsin);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, gsin, GSIN_URI_PART);
 
       // Call the Validator class for the GSIN to check the DLURI syntax
       gsinValidator.validateURI(dlURI, gcpLength);

@@ -125,7 +125,7 @@ public class PGLNConverter implements Converter {
     int gcpLength = 0;
     try {
       final String pgln = dlURI.substring(dlURI.indexOf(PGLN_URI_PART) + PGLN_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(pgln);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, pgln, PGLN_URI_PART);
 
       // Call the Validator class for the PGLN to check the DLURI syntax
       PGLN_VALIDATOR.validateURI(dlURI, gcpLength);

@@ -126,7 +126,7 @@ public class SSCCConverter implements Converter {
     int gcpLength = 0;
     try {
       final String sscc = dlURI.substring(dlURI.indexOf(SSCC_URI_PART) + SSCC_URI_PART.length());
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(sscc);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, sscc, SSCC_URI_PART);
 
       // Validate the URN to check if they match the SGTIN syntax
       SSCC_VALIDATOR.validateURI(dlURI, gcpLength);

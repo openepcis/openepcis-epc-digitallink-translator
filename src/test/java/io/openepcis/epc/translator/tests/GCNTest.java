@@ -102,8 +102,8 @@ public class GCNTest {
         converter.toURN("https://id.gs1.org/255/43943943493924", 12).get("asURN"),
         "urn:epc:id:sgcn:439439434939..4");
     assertEquals(
-        converter.toURN("https://id.gs1.org/255/289996758845486").get("asURN"),
-        "urn:epc:id:sgcn:2899967.58845.86");
+        converter.toURN("https://id.gs1.org/255/300096758845486").get("asURN"),
+        "urn:epc:id:sgcn:300096.758845.86");
 
     /** Class level GCN identifier conversion */
 
