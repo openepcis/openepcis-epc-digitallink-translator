@@ -13,9 +13,9 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openepcis.epc.translator.converter;
+package io.openepcis.epc.translator.constants;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 
 public enum StandardVocabElements {
   BIZ_STEP("urn:epcglobal:cbv:bizstep:", "https://ns.gs1.org/cbv/Bizstep-"),

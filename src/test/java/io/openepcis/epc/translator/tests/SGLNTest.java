@@ -17,11 +17,20 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class SGLNTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
+
   @Test
   public void testSGLN() throws ValidationException {
 
@@ -56,19 +65,19 @@ public class SGLNTest {
     // Valid SGLN with serial Number
     assertEquals(
         "https://id.gs1.org/414/1234567890111/254/1111",
-        ConverterUtil.toURI("urn:epc:id:sgln:1234567890.11.1111"));
+        converter.toURI("urn:epc:id:sgln:1234567890.11.1111"));
     assertEquals(
         "https://id.gs1.org/414/4374736473640/254/\"%&'()*+,-./19:;<=>?",
-        ConverterUtil.toURI("urn:epc:id:sgln:437473647364..\"%&'()*+,-./19:;<=>?"));
+        converter.toURI("urn:epc:id:sgln:437473647364..\"%&'()*+,-./19:;<=>?"));
     assertEquals(
         "https://id.gs1.org/414/4374736473640/254/0",
-        ConverterUtil.toURI("urn:epc:id:sgln:437473647364..0"));
+        converter.toURI("urn:epc:id:sgln:437473647364..0"));
     assertEquals(
         "https://id.gs1.org/414/7857834384782/254/0394903",
-        ConverterUtil.toURI("urn:epc:id:sgln:785783.438478.0394903"));
+        converter.toURI("urn:epc:id:sgln:785783.438478.0394903"));
     assertEquals(
         "https://id.gs1.org/414/4374736473640/254/0",
-        ConverterUtil.toURI("urn:epc:id:sgln:4374736473.64.0"));
+        converter.toURI("urn:epc:id:sgln:4374736473.64.0"));
 
     // SGLN URI with invalid format
     sgln = "hps://id.gs1.org/414/1234567890123/254/1111";
@@ -99,25 +108,26 @@ public class SGLNTest {
     // Valid SGLN URI with serial number
     assertEquals(
         "urn:epc:id:sgln:123456.789012.1234",
-        ConverterUtil.toURN("https://id.gs1.org/414/1234567890123/254/1234", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/414/1234567890123/254/1234", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:123456.789012.1234",
-        ConverterUtil.toURN("https://deutscheBahn.de/train/414/1234567890123/254/1234", 6)
+        converter
+            .toURN("https://deutscheBahn.de/train/414/1234567890123/254/1234", 6)
             .get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:7857834.38478.0394903",
-        ConverterUtil.toURN("https://id.gs1.org/414/7857834384782/254/0394903").get("asURN"));
+        "urn:epc:id:sgln:93590743.8478.0394903",
+        converter.toURN("https://id.gs1.org/414/9359074384782/254/0394903").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:7857834.38478.0",
-        ConverterUtil.toURN("https://id.gs1.org/414/7857834384782").get("asURN"));
+        "urn:epc:id:sgln:93590443.8478.0",
+        converter.toURN("https://id.gs1.org/414/9359044384782").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:5893849.38493.4390493",
-        ConverterUtil.toURN("https://id.gs1.org/414/5893849384938/254/4390493").get("asURN"));
+        "urn:epc:id:sgln:93592393.8493.4390493",
+        converter.toURN("https://id.gs1.org/414/9359239384938/254/4390493").get("asURN"));
     assertEquals(
-        "urn:epc:id:sgln:589384938493..0",
-        ConverterUtil.toURN("https://id.gs1.org/414/5893849384938", 12).get("asURN"));
+        "urn:epc:id:sgln:688000938493..0",
+        converter.toURN("https://id.gs1.org/414/6880009384938", 12).get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:4374736473.64.0",
-        ConverterUtil.toURN("https://id.gs1.org/414/4374736473640", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/414/4374736473640", 10).get("asURN"));
   }
 }

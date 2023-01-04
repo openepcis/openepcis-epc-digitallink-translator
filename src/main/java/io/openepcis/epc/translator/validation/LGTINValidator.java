@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class LGTINValidator {
             "urn:epc:class:lgtin:[0-9]{6,12}\\.[0-9]{1,7}.*",
             "Invalid LGTIN, LGTIN should be of 14 digits and GCP should match 6-12 digits (Ex: urn:epc:class:lgtin:234567890.1123.9999).\nPlease check the provided URN: %s") {
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
 
             final String gcp =
@@ -80,14 +80,15 @@ public class LGTINValidator {
             "(http|https)://.*./01/[0-9]{14}/10/[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,20}",
             "Invalid LGTIN, LGTIN should consist of 14 digit LGTIN followed by Serial numbers (Ex: https://id.gs1.org/01/12345678901234/10/1111).\nPlease check the DL URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GCP Length matches
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "GCP Length should be between 6-12.%nPlease check the provided URI : %s",
+                      "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
                       gcpLength));
             }
           }

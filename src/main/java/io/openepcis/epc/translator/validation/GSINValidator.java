@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +41,9 @@ public class GSINValidator implements PatternValidator {
             "Invalid GSIN, GSIN should consist of 17 digits with GCP 6-12 digits (Ex: urn:epc:id:gsin:123456.7890123456).\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
-            String gsin =
+            final String gsin =
                 urn.substring(urn.indexOf(GSIN_URN_PART) + GSIN_URN_PART.length(), urn.indexOf("."))
                     + urn.substring(urn.indexOf(".") + 1);
 
@@ -67,7 +67,8 @@ public class GSINValidator implements PatternValidator {
             "Invalid GSIN, GSIN should consist of 17 digits (Ex: https://id.gs1.org/402/12345607890123456).\nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check the provided GCP Length is between 6 and 12 digits

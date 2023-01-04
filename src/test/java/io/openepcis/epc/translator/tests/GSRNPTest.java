@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GSRNPTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void testGSRNP() throws ValidationException {
@@ -53,16 +61,16 @@ public class GSRNPTest {
     // Valid GSRNP
     assertEquals(
         "https://id.gs1.org/8017/123456789012345675",
-        ConverterUtil.toURI("urn:epc:id:gsrnp:1234567890.1234567"));
+        converter.toURI("urn:epc:id:gsrnp:1234567890.1234567"));
     assertEquals(
         "https://id.gs1.org/8017/843984934394394932",
-        ConverterUtil.toURI("urn:epc:id:gsrnp:843984.93439439493"));
+        converter.toURI("urn:epc:id:gsrnp:843984.93439439493"));
     assertEquals(
         "https://id.gs1.org/8017/578457847548758479",
-        ConverterUtil.toURI("urn:epc:id:gsrnp:578457847548.75847"));
+        converter.toURI("urn:epc:id:gsrnp:578457847548.75847"));
     assertEquals(
         "https://id.gs1.org/8017/345425435235243521",
-        ConverterUtil.toURI("urn:epc:id:gsrnp:3454254352.3524352"));
+        converter.toURI("urn:epc:id:gsrnp:3454254352.3524352"));
 
     // GSRNP URI with invalid character
     gsrnp = "https://id.gs1.org/8017/12345678901234567A";
@@ -83,18 +91,18 @@ public class GSRNPTest {
     // Valid GSRNP
     assertEquals(
         "urn:epc:id:gsrnp:1234567890.1234567",
-        ConverterUtil.toURN("https://id.gs1.org/8017/123456789012345678", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/8017/123456789012345678", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:gsrnp:1234567890.1234567",
-        ConverterUtil.toURN("https://google.com/8017/123456789012345678", 10).get("asURN"));
+        converter.toURN("https://google.com/8017/123456789012345678", 10).get("asURN"));
     assertEquals(
-        "urn:epc:id:gsrnp:6434637.6437473634",
-        ConverterUtil.toURN("https://google.com/8017/643463764374736343").get("asURN"));
+        "urn:epc:id:gsrnp:643963.76437473634",
+        converter.toURN("https://google.com/8017/643963764374736343").get("asURN"));
     assertEquals(
-        "urn:epc:id:gsrnp:231231.23121312123",
-        ConverterUtil.toURN("https://google.com/8017/231231231213121231").get("asURN"));
+        "urn:epc:id:gsrnp:645933932413.12123",
+        converter.toURN("https://google.com/8017/645933932413121231").get("asURN"));
     assertEquals(
-        "urn:epc:id:gsrnp:231231231213.12123",
-        ConverterUtil.toURN("https://google.com/8017/231231231213121237", 12).get("asURN"));
+        "urn:epc:id:gsrnp:667602231213.12123",
+        converter.toURN("https://google.com/8017/667602231213121237", 12).get("asURN"));
   }
 }

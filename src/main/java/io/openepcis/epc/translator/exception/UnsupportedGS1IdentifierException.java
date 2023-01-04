@@ -13,32 +13,30 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openepcis.epc.translator;
+package io.openepcis.epc.translator.exception;
 
 import java.io.Serial;
 
-public class ValidationException extends RuntimeException {
+public class UnsupportedGS1IdentifierException extends ValidationException {
 
   @Serial private static final long serialVersionUID = 1L;
 
-  public ValidationException() {
-    super();
-  }
+  public UnsupportedGS1IdentifierException() {}
 
-  public ValidationException(
+  public UnsupportedGS1IdentifierException(
       String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 
-  public ValidationException(String message, Throwable cause) {
+  public UnsupportedGS1IdentifierException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  public ValidationException(String message) {
+  public UnsupportedGS1IdentifierException(String message) {
     super(message);
   }
 
-  public ValidationException(Throwable cause) {
+  public UnsupportedGS1IdentifierException(Throwable cause) {
     super(cause);
   }
 }

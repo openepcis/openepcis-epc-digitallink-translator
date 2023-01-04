@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +44,7 @@ public class ITIPValidator implements PatternValidator {
             "Invalid ITIP, ITIP should consist of 18 digits  (Ex: urn:epc:id:itip:23456789.10123.56.78.0000).\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             String itip;
 
@@ -56,16 +56,14 @@ public class ITIPValidator implements PatternValidator {
             } else {
               throw new ValidationException(
                   String.format(
-                      "Invalid ITIP, ITIP should consist of Serial Numbers (Ex: urn:epc:id:itip:23456789.10123.56.78.0000).\nPlease check the provided URN:"
-                          + " %s",
+                      "Invalid ITIP, ITIP should consist of Serial Numbers (Ex: urn:epc:id:itip:23456789.10123.56.78.0000).%nPlease check the provided URN: %s",
                       urn));
             }
 
             if (itip.length() != 20) {
               throw new ValidationException(
                   String.format(
-                      "Invalid ITIP, ITIP should consist of 18 digits (Ex: urn:epc:id:itip:23456789.10123.56.78.0000).\nPlease check "
-                          + "the provided URN: %s",
+                      "Invalid ITIP, ITIP should consist of 18 digits (Ex: urn:epc:id:itip:23456789.10123.56.78.0000).%nPlease check the provided URN: %s",
                       urn));
             }
           }
@@ -90,7 +88,7 @@ public class ITIPValidator implements PatternValidator {
             "Invalid ITIP, Class level ITIP should consist of 18 digits  (Ex: urn:epc:idpat:itip:23456789.10123.56.78.*).\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             final String itip = urn.substring(urn.lastIndexOf(":") + 1, urn.lastIndexOf("."));
 
@@ -117,7 +115,8 @@ public class ITIPValidator implements PatternValidator {
             "(http|https)://.*./8006/[0-9]{18}/21/[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,20}",
             "Invalid ITIP, ITIP must consist of Serial numbers 1 to 20 characters (Ex: https://id.gs1.org/8006/123456789012356756/21/100),\nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check the provided GCP Length is between 6 and 12 digits
@@ -140,7 +139,8 @@ public class ITIPValidator implements PatternValidator {
             "(http|https)://.*./8006/[0-9]{18}",
             "Invalid ITIP, Class level ITIP must consist of 18 digits (Ex: https://id.gs1.org/8006/123456789012356756),\nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check the provided GCP Length is between 6 and 12 digits

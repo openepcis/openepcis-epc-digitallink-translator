@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ITIPTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void ITIP() throws ValidationException {
@@ -59,16 +67,16 @@ public class ITIPTest {
     // Valid ITIP
     assertEquals(
         "https://id.gs1.org/8006/123456789012315678/21/1111",
-        ConverterUtil.toURI("urn:epc:id:itip:234567.1890123.56.78.1111"));
+        converter.toURI("urn:epc:id:itip:234567.1890123.56.78.1111"));
     assertEquals(
         "https://id.gs1.org/8006/646734858938493844/21/!\"%&'()*+,-./1:;<=>=",
-        ConverterUtil.toURI("urn:epc:id:itip:467348.6589384.38.44.!\"%&'()*+,-./1:;<=>="));
+        converter.toURI("urn:epc:id:itip:467348.6589384.38.44.!\"%&'()*+,-./1:;<=>="));
     assertEquals(
         "https://id.gs1.org/8006/758348347384713474/21/5785",
-        ConverterUtil.toURI("urn:epc:id:itip:583483473847.7.34.74.5785"));
+        converter.toURI("urn:epc:id:itip:583483473847.7.34.74.5785"));
     assertEquals(
         "https://id.gs1.org/8006/635645365356453564/21/85945894",
-        ConverterUtil.toURI("urn:epc:id:itip:3564536535.664.35.64.85945894"));
+        converter.toURI("urn:epc:id:itip:3564536535.664.35.64.85945894"));
 
     // ITIP with less than 18 digit URI
     itip = "https://id.gs1.org/8006/12345678901235678/21/1111";
@@ -88,23 +96,23 @@ public class ITIPTest {
 
     // Valid ITIP
     assertEquals(
-        "urn:epc:id:itip:2345678901.123.67.87.1111", ConverterUtil.toURN(itip, 10).get("asURN"));
+        "urn:epc:id:itip:2345678901.123.67.87.1111", converter.toURN(itip, 10).get("asURN"));
     assertEquals(
         "urn:epc:id:itip:2345678901.123.67.87.1111",
-        ConverterUtil.toURN("https://riseagainst.com/songs/8006/123456789012356787/21/1111", 10)
+        converter
+            .toURN("https://riseagainst.com/songs/8006/123456789012356787/21/1111", 10)
             .get("asURN"));
     assertEquals(
         "urn:epc:id:itip:467348.6589384.38.44.!\"%&'()*+,-./1:;<=>=",
-        ConverterUtil.toURN(
-                "https://id.gs1.org/8006/646734858938493844/21/!\"%&'()*+,-./1:;<=>=", 6)
+        converter
+            .toURN("https://id.gs1.org/8006/646734858938493844/21/!\"%&'()*+,-./1:;<=>=", 6)
             .get("asURN"));
     assertEquals(
-        "urn:epc:id:itip:356453.6653564.35.64.85945894",
-        ConverterUtil.toURN("https://id.gs1.org/8006/635645365356453564/21/85945894").get("asURN"));
+        "urn:epc:id:itip:8706185.356565.56.65.85945894",
+        converter.toURN("https://id.gs1.org/8006/387061855656575665/21/85945894").get("asURN"));
     assertEquals(
-        "urn:epc:id:itip:8394802.932323.83.93.547564756",
-        ConverterUtil.toURN("https://id.gs1.org/8006/983948023232328393/21/547564756")
-            .get("asURN"));
+        "urn:epc:id:itip:9044841.552323.83.93.547564756",
+        converter.toURN("https://id.gs1.org/8006/590448415232328393/21/547564756").get("asURN"));
 
     /** Class level ITIP identifiers conversion */
 
@@ -144,23 +152,28 @@ public class ITIPTest {
     // Valid Class level WebURI
     assertEquals(
         "urn:epc:idpat:itip:2345678901.123.56.78.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/8006/123456789012345678", 10)
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/123456789012345678", 10)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:itip:8394394.883948.94.83.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/8006/883943948394839483")
+        "urn:epc:idpat:itip:9589231.440988.65.44.*",
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/495892314098876544")
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:itip:439483.8934948.34.34.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/8006/843948393494893434", 6)
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/843948393494893434", 6)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:itip:943549030943.3.04.93.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/8006/394354903094390493", 12)
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/394354903094390493", 12)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:itip:9435490.330943.04.93.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/8006/394354903094390493")
+        "urn:epc:idpat:itip:9046452.563344.45.45.*",
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8006/590464526334474545")
             .get("asURN"));
 
     // URN to Web URI conversion
@@ -206,15 +219,15 @@ public class ITIPTest {
     // Valid class level ITIP URN
     assertEquals(
         "https://id.gs1.org/8006/394354903094320493",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:itip:943549030.3943.04.93.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:itip:943549030.3943.04.93.*"));
     assertEquals(
         "https://id.gs1.org/8006/748347837483483489",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:itip:483478374834.7.34.89.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:itip:483478374834.7.34.89.*"));
     assertEquals(
         "https://id.gs1.org/8006/748347834783449293",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:itip:483478.7347834.92.93.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:itip:483478.7347834.92.93.*"));
     assertEquals(
         "https://id.gs1.org/8006/349349439943004039",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:itip:493494.3399430.40.39.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:itip:493494.3399430.40.39.*"));
   }
 }

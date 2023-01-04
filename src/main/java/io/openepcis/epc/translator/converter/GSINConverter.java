@@ -15,8 +15,9 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
+import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GSINValidator;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,72 +30,119 @@ public class GSINConverter implements Converter {
   private final GSINValidator gsinValidator = new GSINValidator();
 
   // Check if the provided URN is of GSIN type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(GSIN_URN_PART);
   }
 
   // Check if the provided Digital Link URI is of GSIN Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     return dlURI.contains(GSIN_URI_PART);
   }
 
   // Convert the provided URN to respective Digital Link URI of GSIN type
-  public String convertToDigitalLink(String urn) throws ValidationException {
-    // Call the Validator class for the GSIN to check the URN syntax
-    gsinValidator.validateURN(urn);
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Call the Validator class for the GSIN to check the URN syntax
+      gsinValidator.validateURN(urn);
 
-    // If the URN passed the validation then convert the URN to URI
-    String gsin =
-        urn.substring(urn.indexOf(GSIN_URN_PART) + GSIN_URN_PART.length(), urn.indexOf("."))
-            + urn.substring(urn.indexOf(".") + 1);
-    gsin = gsin.substring(0, 16) + UPCEANLogicImpl.calcChecksum(gsin.substring(0, 16));
-    return Constants.IDENTIFIERDOMAIN + GSIN_URI_PART + gsin;
+      // If the URN passed the validation then convert the URN to URI
+      String gsin =
+          urn.substring(urn.indexOf(GSIN_URN_PART) + GSIN_URN_PART.length(), urn.indexOf("."))
+              + urn.substring(urn.indexOf(".") + 1);
+      gsin = gsin.substring(0, 16) + UPCEANLogicImpl.calcChecksum(gsin.substring(0, 16));
+      return Constants.GS1_IDENTIFIER_DOMAIN + GSIN_URI_PART + gsin;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GSIN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
   // Convert the provided Digital Link URI to respective URN of GSIN Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
-    // Call the Validator class for the GSIN to check the DLURI syntax
-    gsinValidator.validateURI(dlURI, gcpLength);
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      // Call the Validator class for the GSIN to check the DLURI syntax
+      gsinValidator.validateURI(dlURI, gcpLength);
 
-    // If the URI passed the validation then convert the URI to URN
-    final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
-    return getEPCMap(dlURI, gcpLength, gsin);
+      // If the URI passed the validation then convert the URI to URN
+      final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
+      return getEPCMap(dlURI, gcpLength, gsin);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GSIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
-  private Map<String, String> getEPCMap(String dlURI, int gcpLength, String gsin) {
-    Map<String, String> buildURN = new HashMap<>();
-    final String asURN =
-        "urn:epc:id:gsin:"
-            + gsin.substring(0, gcpLength)
-            + "."
-            + gsin.substring(gcpLength, gsin.length() - 1);
+  private Map<String, String> getEPCMap(
+      final String dlURI, final int gcpLength, final String gsin) {
 
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(GSIN_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(GSIN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
+    try {
+      asURN =
+          "urn:epc:id:gsin:"
+              + gsin.substring(0, gcpLength)
+              + "."
+              + gsin.substring(gcpLength, gsin.length() - 1);
+
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
+      } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(GSIN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
+      }
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
+      buildURN.put("gsin", gsin);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the GSIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("gsin", gsin);
+
+    // After generating the URN validate it again and ensure GCP validates
+    gsinValidator.validateURN(asURN);
+
     return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GSIN Type
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(gsin);
+  public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
+    try {
+      final String gsin = dlURI.substring(dlURI.indexOf(GSIN_URI_PART) + GSIN_URI_PART.length());
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, gsin, GSIN_URI_PART);
 
-    // Call the Validator class for the GSIN to check the DLURI syntax
-    gsinValidator.validateURI(dlURI, gcpLength);
+      // Call the Validator class for the GSIN to check the DLURI syntax
+      gsinValidator.validateURI(dlURI, gcpLength);
 
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, gsin);
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, gsin);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GSIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
   }
 }

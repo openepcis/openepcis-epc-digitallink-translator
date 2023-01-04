@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class SSCCTest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void testSSCC() throws ValidationException {
@@ -57,16 +65,16 @@ public class SSCCTest {
     // Valid SSCC
     assertEquals(
         "https://id.gs1.org/00/012345666638689852",
-        ConverterUtil.toURI("urn:epc:id:sscc:123456.06663868985"));
+        converter.toURI("urn:epc:id:sscc:123456.06663868985"));
     assertEquals(
         "https://id.gs1.org/00/474384738473874832",
-        ConverterUtil.toURI("urn:epc:id:sscc:743847384738.47483"));
+        converter.toURI("urn:epc:id:sscc:743847384738.47483"));
     assertEquals(
         "https://id.gs1.org/00/758758475845784857",
-        ConverterUtil.toURI("urn:epc:id:sscc:587584.77584578485"));
+        converter.toURI("urn:epc:id:sscc:587584.77584578485"));
     assertEquals(
         "https://id.gs1.org/00/994039403490349033",
-        ConverterUtil.toURI("urn:epc:id:sscc:9403940349.9034903"));
+        converter.toURI("urn:epc:id:sscc:9403940349.9034903"));
 
     // SSCC URI with more than 18 digits
     sscc = "https://id.gs1.org/00/0123456789012345678";
@@ -91,21 +99,21 @@ public class SSCCTest {
     // Valid SSCC URI
     assertEquals(
         "urn:epc:id:sscc:123456.07890123456",
-        ConverterUtil.toURN("https://id.gs1.org/00/012345678901234567", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/00/012345678901234567", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sscc:123456.07890123456",
-        ConverterUtil.toURN("https://marriot.in/blr/123/00/012345678901234567", 6).get("asURN"));
+        converter.toURN("https://marriot.in/blr/123/00/012345678901234567", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sscc:9403940349.9034903",
-        ConverterUtil.toURN("https://marriot.in/blr/123/00/994039403490349033", 10).get("asURN"));
+        converter.toURN("https://marriot.in/blr/123/00/994039403490349033", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:sscc:587584.77584578485",
-        ConverterUtil.toURN("https://marriot.in/blr/123/00/758758475845784857", 6).get("asURN"));
+        converter.toURN("https://marriot.in/blr/123/00/758758475845784857", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:sscc:5875847.7584578485",
-        ConverterUtil.toURN("https://marriot.in/blr/123/00/758758475845784857").get("asURN"));
+        "urn:epc:id:sscc:3665847.9584578485",
+        converter.toURN("https://marriot.in/blr/123/00/936658475845784857").get("asURN"));
     assertEquals(
-        "urn:epc:id:sscc:73467346.667373473",
-        ConverterUtil.toURN("https://marriot.in/blr/123/00/673467346673734737").get("asURN"));
+        "urn:epc:id:sscc:93594046.867373473",
+        converter.toURN("https://marriot.in/blr/123/00/893594046673734737").get("asURN"));
   }
 }

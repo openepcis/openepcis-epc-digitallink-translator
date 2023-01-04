@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class GDTIValidator implements PatternValidator {
             "Invalid GDTI, GDTI should be of 13 digits (Ex: urn:epc:id:gdti:123456.789012.ABC123).\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             String gdti;
             if (urn.indexOf(".", urn.indexOf(".") + 1) == -1) {
@@ -90,7 +90,7 @@ public class GDTIValidator implements PatternValidator {
             "Invalid GDTI, Class level GDTI should be of 13 digits (Ex: urn:epc:idpat:gdti:123456.789012.*).\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             String gdti;
             if (urn.indexOf(".", urn.indexOf(".") + 1) == -1) {
@@ -103,8 +103,7 @@ public class GDTIValidator implements PatternValidator {
             if (gdti.length() != 13) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GDTI, Class level GDTI should be of 13 digits (Ex: urn:epc:idpat:gdti:123456.789012.*).\nPlease check "
-                          + "the provided URN: %s",
+                      "Invalid GDTI, Class level GDTI should be of 13 digits (Ex: urn:epc:idpat:gdti:123456.789012.*).%nPlease check the provided URN: %s",
                       urn));
             }
           }
@@ -126,7 +125,8 @@ public class GDTIValidator implements PatternValidator {
                 + "https://id.gs1.org/253/1234567890128ABC123),\nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
 
             super.validate(uri, gcpLength);
 
@@ -158,7 +158,8 @@ public class GDTIValidator implements PatternValidator {
             "Invalid GDTI, Class level GDTI must be 13 digits (Ex: https://id.gs1.org/253/9524321400017),\nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
 
             super.validate(uri, gcpLength);
 
@@ -190,7 +191,8 @@ public class GDTIValidator implements PatternValidator {
             "Invalid GDTI, GDTI must be 13 digits (Ex: https://id.gs1.org/253/9524321400017),\nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
 
             super.validate(uri, gcpLength);
 

@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,12 +38,11 @@ public class GINCValidator implements PatternValidator {
             "Invalid GINC, GINC should consist of GCP with 6-12 digits (Ex: urn:epc:id:ginc:1234567890.ABCDEF123456789),\nPlease check the provided URN: %s"));
     URN_MATCHERS.add(
         new Matcher(
-            "urn:epc:id:ginc:[0-9]{6,12}\\.[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,24}",
-            "Invalid GINC, GINC should be between 7 and 30 characters with GCP 6-12 digits (Ex: urn:epc:id:ginc:1234567890.ABCDEF123456789),\nPlease check the provided URN: "
-                + "%s") {
+            "urn:epc:id:ginc:[0-9]{6,12}\\.[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{0,24}",
+            "Invalid GINC, GINC should be between 7 and 30 characters with GCP 6-12 digits (Ex: urn:epc:id:ginc:1234567890.ABCDEF123456789),\nPlease check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
 
             // GINC Length cannot be more than 30 characters and less than 7 characters
@@ -52,8 +51,7 @@ public class GINCValidator implements PatternValidator {
             if (!(ginc.length() <= 31 && ginc.length() >= 7)) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GINC, GINC should be between 7 and 30 characters (Ex: urn:epc:id:ginc:1234567890.ABCDEF123456789),"
-                          + "\nPlease check the provided URN: %s",
+                      "Invalid GINC, GINC should be between 7 and 30 characters (Ex: urn:epc:id:ginc:1234567890.ABCDEF123456789),%nPlease check the provided URN: %s",
                       urn));
             }
           }
@@ -70,7 +68,8 @@ public class GINCValidator implements PatternValidator {
             "Invalid GINC, GINC should be between 7 and 30 characters with GCP 6-12 digits (Ex: https://id.gs1.org/401/123456789012100),\nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check the provided GCP Length is between 6 and 12 digits
@@ -82,7 +81,7 @@ public class GINCValidator implements PatternValidator {
             }
 
             // Check the GINC Length is more than GCP Length
-            String ginc = uri.substring(uri.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
+            final String ginc = uri.substring(uri.indexOf(GINC_URI_PART) + GINC_URI_PART.length());
             if (ginc.length() < gcpLength) {
               throw new ValidationException(
                   String.format(

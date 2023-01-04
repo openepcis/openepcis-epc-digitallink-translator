@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class PGLNValidator implements PatternValidator {
             "Invalid PGLN,PGLN should consist of GCP with 6-12 digits (Ex: urn:epc:id:pgln:123456.789012).\n Please check the provided URN: %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
             String pgln = urn.substring(urn.lastIndexOf(":") + 1);
 
@@ -59,14 +59,15 @@ public class PGLNValidator implements PatternValidator {
             "(http|https):?://.*/417/[0-9]{13}",
             "Invalid PGLN, PGLN should consist of 13 digit PGLN (Ex: https://id.gs1.org/417/1234567890128),\nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GCP Length matches
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "GCP Length should be between 6-12.%nPlease check the provided URI : %s",
+                      "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
                       gcpLength));
             }
           }

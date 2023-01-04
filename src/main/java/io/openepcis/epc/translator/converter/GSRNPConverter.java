@@ -15,8 +15,9 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
+import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GSRNPValidator;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,71 +29,117 @@ public class GSRNPConverter implements Converter {
   private static final GSRNPValidator GSRNP_VALIDATOR = new GSRNPValidator();
 
   // Check if the provided URN is of GSRNP type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(":gsrnp:");
   }
 
   // Check if the provided Digital Link URI is of GSRNP Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     return dlURI.contains(GSRNP_URI_PART);
   }
 
   // Convert the provided URN to respective Digital Link URI of GSRNP type
-  public String convertToDigitalLink(String urn) throws ValidationException {
-    // Call the Validator class for the GSRNP to check the URN syntax
-    GSRNP_VALIDATOR.validateURN(urn);
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Call the Validator class for the GSRNP to check the URN syntax
+      GSRNP_VALIDATOR.validateURN(urn);
 
-    // If the URN passed the validation then convert the URN to URI
-    final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
-    String gsrnp = gcp + urn.substring(urn.indexOf('.') + 1);
-    gsrnp = gsrnp.substring(0, 17) + UPCEANLogicImpl.calcChecksum(gsrnp.substring(0, 17));
-    return Constants.IDENTIFIERDOMAIN + GSRNP_URI_PART + gsrnp;
+      // If the URN passed the validation then convert the URN to URI
+      final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
+      String gsrnp = gcp + urn.substring(urn.indexOf('.') + 1);
+      gsrnp = gsrnp.substring(0, 17) + UPCEANLogicImpl.calcChecksum(gsrnp.substring(0, 17));
+      return Constants.GS1_IDENTIFIER_DOMAIN + GSRNP_URI_PART + gsrnp;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GSRNP identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
   // Convert the provided Digital Link URI to respective URN of GSRNP Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
-    // Call the Validator class for the GSRNP to check the DLURI syntax
-    GSRNP_VALIDATOR.validateURI(dlURI, gcpLength);
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      // Call the Validator class for the GSRNP to check the DLURI syntax
+      GSRNP_VALIDATOR.validateURI(dlURI, gcpLength);
 
-    // If the URI passed the validation then convert the URI to URN
-    final String gsrnp = dlURI.substring(dlURI.indexOf(GSRNP_URI_PART) + GSRNP_URI_PART.length());
-    return getEPCMap(dlURI, gcpLength, gsrnp);
+      // If the URI passed the validation then convert the URI to URN
+      final String gsrnp = dlURI.substring(dlURI.indexOf(GSRNP_URI_PART) + GSRNP_URI_PART.length());
+      return getEPCMap(dlURI, gcpLength, gsrnp);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GSRNP identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
-  private Map<String, String> getEPCMap(String dlURI, int gcpLength, String gsrnp) {
-    Map<String, String> buildURN = new HashMap<>();
-    final String asURN =
-        "urn:epc:id:gsrnp:"
-            + gsrnp.substring(0, gcpLength)
-            + "."
-            + gsrnp.substring(gcpLength, gsrnp.length() - 1);
+  private Map<String, String> getEPCMap(
+      final String dlURI, final int gcpLength, final String gsrnp) {
+    final Map<String, String> buildURN = new HashMap<>();
+    String asURN;
+    try {
+      asURN =
+          "urn:epc:id:gsrnp:"
+              + gsrnp.substring(0, gcpLength)
+              + "."
+              + gsrnp.substring(gcpLength, gsrnp.length() - 1);
 
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(GSRNP_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(GSRNP_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
+      } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(GSRNP_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
+      }
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
+      buildURN.put("gsrnp", gsrnp);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the GSRNP identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("gsrnp", gsrnp);
+
+    // After generating the URN validate it again and ensure GCP validates
+    GSRNP_VALIDATOR.validateURN(asURN);
+
     return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GSRNP Type
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    final String gsrnp = dlURI.substring(dlURI.indexOf(GSRNP_URI_PART) + GSRNP_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(gsrnp);
+  public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
+    try {
+      final String gsrnp = dlURI.substring(dlURI.indexOf(GSRNP_URI_PART) + GSRNP_URI_PART.length());
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, gsrnp, GSRNP_URI_PART);
 
-    // Call the Validator class for the GSRNP to check the DLURI syntax
-    GSRNP_VALIDATOR.validateURI(dlURI, gcpLength);
+      // Call the Validator class for the GSRNP to check the DLURI syntax
+      GSRNP_VALIDATOR.validateURI(dlURI, gcpLength);
 
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, gsrnp);
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, gsrnp);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GSRNP identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
   }
 }

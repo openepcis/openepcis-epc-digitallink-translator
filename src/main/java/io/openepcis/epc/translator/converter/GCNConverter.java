@@ -15,8 +15,9 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.GCPLengthProvider;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.DefaultGCPLengthProvider;
+import io.openepcis.epc.translator.constants.Constants;
+import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GCNValidator;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,101 +31,151 @@ public class GCNConverter implements Converter {
 
   public GCNConverter() {}
 
-  public GCNConverter(boolean isClassLevel) {
+  public GCNConverter(final boolean isClassLevel) {
     this.isClassLevel = isClassLevel;
   }
 
   // Check if the provided URN is of GCN type
-  public boolean supportsDigitalLinkURI(String urn) {
+  public boolean supportsDigitalLinkURI(final String urn) {
     return urn.contains(":sgcn:");
   }
 
   // Check if the provided Digital Link URI is of GCN Type
-  public boolean supportsURN(String dlURI) {
+  public boolean supportsURN(final String dlURI) {
     return dlURI.contains(GCN_URI_PART);
   }
 
   // Convert the provided URN to respective Digital Link URI of GCN type
-  public String convertToDigitalLink(String urn) throws ValidationException {
+  public String convertToDigitalLink(final String urn) throws ValidationException {
+    try {
+      // Call the Validator class for the GCN to check the URN syntax
+      if (isClassLevel) {
+        GCN_VALIDATOR.validateClassLevelURN(urn);
+      } else {
+        GCN_VALIDATOR.validateURN(urn);
+      }
 
-    // Call the Validator class for the GCN to check the URN syntax
-    if (isClassLevel) {
-      GCN_VALIDATOR.validateClassLevelURN(urn);
-    } else {
-      GCN_VALIDATOR.validateURN(urn);
+      // If the URN passed the validation then convert the URN to URI
+      final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
+      String sgcn =
+          gcp + urn.substring(urn.indexOf('.') + 1, urn.indexOf(".", urn.indexOf(".") + 1));
+      sgcn = sgcn.substring(0, 12) + UPCEANLogicImpl.calcChecksum(sgcn.substring(0, 12));
+
+      if (!isClassLevel) {
+        sgcn = sgcn + urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
+      }
+      return Constants.GS1_IDENTIFIER_DOMAIN + GCN_URI_PART + sgcn;
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GCN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
+              + urn
+              + "\n"
+              + exception.getMessage());
     }
-
-    // If the URN passed the validation then convert the URN to URI
-    final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
-    String sgcn = gcp + urn.substring(urn.indexOf('.') + 1, urn.indexOf(".", urn.indexOf(".") + 1));
-    sgcn = sgcn.substring(0, 12) + UPCEANLogicImpl.calcChecksum(sgcn.substring(0, 12));
-
-    if (!isClassLevel) {
-      sgcn = sgcn + urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
-    }
-    return Constants.IDENTIFIERDOMAIN + GCN_URI_PART + sgcn;
   }
 
   // Convert the provided Digital Link URI to respective URN of GCN Type
-  public Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException {
-    // Call the Validator class for the GCN to check the DLURI syntax
-    if (isClassLevel) {
-      GCN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      GCN_VALIDATOR.validateURI(dlURI, gcpLength);
-    }
+  public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
+      throws ValidationException {
+    try {
+      // Call the Validator class for the GCN to check the DLURI syntax
+      if (isClassLevel) {
+        GCN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        GCN_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
 
-    // If the URI passed the validation then convert the URI to URN
-    String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
-    return getEPCMap(dlURI, gcpLength, sgcn);
+      // If the URI passed the validation then convert the URI to URN
+      String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
+      return getEPCMap(dlURI, gcpLength, sgcn);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GCN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
   }
 
   private Map<String, String> getEPCMap(String dlURI, int gcpLength, String sgcn) {
-    Map<String, String> buildURN = new HashMap<>();
+    final Map<String, String> buildURN = new HashMap<>();
     String asURN;
-    String tempSgcn = sgcn.substring(0, 13);
-    tempSgcn =
-        tempSgcn.substring(0, gcpLength)
-            + "."
-            + tempSgcn.substring(gcpLength, tempSgcn.length() - 1);
 
+    try {
+      String tempSgcn = sgcn.substring(0, 13);
+      tempSgcn =
+          tempSgcn.substring(0, gcpLength)
+              + "."
+              + tempSgcn.substring(gcpLength, tempSgcn.length() - 1);
+
+      if (isClassLevel) {
+        asURN = "urn:epc:idpat:sgcn:" + tempSgcn + ".*";
+      } else {
+        final String serial = sgcn.substring(13);
+        asURN = "urn:epc:id:sgcn:" + tempSgcn + "." + serial;
+        buildURN.put(Constants.SERIAL, serial);
+      }
+
+      // If dlURI contains GS1 domain then captured and canonical are same
+      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(Constants.CANONICAL_DL, dlURI);
+      } else {
+        // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
+        final String canonicalDL =
+            dlURI.replace(
+                dlURI.substring(0, dlURI.indexOf(GCN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
+      }
+
+      buildURN.put(Constants.AS_CAPTURED, dlURI);
+      buildURN.put(Constants.AS_URN, asURN);
+      buildURN.put("sgcn", sgcn);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "The conversion of the GCN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
+    }
+
+    // After generating the URN validate it again and ensure GCP validates
     if (isClassLevel) {
-      asURN = "urn:epc:idpat:sgcn:" + tempSgcn + ".*";
+      GCN_VALIDATOR.validateClassLevelURN(asURN);
     } else {
-      final String serial = sgcn.substring(13);
-      asURN = "urn:epc:id:sgcn:" + tempSgcn + "." + serial;
-      buildURN.put(Constants.SERIAL, serial);
+      GCN_VALIDATOR.validateURN(asURN);
     }
 
-    if (dlURI.contains(Constants.IDENTIFIERDOMAIN)) {
-      final String asCaptured =
-          dlURI.replace(dlURI.substring(0, dlURI.indexOf(GCN_URI_PART)), Constants.DLDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, asCaptured);
-      buildURN.put(Constants.CANONICALDL, dlURI);
-    } else {
-      final String canonicalDL =
-          dlURI.replace(
-              dlURI.substring(0, dlURI.indexOf(GCN_URI_PART)), Constants.IDENTIFIERDOMAIN);
-      buildURN.put(Constants.ASCAPTURED, dlURI);
-      buildURN.put(Constants.CANONICALDL, canonicalDL);
-    }
-    buildURN.put(Constants.ASURN, asURN);
-    buildURN.put("sgcn", sgcn);
     return buildURN;
   }
 
   // Convert the provided Digital Link URI to respective URN of GCN Type
-  public Map<String, String> convertToURN(String dlURI) throws ValidationException {
-    String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
-    int gcpLength = GCPLengthProvider.getInstance().getGcpLength(sgcn);
+  public Map<String, String> convertToURN(final String dlURI) throws ValidationException {
+    int gcpLength = 0;
 
-    // Call the Validator class for the GCN to check the DLURI syntax
-    if (isClassLevel) {
-      GCN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
-    } else {
-      GCN_VALIDATOR.validateURI(dlURI, gcpLength);
+    try {
+      final String sgcn = dlURI.substring(dlURI.indexOf(GCN_URI_PART) + GCN_URI_PART.length());
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, sgcn, GCN_URI_PART);
+
+      // Call the Validator class for the GCN to check the DLURI syntax
+      if (isClassLevel) {
+        GCN_VALIDATOR.validateClassLevelURI(dlURI, gcpLength);
+      } else {
+        GCN_VALIDATOR.validateURI(dlURI, gcpLength);
+      }
+      // If the URI passed the validation then convert the URI to URN
+      return getEPCMap(dlURI, gcpLength, sgcn);
+    } catch (Exception exception) {
+      throw new ValidationException(
+          "Exception occurred during the conversion of GCN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
+              + dlURI
+              + Constants.GCP_LENGTH
+              + gcpLength
+              + "\n"
+              + exception.getMessage());
     }
-    // If the URI passed the validation then convert the URI to URN
-    return getEPCMap(dlURI, gcpLength, sgcn);
   }
 }

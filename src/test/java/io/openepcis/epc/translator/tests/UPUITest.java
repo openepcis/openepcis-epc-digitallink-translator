@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class UPUITest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void UPUI() throws ValidationException {
@@ -45,16 +53,16 @@ public class UPUITest {
     // Valid UPUI
     assertEquals(
         "https://id.gs1.org/01/12345678901231/235/1111ANC",
-        ConverterUtil.toURI("urn:epc:id:upui:234567.1890123.1111ANC"));
+        converter.toURI("urn:epc:id:upui:234567.1890123.1111ANC"));
     assertEquals(
         "https://id.gs1.org/01/78574584574857/235/!\"%&'()*+,-./",
-        ConverterUtil.toURI("urn:epc:id:upui:857458457485.7.!\"%&'()*+,-./"));
+        converter.toURI("urn:epc:id:upui:857458457485.7.!\"%&'()*+,-./"));
     assertEquals(
         "https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az",
-        ConverterUtil.toURI("urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az"));
+        converter.toURI("urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az"));
     assertEquals(
         "https://id.gs1.org/01/78578348384737/235/8398439",
-        ConverterUtil.toURI("urn:epc:id:upui:857834.7838473.8398439"));
+        converter.toURI("urn:epc:id:upui:857834.7838473.8398439"));
 
     // UPUI URI with less than 14 digits
     upui = "https://id.gs1.org/01/1234567890123/235/1111ANC";
@@ -75,24 +83,25 @@ public class UPUITest {
     // Valid UPUI
     assertEquals(
         "urn:epc:id:upui:234567.1890123.1111ANC",
-        ConverterUtil.toURN("https://id.gs1.org/01/12345678901231/235/1111ANC", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/01/12345678901231/235/1111ANC", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:upui:234567.1890123.1111ANC",
-        ConverterUtil.toURN("https://maps.google.com.in.de.00/12/01/12345678901231/235/1111ANC", 6)
+        converter
+            .toURN("https://maps.google.com.in.de.00/12/01/12345678901231/235/1111ANC", 6)
             .get("asURN"));
     assertEquals(
         "urn:epc:id:upui:857458457485.7.!\"%&'()*+,-./",
-        ConverterUtil.toURN("https://id.gs1.org/01/78574584574857/235/!\"%&'()*+,-./", 12)
+        converter
+            .toURN("https://id.gs1.org/01/78574584574857/235/!\"%&'()*+,-./", 12)
             .get("asURN"));
     assertEquals(
         "urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az",
-        ConverterUtil.toURN("https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az", 6)
-            .get("asURN"));
+        converter.toURN("https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az", 6).get("asURN"));
     assertEquals(
-        "urn:epc:id:upui:857834838473.7.8398439",
-        ConverterUtil.toURN("https://id.gs1.org/01/78578348384737/235/8398439").get("asURN"));
+        "urn:epc:id:upui:93594438.84737.8398439",
+        converter.toURN("https://id.gs1.org/01/89359443847373/235/8398439").get("asURN"));
     assertEquals(
-        "urn:epc:id:upui:5362325.532635.0230293",
-        ConverterUtil.toURN("https://id.gs1.org/01/55362325326356/235/0230293").get("asURN"));
+        "urn:epc:id:upui:351152.9532635.0230293",
+        converter.toURN("https://id.gs1.org/01/93511525326356/235/0230293").get("asURN"));
   }
 }

@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +41,7 @@ public class SGLNValidator implements PatternValidator {
             "(urn:epc:id:sgln:)[0-9]{6,12}\\.[0-9]{0,6}.*",
             "Invalid SGLN,SGLN should be of 13 digits with GCP 6-12 digits (Ex: urn:epc:id:sgln:1234567890.12.1111).%nPlease check the provided URN: %s") {
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
 
             String sgln;
@@ -54,8 +54,7 @@ public class SGLNValidator implements PatternValidator {
             } else {
               throw new ValidationException(
                   String.format(
-                      "Invalid SGLN, SGLN should be of 13 digits followed by extension (Ex: urn:epc:id:sgln:1234567890.12.1111).%nPlease check the provided"
-                          + " URN: %s",
+                      "Invalid SGLN, SGLN should be of 13 digits followed by extension (Ex: urn:epc:id:sgln:1234567890.12.1111).%nPlease check the provided URN: %s",
                       urn));
             }
 
@@ -82,14 +81,15 @@ public class SGLNValidator implements PatternValidator {
             "(http|https):?://.*/414/[0-9]{13}.*",
             "Invalid SGLN, SGLN should consist of 13 digit SGLN (Ex: https://id.gs1.org/414/1234567890128/254/1111),%nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check if the GCP Length matches
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "GCP Length should be between 6-12.%nPlease check the provided URI : %s",
+                      "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
                       gcpLength));
             }
           }

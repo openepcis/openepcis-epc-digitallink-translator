@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +81,7 @@ public class GCNValidator implements PatternValidator {
             if (sgcn.length() < gcpLength) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GCN, GCN cannot be more than GCP length.%nPlease check the provided URI: %s",
+                      "Invalid GCN, GCN cannot be more than GCP length. Please check the provided URI: %s",
                       dlURI));
             }
 
@@ -89,7 +89,7 @@ public class GCNValidator implements PatternValidator {
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GCP Length, GCP Length should be between 6-12 digits.%nPlease check the provided GCP Length: %s",
+                      "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
                       gcpLength));
             }
           }
@@ -115,8 +115,7 @@ public class GCNValidator implements PatternValidator {
             if (sgcn.length() != 13) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GCN, Class level GCN should consist of 13 digits (Ex: urn:epc:idpat:sgcn:123456.789012.*),\nPlease "
-                          + "check the provided URN: %s",
+                      "Invalid GCN, Class level GCN should consist of 13 digits (Ex: urn:epc:idpat:sgcn:123456.789012.*),%nPlease check the provided URN: %s",
                       urn));
             }
           }
@@ -149,7 +148,7 @@ public class GCNValidator implements PatternValidator {
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "Invalid GCP Length, GCP Length should be between 6-12 digits.%nPlease check the provided GCP Length: %s",
+                      "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
                       gcpLength));
             }
           }

@@ -13,10 +13,17 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openepcis.epc.translator;
+package io.openepcis.epc.translator.constants;
 
-public class UrnDLTransformationException extends RuntimeException {
-  public UrnDLTransformationException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class Constants {
+  public static final String GS1_IDENTIFIER_DOMAIN = "https://id.gs1.org";
+  public static final String AS_CAPTURED = "asCaptured";
+  public static final String CANONICAL_DL = "canonicalDL";
+  public static final String AS_URN = "asURN";
+  public static final String SERIAL = "serial";
+  public static final String GCP_LENGTH = " GCP Length : ";
 }

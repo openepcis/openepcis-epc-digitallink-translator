@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +46,7 @@ public class UPUIValidator implements PatternValidator {
             "Invalid UPUI, UPUI should consist of TPX of 1 to 28 characters(Ex: urn:epc:id:upui:234567890123.1.1234ABCD5678EFGH).\nPlease check the provided URN : %s") {
 
           @Override
-          public void validate(String urn) throws ValidationException {
+          public void validate(final String urn) throws ValidationException {
             super.validate(urn);
 
             String upui =
@@ -83,14 +83,15 @@ public class UPUIValidator implements PatternValidator {
             "(http|https)://.*./01/[0-9]{14}/235/[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,28}",
             "Invalid UPUI, UPUI must consist of TPX 1 to 28 characters (Ex: https://id.gs1.org/01/12345678901231/235/9999).\nPlease check the URI: %s") {
           @Override
-          protected void validate(String uri, int gcpLength) throws ValidationException {
+          protected void validate(final String uri, final int gcpLength)
+              throws ValidationException {
             super.validate(uri, gcpLength);
 
             // Check the provided GCP Length is between 6 and 12 digits
             if (!(gcpLength >= 6 && gcpLength <= 12)) {
               throw new ValidationException(
                   String.format(
-                      "GCP Length should be between 6-12 digits.%nPlease check the provided GCP Length: %s",
+                      "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
                       gcpLength));
             }
           }

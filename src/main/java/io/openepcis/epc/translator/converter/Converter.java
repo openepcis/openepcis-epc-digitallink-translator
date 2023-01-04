@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.converter;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.Map;
 
 public interface Converter {

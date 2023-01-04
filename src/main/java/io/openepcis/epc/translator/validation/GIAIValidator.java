@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.translator.validation;
 
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +51,8 @@ public class GIAIValidator implements PatternValidator {
             "Invalid GIAI, GIAI must be between 10 and 30 alphanumeric characters (Ex:https://id.gs1.org/8004/1234567890ABCD),\nPlease check the URI: %s") {
 
           @Override
-          protected void validate(String dlURI, int gcpLength) throws ValidationException {
+          protected void validate(final String dlURI, final int gcpLength)
+              throws ValidationException {
             super.validate(dlURI, gcpLength);
 
             String giai = dlURI.substring(dlURI.indexOf(GIAI_URI_PART) + GIAI_URI_PART.length());

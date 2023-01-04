@@ -17,11 +17,19 @@ package io.openepcis.epc.translator.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import io.openepcis.epc.translator.ConverterUtil;
-import io.openepcis.epc.translator.ValidationException;
+import io.openepcis.epc.translator.Converter;
+import io.openepcis.epc.translator.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GRAITest {
+
+  private Converter converter;
+
+  @Before
+  public void before() throws Exception {
+    converter = new Converter();
+  }
 
   @Test
   public void testGRAI() throws ValidationException {
@@ -53,16 +61,16 @@ public class GRAITest {
     // Valid GRAI
     assertEquals(
         "https://id.gs1.org/8003/12345678901284ABC",
-        ConverterUtil.toURI("urn:epc:id:grai:1234567890.12.4ABC"));
+        converter.toURI("urn:epc:id:grai:1234567890.12.4ABC"));
     assertEquals(
         "https://id.gs1.org/8003/1234567890128!\"%&'()*+,-.",
-        ConverterUtil.toURI("urn:epc:id:grai:123456789012..!\"%&'()*+,-."));
+        converter.toURI("urn:epc:id:grai:123456789012..!\"%&'()*+,-."));
     assertEquals(
         "https://id.gs1.org/8003/43847837483703:;<>=?AZ_az",
-        ConverterUtil.toURI("urn:epc:id:grai:438478.374837.3:;<>=?AZ_az"));
+        converter.toURI("urn:epc:id:grai:438478.374837.3:;<>=?AZ_az"));
     assertEquals(
         "https://id.gs1.org/8003/12345678901284",
-        ConverterUtil.toURI("urn:epc:id:grai:123456789012..4"));
+        converter.toURI("urn:epc:id:grai:123456789012..4"));
 
     // GRAI URI with invalid domain
     grai = "hps://id.gs1.org/8003/12345678901284ABC";
@@ -79,22 +87,22 @@ public class GRAITest {
     // GRAI with valid URI
     assertEquals(
         "urn:epc:id:grai:123456.789012.4ABCD",
-        ConverterUtil.toURN("https://id.gs1.org/8003/12345678901234ABCD", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/8003/12345678901234ABCD", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:123456.789012.4ABCD",
-        ConverterUtil.toURN("https://youtube.com.org/8003/12345678901234ABCD", 6).get("asURN"));
+        converter.toURN("https://youtube.com.org/8003/12345678901234ABCD", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:1234567890.12.AABC",
-        ConverterUtil.toURN("https://id.gs1.org/8003/1234567890123AABC", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/8003/1234567890123AABC", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:438478.374837.3:;<>=?AZ_az",
-        ConverterUtil.toURN("https://id.gs1.org/8003/43847837483703:;<>=?AZ_az", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/8003/43847837483703:;<>=?AZ_az", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:123456789012..!\"%&'()*+,-.",
-        ConverterUtil.toURN("https://id.gs1.org/8003/1234567890128!\"%&'()*+,-.", 12).get("asURN"));
+        converter.toURN("https://id.gs1.org/8003/1234567890128!\"%&'()*+,-.", 12).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:1234567890.12.4",
-        ConverterUtil.toURN("https://id.gs1.org/8003/12345678901284").get("asURN"));
+        converter.toURN("https://id.gs1.org/8003/12345678901284").get("asURN"));
 
     /** GRAI Class identifier validations */
 
@@ -128,19 +136,23 @@ public class GRAITest {
     // Class level GRAI with valid identifiers
     assertEquals(
         "urn:epc:idpat:grai:1234567890.12.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890123", 10)
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890123", 10)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:grai:1234567890.12.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890123")
+        converter
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890123")
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:grai:784283728372..*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283728", 12)
+        converter
+            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283728", 12)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:grai:7842837.28372.*",
-        ConverterUtil.toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283728")
+        converter
+            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283728")
             .get("asURN"));
 
     // Conversion from URN to Web URI
@@ -168,12 +180,12 @@ public class GRAITest {
     // Valid Class level GRAI to Web URI conversion
     assertEquals(
         "https://id.gs1.org/8003/4843847384737",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:grai:4843847.38473.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:4843847.38473.*"));
     assertEquals(
         "https://id.gs1.org/8003/8493394839844",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8493394.83984.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8493394.83984.*"));
     assertEquals(
         "https://id.gs1.org/8003/8439483984392",
-        ConverterUtil.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8439483.98439.*"));
+        converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8439483.98439.*"));
   }
 }
