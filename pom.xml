@@ -102,7 +102,7 @@
                 <executions>
                     <execution>
                         <!-- the wget goal actually binds itself to this phase by default -->
-                        <phase>process-resources</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>wget</goal>
                         </goals>
@@ -110,7 +110,7 @@
                             <url>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</url>
                             <outputFileName>gcpprefixformatlist.json</outputFileName>
                             <!-- default target location, just to demonstrate the parameter -->
-                            <outputDirectory>src/main/resources</outputDirectory>
+                            <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
