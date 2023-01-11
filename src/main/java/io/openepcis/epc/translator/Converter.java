@@ -29,6 +29,7 @@ public class Converter {
   private final Set<io.openepcis.epc.translator.converter.Converter> dl = new HashSet<>();
   private final Set<io.openepcis.epc.translator.converter.Converter> classLevelTranslator =
       new HashSet<>();
+  private final EventVocabularyFormatter eventVocabularyFormatter = new EventVocabularyFormatter();
 
   public Converter() {
     // Add all EPC instance-level converter
@@ -202,7 +203,7 @@ public class Converter {
   public String toWebURIVocabulary(final String urnVocabulary) {
     return urnVocabulary == null || urnVocabulary.trim().equals("")
         ? urnVocabulary
-        : EventVocabularyFormatter.canonicalWebURIVocabulary(urnVocabulary);
+        : eventVocabularyFormatter.canonicalWebURIVocabulary(urnVocabulary);
   }
 
   /**
@@ -216,7 +217,7 @@ public class Converter {
   public String toUrnVocabulary(final String webUriVocabulary) {
     return webUriVocabulary == null || webUriVocabulary.trim().equals("")
         ? webUriVocabulary
-        : EventVocabularyFormatter.canonicalString(webUriVocabulary);
+        : eventVocabularyFormatter.canonicalString(webUriVocabulary);
   }
 
   /**
@@ -229,7 +230,7 @@ public class Converter {
   public String toBareStringVocabulary(final String eventVocabulary) {
     return eventVocabulary == null || eventVocabulary.trim().equals("")
         ? eventVocabulary
-        : EventVocabularyFormatter.bareString(eventVocabulary);
+        : eventVocabularyFormatter.bareString(eventVocabulary);
   }
 
   /**
@@ -245,6 +246,6 @@ public class Converter {
       final String bareString, final String fieldName, final String format) {
     return bareString == null || bareString.trim().equals("") || fieldName == null
         ? bareString
-        : EventVocabularyFormatter.cbvVocabulary(bareString, fieldName, format);
+        : eventVocabularyFormatter.cbvVocabulary(bareString, fieldName, format);
   }
 }
