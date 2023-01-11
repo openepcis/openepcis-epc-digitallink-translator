@@ -33,15 +33,15 @@ public class BareStringVocabularyTest {
 
   @Test
   public void BizStepBareStringTest() {
-    String bizStep = "https://ref.gs1.org/voc/Bizstep-departing";
+    String bizStep = "https://ref.gs1.org/cbv/Bizstep-departing";
     assertEquals("departing", converter.toBareStringVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/voc/Bizstep-commissioning";
+    bizStep = "https://ref.gs1.org/cbv/Bizstep-commissioning";
     assertEquals("commissioning", converter.toBareStringVocabulary(bizStep));
 
-    bizStep = "https://example.com/voc/My-Own-Vocabulary";
+    bizStep = "https://example.com/cbv/My-Own-Vocabulary";
     assertEquals(
-        "https://example.com/voc/My-Own-Vocabulary", converter.toBareStringVocabulary(bizStep));
+        "https://example.com/cbv/My-Own-Vocabulary", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "urn:epcglobal:cbv:bizstep:inspecting";
     assertEquals("inspecting", converter.toBareStringVocabulary(bizStep));
@@ -61,10 +61,10 @@ public class BareStringVocabularyTest {
 
   @Test
   public void DispositionBareStringTest() {
-    String disposition = "https://ref.gs1.org/voc/Disp-in_transit";
+    String disposition = "https://ref.gs1.org/cbv/Disp-in_transit";
     assertEquals("in_transit", converter.toBareStringVocabulary(disposition));
 
-    disposition = "https://ref.gs1.org/voc/Disp-recalled";
+    disposition = "https://ref.gs1.org/cbv/Disp-recalled";
     assertEquals("recalled", converter.toBareStringVocabulary(disposition));
 
     disposition = "https://example.com/My-Own-Disposition";
@@ -85,13 +85,13 @@ public class BareStringVocabularyTest {
 
   @Test
   public void BizTransactionBareStringTest() {
-    String bizTransactionType = "https://ref.gs1.org/voc/BTT-inv";
+    String bizTransactionType = "https://ref.gs1.org/cbv/BTT-inv";
     assertEquals("inv", converter.toBareStringVocabulary(bizTransactionType));
 
-    bizTransactionType = "https://ref.gs1.org/voc/BTT-desadv";
+    bizTransactionType = "https://ref.gs1.org/cbv/BTT-desadv";
     assertEquals("desadv", converter.toBareStringVocabulary(bizTransactionType));
 
-    bizTransactionType = "https://ref.gs1.org/voc/BTT-po";
+    bizTransactionType = "https://ref.gs1.org/cbv/BTT-po";
     assertEquals("po", converter.toBareStringVocabulary(bizTransactionType));
 
     bizTransactionType = "https://example.com/department/My_Own_Biz_Type";
@@ -116,13 +116,13 @@ public class BareStringVocabularyTest {
 
   @Test
   public void SourceDestinationBareStringTest() {
-    String srcDestinationString = "https://ref.gs1.org/voc/SDT-possessing_party";
+    String srcDestinationString = "https://ref.gs1.org/cbv/SDT-possessing_party";
     assertEquals("possessing_party", converter.toBareStringVocabulary(srcDestinationString));
 
-    srcDestinationString = "https://ref.gs1.org/voc/SDT-owning_party";
+    srcDestinationString = "https://ref.gs1.org/cbv/SDT-owning_party";
     assertEquals("owning_party", converter.toBareStringVocabulary(srcDestinationString));
 
-    srcDestinationString = "https://ref.gs1.org/voc/SDT-location";
+    srcDestinationString = "https://ref.gs1.org/cbv/SDT-location";
     assertEquals("location", converter.toBareStringVocabulary(srcDestinationString));
 
     srcDestinationString = "https://example.com/source/My_Own_Source";
@@ -153,13 +153,13 @@ public class BareStringVocabularyTest {
 
   @Test
   public void ErrorDeclarationReasonBareStringTest() {
-    String errorReason = "https://ref.gs1.org/voc/ER-incorrect_data";
+    String errorReason = "https://ref.gs1.org/cbv/ER-incorrect_data";
     assertEquals("incorrect_data", converter.toBareStringVocabulary(errorReason));
 
-    errorReason = "https://ref.gs1.org/voc/ER-did_not_occur";
+    errorReason = "https://ref.gs1.org/cbv/ER-did_not_occur";
     assertEquals("did_not_occur", converter.toBareStringVocabulary(errorReason));
 
-    errorReason = "https://ref.gs1.org/voc/ER-other";
+    errorReason = "https://ref.gs1.org/cbv/ER-other";
     assertEquals("other", converter.toBareStringVocabulary(errorReason));
 
     errorReason = "https://example.com/myReason/ReasonDescription";

@@ -43,10 +43,10 @@ public class CbvVocabularyTest {
 
     // Converting BizStep BareString to CBV vocabulary in WebURI format.
     assertEquals(
-        "https://ref.gs1.org/voc/Bizstep-shipping",
+        "https://ref.gs1.org/cbv/Bizstep-shipping",
         converter.toCbvVocabulary("shipping", "bizStep", "webUri"));
     assertEquals(
-        "https://ref.gs1.org/voc/Bizstep-packing",
+        "https://ref.gs1.org/cbv/Bizstep-packing",
         converter.toCbvVocabulary("packing", "bizStep", "webUri"));
 
     assertEquals("", converter.toCbvVocabulary("", "bizStep", ""));
@@ -67,10 +67,10 @@ public class CbvVocabularyTest {
 
     // Converting Disposition BareString to CBV vocabulary in WebURI format.
     assertEquals(
-        "https://ref.gs1.org/voc/Disp-in_transit",
+        "https://ref.gs1.org/cbv/Disp-in_transit",
         converter.toCbvVocabulary("in_transit", "disposition", "WebURI"));
     assertEquals(
-        "https://ref.gs1.org/voc/Disp-partially_dispensed",
+        "https://ref.gs1.org/cbv/Disp-partially_dispensed",
         converter.toCbvVocabulary("partially_dispensed", "disposition", "WebURI"));
 
     // Converting PersistentDisposition BareString to CBV vocabulary in URN format.
@@ -83,10 +83,10 @@ public class CbvVocabularyTest {
 
     // Converting PersistentDisposition BareString to CBV vocabulary in URN format.
     assertEquals(
-        "https://ref.gs1.org/voc/Disp-in_transit",
+        "https://ref.gs1.org/cbv/Disp-in_transit",
         converter.toCbvVocabulary("in_transit", "persistentDisposition", "WebURI"));
     assertEquals(
-        "https://ref.gs1.org/voc/Disp-partially_dispensed",
+        "https://ref.gs1.org/cbv/Disp-partially_dispensed",
         converter.toCbvVocabulary("partially_dispensed", "persistentDisposition", "WebURI"));
   }
 
@@ -103,13 +103,13 @@ public class CbvVocabularyTest {
 
     // Converting BizTransaction/BizTransactionList BareString to CBV vocabulary in WebURI format.
     assertEquals(
-        "https://ref.gs1.org/voc/BTT-po",
+        "https://ref.gs1.org/cbv/BTT-po",
         converter.toCbvVocabulary("po", "bizTransaction", "webURi"));
     assertEquals(
-        "https://ref.gs1.org/voc/BTT-inv",
+        "https://ref.gs1.org/cbv/BTT-inv",
         converter.toCbvVocabulary("inv", "bizTransaction", "webURi"));
     assertEquals(
-        "https://ref.gs1.org/voc/BTT-pedigree",
+        "https://ref.gs1.org/cbv/BTT-pedigree",
         converter.toCbvVocabulary("pedigree", "bizTransaction", "webURi"));
   }
 
@@ -128,13 +128,13 @@ public class CbvVocabularyTest {
 
     // Converting Source/SourceList BareString to CBV vocabulary in WebURI format.
     assertEquals(
-        "https://ref.gs1.org/voc/SDT-owning_party",
+        "https://ref.gs1.org/cbv/SDT-owning_party",
         converter.toCbvVocabulary("owning_party", "source", "weburi"));
     assertEquals(
-        "https://ref.gs1.org/voc/SDT-location",
+        "https://ref.gs1.org/cbv/SDT-location",
         converter.toCbvVocabulary("location", "source", "weburi"));
     assertEquals(
-        "https://ref.gs1.org/voc/SDT-processing_party",
+        "https://ref.gs1.org/cbv/SDT-processing_party",
         converter.toCbvVocabulary("processing_party", "source", "weburi"));
 
     // Converting Destination/DestinationList BareString to CBV vocabulary in URN format.
@@ -150,13 +150,13 @@ public class CbvVocabularyTest {
 
     // Converting Destination/DestinationList BareString to CBV vocabulary in WebURI format.
     assertEquals(
-        "https://ref.gs1.org/voc/SDT-owning_party",
+        "https://ref.gs1.org/cbv/SDT-owning_party",
         converter.toCbvVocabulary("owning_party", "Destination", "weburi"));
     assertEquals(
-        "https://ref.gs1.org/voc/SDT-location",
+        "https://ref.gs1.org/cbv/SDT-location",
         converter.toCbvVocabulary("location", "Destination", "weburi"));
     assertEquals(
-        "https://ref.gs1.org/voc/SDT-processing_party",
+        "https://ref.gs1.org/cbv/SDT-processing_party",
         converter.toCbvVocabulary("processing_party", "Destination", "weburi"));
   }
 
@@ -175,12 +175,12 @@ public class CbvVocabularyTest {
 
     // Convert ErrorDeclaration Reason BareString to CBV vocabulary in WebURI format.
     assertEquals(
-        "https://ref.gs1.org/voc/ER-did_not_occur",
+        "https://ref.gs1.org/cbv/ER-did_not_occur",
         converter.toCbvVocabulary("did_not_occur", "reason", "WebURI"));
     assertEquals(
-        "https://ref.gs1.org/voc/ER-incorrect_data",
+        "https://ref.gs1.org/cbv/ER-incorrect_data",
         converter.toCbvVocabulary("incorrect_data", "reason", "WebURI"));
     assertEquals(
-        "https://ref.gs1.org/voc/ER-other", converter.toCbvVocabulary("other", "reason", "WebURI"));
+        "https://ref.gs1.org/cbv/ER-other", converter.toCbvVocabulary("other", "reason", "WebURI"));
   }
 }
