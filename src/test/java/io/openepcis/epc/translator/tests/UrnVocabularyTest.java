@@ -33,16 +33,16 @@ public class UrnVocabularyTest {
 
   @Test
   public void BizStepUrnTest() {
-    String bizStep = "https://ref.gs1.org/cbv/Bizstep-departing";
+    String bizStep = "https://ref.gs1.org/cbv/BizStep-departing";
     assertEquals("urn:epcglobal:cbv:bizstep:departing", converter.toUrnVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/cbv/Bizstep-inspecting";
+    bizStep = "https://ref.gs1.org/cbv/BizStep-inspecting";
     assertEquals("urn:epcglobal:cbv:bizstep:inspecting", converter.toUrnVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/cbv/Bizstep-receiving";
+    bizStep = "https://ref.gs1.org/cbv/BizStep-receiving";
     assertEquals("urn:epcglobal:cbv:bizstep:receiving", converter.toUrnVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/cbv/Bizstep-commissioning";
+    bizStep = "https://ref.gs1.org/cbv/BizStep-commissioning";
     assertEquals("urn:epcglobal:cbv:bizstep:commissioning", converter.toUrnVocabulary(bizStep));
 
     bizStep = "https://example.com/department/My_Own_BizStep";

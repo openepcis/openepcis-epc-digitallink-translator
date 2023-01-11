@@ -35,19 +35,19 @@ public class WebURIVocabularyTest {
   public void BizStepWebUriTest() {
     String bizStep = "urn:epcglobal:cbv:bizstep:departing";
     assertEquals(
-        "https://ref.gs1.org/cbv/Bizstep-departing", converter.toWebURIVocabulary(bizStep));
+        "https://ref.gs1.org/cbv/BizStep-departing", converter.toWebURIVocabulary(bizStep));
 
     bizStep = "urn:epcglobal:cbv:bizstep:inspecting";
     assertEquals(
-        "https://ref.gs1.org/cbv/Bizstep-inspecting", converter.toWebURIVocabulary(bizStep));
+        "https://ref.gs1.org/cbv/BizStep-inspecting", converter.toWebURIVocabulary(bizStep));
 
     bizStep = "urn:epcglobal:cbv:bizstep:receiving";
     assertEquals(
-        "https://ref.gs1.org/cbv/Bizstep-receiving", converter.toWebURIVocabulary(bizStep));
+        "https://ref.gs1.org/cbv/BizStep-receiving", converter.toWebURIVocabulary(bizStep));
 
     bizStep = "urn:epcglobal:cbv:bizstep:commissioning";
     assertEquals(
-        "https://ref.gs1.org/cbv/Bizstep-commissioning", converter.toWebURIVocabulary(bizStep));
+        "https://ref.gs1.org/cbv/BizStep-commissioning", converter.toWebURIVocabulary(bizStep));
 
     bizStep = "urn:example:department:bizstep:custom_business";
     assertEquals(

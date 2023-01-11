@@ -31,7 +31,7 @@ public class EventVocabularyFormatter {
   private static final String BIZ_TRANSACTION_URN_PREFIX = URN_PREFIX + "btt:";
   private static final String SRC_DEST_URN_PREFIX = URN_PREFIX + "sdt:";
   private static final String ERR_REASON_URN_PREFIX = URN_PREFIX + "er:";
-  private static final String BIZ_STEP_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/Bizstep-";
+  private static final String BIZ_STEP_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/BizStep-";
   private static final String DISPOSITION_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/Disp-";
   private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/BTT-";
   private static final String SRC_DEST_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/SDT-";

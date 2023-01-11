@@ -43,10 +43,10 @@ public class CbvVocabularyTest {
 
     // Converting BizStep BareString to CBV vocabulary in WebURI format.
     assertEquals(
-        "https://ref.gs1.org/cbv/Bizstep-shipping",
+        "https://ref.gs1.org/cbv/BizStep-shipping",
         converter.toCbvVocabulary("shipping", "bizStep", "webUri"));
     assertEquals(
-        "https://ref.gs1.org/cbv/Bizstep-packing",
+        "https://ref.gs1.org/cbv/BizStep-packing",
         converter.toCbvVocabulary("packing", "bizStep", "webUri"));
 
     assertEquals("", converter.toCbvVocabulary("", "bizStep", ""));

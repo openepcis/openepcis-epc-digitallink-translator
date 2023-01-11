@@ -33,10 +33,10 @@ public class BareStringVocabularyTest {
 
   @Test
   public void BizStepBareStringTest() {
-    String bizStep = "https://ref.gs1.org/cbv/Bizstep-departing";
+    String bizStep = "https://ref.gs1.org/cbv/BizStep-departing";
     assertEquals("departing", converter.toBareStringVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/cbv/Bizstep-commissioning";
+    bizStep = "https://ref.gs1.org/cbv/BizStep-commissioning";
     assertEquals("commissioning", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "https://example.com/cbv/My-Own-Vocabulary";
