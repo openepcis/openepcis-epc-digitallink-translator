@@ -33,16 +33,16 @@ public class UrnVocabularyTest {
 
   @Test
   public void BizStepUrnTest() {
-    String bizStep = "https://ref.gs1.org/voc/Bizstep-departing";
+    String bizStep = "https://ref.gs1.org/cbv/BizStep-departing";
     assertEquals("urn:epcglobal:cbv:bizstep:departing", converter.toUrnVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/voc/Bizstep-inspecting";
+    bizStep = "https://ref.gs1.org/cbv/BizStep-inspecting";
     assertEquals("urn:epcglobal:cbv:bizstep:inspecting", converter.toUrnVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/voc/Bizstep-receiving";
+    bizStep = "https://ref.gs1.org/cbv/BizStep-receiving";
     assertEquals("urn:epcglobal:cbv:bizstep:receiving", converter.toUrnVocabulary(bizStep));
 
-    bizStep = "https://ref.gs1.org/voc/Bizstep-commissioning";
+    bizStep = "https://ref.gs1.org/cbv/BizStep-commissioning";
     assertEquals("urn:epcglobal:cbv:bizstep:commissioning", converter.toUrnVocabulary(bizStep));
 
     bizStep = "https://example.com/department/My_Own_BizStep";
@@ -56,16 +56,16 @@ public class UrnVocabularyTest {
 
   @Test
   public void DispositionUrnTest() {
-    String disposition = "https://ref.gs1.org/voc/Disp-in_transit";
+    String disposition = "https://ref.gs1.org/cbv/Disp-in_transit";
     assertEquals("urn:epcglobal:cbv:disp:in_transit", converter.toUrnVocabulary(disposition));
 
-    disposition = "https://ref.gs1.org/voc/Disp-recalled";
+    disposition = "https://ref.gs1.org/cbv/Disp-recalled";
     assertEquals("urn:epcglobal:cbv:disp:recalled", converter.toUrnVocabulary(disposition));
 
-    disposition = "https://ref.gs1.org/voc/Disp-in_progress";
+    disposition = "https://ref.gs1.org/cbv/Disp-in_progress";
     assertEquals("urn:epcglobal:cbv:disp:in_progress", converter.toUrnVocabulary(disposition));
 
-    disposition = "https://ref.gs1.org/voc/Disp-needs_replacement";
+    disposition = "https://ref.gs1.org/cbv/Disp-needs_replacement";
     assertEquals(
         "urn:epcglobal:cbv:disp:needs_replacement", converter.toUrnVocabulary(disposition));
 
@@ -77,13 +77,13 @@ public class UrnVocabularyTest {
 
   @Test
   public void BizTransactionUrnTest() {
-    String bizTransactionType = "https://ref.gs1.org/voc/BTT-inv";
+    String bizTransactionType = "https://ref.gs1.org/cbv/BTT-inv";
     assertEquals("urn:epcglobal:cbv:btt:inv", converter.toUrnVocabulary(bizTransactionType));
 
-    bizTransactionType = "https://ref.gs1.org/voc/BTT-desadv";
+    bizTransactionType = "https://ref.gs1.org/cbv/BTT-desadv";
     assertEquals("urn:epcglobal:cbv:btt:desadv", converter.toUrnVocabulary(bizTransactionType));
 
-    bizTransactionType = "https://ref.gs1.org/voc/BTT-po";
+    bizTransactionType = "https://ref.gs1.org/cbv/BTT-po";
     assertEquals("urn:epcglobal:cbv:btt:po", converter.toUrnVocabulary(bizTransactionType));
 
     bizTransactionType = "https://example.com/department/My_Own_Biz_Type";
@@ -94,14 +94,14 @@ public class UrnVocabularyTest {
 
   @Test
   public void SourceDestinationUrnTest() {
-    String canonicalString = "https://ref.gs1.org/voc/SDT-possessing_party";
+    String canonicalString = "https://ref.gs1.org/cbv/SDT-possessing_party";
     assertEquals(
         "urn:epcglobal:cbv:sdt:possessing_party", converter.toUrnVocabulary(canonicalString));
 
-    canonicalString = "https://ref.gs1.org/voc/SDT-owning_party";
+    canonicalString = "https://ref.gs1.org/cbv/SDT-owning_party";
     assertEquals("urn:epcglobal:cbv:sdt:owning_party", converter.toUrnVocabulary(canonicalString));
 
-    canonicalString = "https://ref.gs1.org/voc/SDT-location";
+    canonicalString = "https://ref.gs1.org/cbv/SDT-location";
     assertEquals("urn:epcglobal:cbv:sdt:location", converter.toUrnVocabulary(canonicalString));
 
     canonicalString = "https://example.com/source/My_Own_Source";
@@ -117,13 +117,13 @@ public class UrnVocabularyTest {
 
   @Test
   public void ErrorDeclarationReasonUrnTest() {
-    String errorReason = "https://ref.gs1.org/voc/ER-incorrect_data";
+    String errorReason = "https://ref.gs1.org/cbv/ER-incorrect_data";
     assertEquals("urn:epcglobal:cbv:er:incorrect_data", converter.toUrnVocabulary(errorReason));
 
-    errorReason = "https://ref.gs1.org/voc/ER-did_not_occur";
+    errorReason = "https://ref.gs1.org/cbv/ER-did_not_occur";
     assertEquals("urn:epcglobal:cbv:er:did_not_occur", converter.toUrnVocabulary(errorReason));
 
-    errorReason = "https://ref.gs1.org/voc/ER-other";
+    errorReason = "https://ref.gs1.org/cbv/ER-other";
     assertEquals("urn:epcglobal:cbv:er:other", converter.toUrnVocabulary(errorReason));
 
     errorReason = "https://example.com/error/My_Own_Reason";

@@ -31,11 +31,11 @@ public class EventVocabularyFormatter {
   private static final String BIZ_TRANSACTION_URN_PREFIX = URN_PREFIX + "btt:";
   private static final String SRC_DEST_URN_PREFIX = URN_PREFIX + "sdt:";
   private static final String ERR_REASON_URN_PREFIX = URN_PREFIX + "er:";
-  private static final String BIZ_STEP_WEB_URI_PREFIX = WEB_URI_PREFIX + "voc/Bizstep-";
-  private static final String DISPOSITION_WEB_URI_PREFIX = WEB_URI_PREFIX + "voc/Disp-";
-  private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = WEB_URI_PREFIX + "voc/BTT-";
-  private static final String SRC_DEST_WEB_URI_PREFIX = WEB_URI_PREFIX + "voc/SDT-";
-  private static final String ERR_REASON_WEB_URI_PREFIX = WEB_URI_PREFIX + "voc/ER-";
+  private static final String BIZ_STEP_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/BizStep-";
+  private static final String DISPOSITION_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/Disp-";
+  private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/BTT-";
+  private static final String SRC_DEST_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/SDT-";
+  private static final String ERR_REASON_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/ER-";
   private static final List<String> URN_FORMATTED_CBV_STRING =
       Arrays.asList(
           BIZ_STEP_URN_PREFIX,
@@ -53,7 +53,7 @@ public class EventVocabularyFormatter {
 
   // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event
   // hash generator.
-  public static String canonicalWebURIVocabulary(final String urnVocabulary) {
+  public String canonicalWebURIVocabulary(final String urnVocabulary) {
 
     if (urnVocabulary.startsWith(BIZ_STEP_URN_PREFIX)) {
       // For Business Step remove the urn:epcglobal:cbv:bizstep: and replace with
@@ -88,7 +88,7 @@ public class EventVocabularyFormatter {
 
   // Method to convert the CBV WebURI formatted vocabularies into URN vocabulary. Used during
   // JSON/JSON-LD conversion to XML.
-  public static String canonicalString(final String webUriVocabulary) {
+  public String canonicalString(final String webUriVocabulary) {
 
     if (webUriVocabulary.startsWith(BIZ_STEP_WEB_URI_PREFIX)) {
       // For Business Step remove the https://ns.gs1.org/voc/Bizstep- and replace with
@@ -125,7 +125,7 @@ public class EventVocabularyFormatter {
 
   // Method to convert the CBV URN/WebURI formatted vocabularies into BareString vocabulary. Used
   // during XML -> JSON/JSON-LD conversion.
-  public static String bareString(final String cbvVocabulary) {
+  public String bareString(final String cbvVocabulary) {
     if (URN_FORMATTED_CBV_STRING.stream().anyMatch(cbvVocabulary::startsWith)) {
       // Check if the CBV URN Vocabulary matches any of the pre-defined CBV URN string if so remove
       // the URN prefix and return bare string.
@@ -141,7 +141,7 @@ public class EventVocabularyFormatter {
 
   // Method to convert the BareString vocabularies into CBV formatted URN/WebURI vocabulary. Used
   // during JSON/JSON-LD -> XML conversion.
-  public static String cbvVocabulary(
+  public String cbvVocabulary(
       final String bareString, final String fieldName, final String format) {
     // Check for the fieldName and based on that return the respective CBV formatted vocabulary in
     // either WebURI or URN format.
