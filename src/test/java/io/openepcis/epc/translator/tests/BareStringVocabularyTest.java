@@ -54,6 +54,10 @@ public class BareStringVocabularyTest {
         "urn:example:department:bizstep:my_own_vocabulary",
         converter.toBareStringVocabulary(bizStep));
 
+    bizStep = "cbv:BizStep-receiving";
+    assertEquals("receiving", converter.toBareStringVocabulary(bizStep));
+
+    assertEquals("cbv:receiving", converter.toBareStringVocabulary("cbv:receiving"));
     assertEquals("", converter.toBareStringVocabulary(""));
     assertEquals(" ", converter.toBareStringVocabulary(" "));
     assertNull(converter.toBareStringVocabulary(null));
@@ -81,6 +85,11 @@ public class BareStringVocabularyTest {
     assertEquals(
         "urn:example:department:bizstep:my_own_vocabulary",
         converter.toBareStringVocabulary(disposition));
+
+    disposition = "cbv:Disp-in_progress";
+    assertEquals("in_progress", converter.toBareStringVocabulary(disposition));
+
+    assertEquals("cbv:in_progress", converter.toBareStringVocabulary("cbv:in_progress"));
   }
 
   @Test
@@ -112,6 +121,11 @@ public class BareStringVocabularyTest {
     assertEquals(
         "urn:example:department:error:custom_error",
         converter.toBareStringVocabulary(bizTransactionType));
+
+    bizTransactionType = "cbv:BTT-desadv";
+    assertEquals("desadv", converter.toBareStringVocabulary(bizTransactionType));
+
+    assertEquals("cbv:desadv", converter.toBareStringVocabulary("cbv:desadv"));
   }
 
   @Test
@@ -149,6 +163,11 @@ public class BareStringVocabularyTest {
 
     srcDestinationString = "mySource";
     assertEquals("mySource", converter.toBareStringVocabulary(srcDestinationString));
+
+    srcDestinationString = "cbv:SDT-owning_party";
+    assertEquals("owning_party", converter.toBareStringVocabulary(srcDestinationString));
+
+    assertEquals("cbv:owning_party", converter.toBareStringVocabulary("cbv:owning_party"));
   }
 
   @Test
@@ -180,6 +199,10 @@ public class BareStringVocabularyTest {
     assertEquals(
         "urn:example:error:reason:my_own_reason", converter.toBareStringVocabulary(errorReason));
 
+    errorReason = "cbv:ER-did_not_occur";
+    assertEquals("did_not_occur", converter.toBareStringVocabulary(errorReason));
+
+    assertEquals("cbv:did_not_occur", converter.toBareStringVocabulary("cbv:did_not_occur"));
     assertEquals("", converter.toBareStringVocabulary(""));
     assertEquals(" ", converter.toBareStringVocabulary(" "));
     assertNull(converter.toBareStringVocabulary(null));
