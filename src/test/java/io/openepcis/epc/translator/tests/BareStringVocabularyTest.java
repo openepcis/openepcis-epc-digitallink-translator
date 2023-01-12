@@ -57,6 +57,12 @@ public class BareStringVocabularyTest {
     bizStep = "cbv:BizStep-receiving";
     assertEquals("receiving", converter.toBareStringVocabulary(bizStep));
 
+    bizStep = "https://ref.gs1.org/cbv/BizStep-accepting";
+    assertEquals("accepting", converter.toBareStringVocabulary(bizStep));
+
+    bizStep = "https://ref.gs1.org/cbv/BizStep-disassembling";
+    assertEquals("disassembling", converter.toBareStringVocabulary(bizStep));
+
     assertEquals("cbv:receiving", converter.toBareStringVocabulary("cbv:receiving"));
     assertEquals("", converter.toBareStringVocabulary(""));
     assertEquals(" ", converter.toBareStringVocabulary(" "));
@@ -88,6 +94,12 @@ public class BareStringVocabularyTest {
 
     disposition = "cbv:Disp-in_progress";
     assertEquals("in_progress", converter.toBareStringVocabulary(disposition));
+
+    disposition = "https://ref.gs1.org/cbv/Disp-completeness_verified";
+    assertEquals("completeness_verified", converter.toBareStringVocabulary(disposition));
+
+    disposition = "https://ref.gs1.org/cbv/Disp-returned";
+    assertEquals("returned", converter.toBareStringVocabulary(disposition));
 
     assertEquals("cbv:in_progress", converter.toBareStringVocabulary("cbv:in_progress"));
   }
@@ -124,6 +136,12 @@ public class BareStringVocabularyTest {
 
     bizTransactionType = "cbv:BTT-desadv";
     assertEquals("desadv", converter.toBareStringVocabulary(bizTransactionType));
+
+    bizTransactionType = "https://ref.gs1.org/cbv/BTT-pedigree";
+    assertEquals("pedigree", converter.toBareStringVocabulary(bizTransactionType));
+
+    bizTransactionType = "https://ref.gs1.org/cbv/BTT-bol";
+    assertEquals("bol", converter.toBareStringVocabulary(bizTransactionType));
 
     assertEquals("cbv:desadv", converter.toBareStringVocabulary("cbv:desadv"));
   }
@@ -167,6 +185,12 @@ public class BareStringVocabularyTest {
     srcDestinationString = "cbv:SDT-owning_party";
     assertEquals("owning_party", converter.toBareStringVocabulary(srcDestinationString));
 
+    srcDestinationString = "https://ref.gs1.org/cbv/SDT-possessing_party";
+    assertEquals("possessing_party", converter.toBareStringVocabulary(srcDestinationString));
+
+    srcDestinationString = "https://ref.gs1.org/cbv/SDT-location";
+    assertEquals("location", converter.toBareStringVocabulary(srcDestinationString));
+
     assertEquals("cbv:owning_party", converter.toBareStringVocabulary("cbv:owning_party"));
   }
 
@@ -201,6 +225,12 @@ public class BareStringVocabularyTest {
 
     errorReason = "cbv:ER-did_not_occur";
     assertEquals("did_not_occur", converter.toBareStringVocabulary(errorReason));
+
+    errorReason = "https://ref.gs1.org/cbv/ER-did_not_occur";
+    assertEquals("did_not_occur", converter.toBareStringVocabulary(errorReason));
+
+    errorReason = "https://ref.gs1.org/cbv/ER-incorrect_data";
+    assertEquals("incorrect_data", converter.toBareStringVocabulary(errorReason));
 
     assertEquals("cbv:did_not_occur", converter.toBareStringVocabulary("cbv:did_not_occur"));
     assertEquals("", converter.toBareStringVocabulary(""));
