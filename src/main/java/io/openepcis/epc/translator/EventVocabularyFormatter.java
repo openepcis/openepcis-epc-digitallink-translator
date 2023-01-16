@@ -21,21 +21,31 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
-public class EventVocabularyFormatter {
-
-  private static final String WEB_URI_PREFIX = "https://ref.gs1.org/";
+public class EventVocabularyFormatter implements VocabularyFormat {
+  private static final String WEB_URI_PREFIX = "https://ref.gs1.org/cbv/";
+  private static final String GS1_WEB_URI = "https://gs1.org/voc/";
   private static final String URN_PREFIX = "urn:epcglobal:cbv:";
   private static final String WEBURI_FORMATTED = "WebURI";
   private static final String BIZ_STEP_URN_PREFIX = URN_PREFIX + "bizstep:";
+  private static final String BIZ_STEP_CURIE_PREFIX = "cbv:BizStep-";
   private static final String DISPOSITION_URN_PREFIX = URN_PREFIX + "disp:";
+  private static final String DISPOSITION_CURIE_PREFIX = "cbv:Disp-";
   private static final String BIZ_TRANSACTION_URN_PREFIX = URN_PREFIX + "btt:";
+  private static final String BIZ_TRANSACTION_CURIE_PREFIX = "cbv:BTT-";
   private static final String SRC_DEST_URN_PREFIX = URN_PREFIX + "sdt:";
+  private static final String SRC_DEST_CURIE_PREFIX = "cbv:SDT-";
   private static final String ERR_REASON_URN_PREFIX = URN_PREFIX + "er:";
-  private static final String BIZ_STEP_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/BizStep-";
-  private static final String DISPOSITION_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/Disp-";
-  private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/BTT-";
-  private static final String SRC_DEST_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/SDT-";
-  private static final String ERR_REASON_WEB_URI_PREFIX = WEB_URI_PREFIX + "cbv/ER-";
+  private static final String ERR_REASON_CURIE_PREFIX = "cbv:ER-";
+  private static final String BIZ_STEP_WEB_URI_PREFIX = WEB_URI_PREFIX + "BizStep-";
+  private static final String DISPOSITION_WEB_URI_PREFIX = WEB_URI_PREFIX + "Disp-";
+  private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = WEB_URI_PREFIX + "BTT-";
+  private static final String SRC_DEST_WEB_URI_PREFIX = WEB_URI_PREFIX + "SDT-";
+  private static final String ERR_REASON_WEB_URI_PREFIX = WEB_URI_PREFIX + "ER-";
+  private static final String BIZ_STEP_GS1_PREFIX = GS1_WEB_URI + "BizStep-";
+  private static final String DISPOSITION_GS1_PREFIX = GS1_WEB_URI + "Disp-";
+  private static final String BIZ_TRANSACTION_GS1_PREFIX = GS1_WEB_URI + "BTT-";
+  private static final String SRC_DEST_GS1_PREFIX = GS1_WEB_URI + "SDT-";
+  private static final String ERR_REASON_GS1_PREFIX = GS1_WEB_URI + "ER-";
   private static final List<String> URN_FORMATTED_CBV_STRING =
       Arrays.asList(
           BIZ_STEP_URN_PREFIX,
@@ -43,13 +53,25 @@ public class EventVocabularyFormatter {
           BIZ_TRANSACTION_URN_PREFIX,
           SRC_DEST_URN_PREFIX,
           ERR_REASON_URN_PREFIX);
+  private static final List<String> CURIE_FORMATTED_CBV_STRING =
+      Arrays.asList(
+          BIZ_STEP_CURIE_PREFIX,
+          DISPOSITION_CURIE_PREFIX,
+          BIZ_TRANSACTION_CURIE_PREFIX,
+          SRC_DEST_CURIE_PREFIX,
+          ERR_REASON_CURIE_PREFIX);
   private static final List<String> WEBURI_FORMATTED_CBV_STRING =
       Arrays.asList(
           BIZ_STEP_WEB_URI_PREFIX,
           DISPOSITION_WEB_URI_PREFIX,
           BIZ_TRANSACTION_WEB_URI_PREFIX,
           SRC_DEST_WEB_URI_PREFIX,
-          ERR_REASON_WEB_URI_PREFIX);
+          ERR_REASON_WEB_URI_PREFIX,
+          BIZ_STEP_GS1_PREFIX,
+          DISPOSITION_GS1_PREFIX,
+          BIZ_TRANSACTION_GS1_PREFIX,
+          SRC_DEST_GS1_PREFIX,
+          ERR_REASON_GS1_PREFIX);
 
   // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event
   // hash generator.
@@ -130,10 +152,12 @@ public class EventVocabularyFormatter {
       // Check if the CBV URN Vocabulary matches any of the pre-defined CBV URN string if so remove
       // the URN prefix and return bare string.
       return cbvVocabulary.substring(cbvVocabulary.lastIndexOf(":") + 1);
-
     } else if (WEBURI_FORMATTED_CBV_STRING.stream().anyMatch(cbvVocabulary::startsWith)) {
       // Check if the CBV WebURI vocabulary matches any of the pre-defined CBV WebURI string if so
       // remove the WebURI prefix and return bare string.
+      return cbvVocabulary.substring(cbvVocabulary.lastIndexOf("-") + 1);
+    } else if (CURIE_FORMATTED_CBV_STRING.stream().anyMatch(cbvVocabulary::startsWith)) {
+      // If the cbv matches the curie urn then remove the prefix and return bare string
       return cbvVocabulary.substring(cbvVocabulary.lastIndexOf("-") + 1);
     }
     return cbvVocabulary;
