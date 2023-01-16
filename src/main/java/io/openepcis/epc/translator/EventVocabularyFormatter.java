@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
-public class EventVocabularyFormatter {
+public class EventVocabularyFormatter implements VocabularyFormat {
   private static final String WEB_URI_PREFIX = "https://ref.gs1.org/cbv/";
   private static final String GS1_WEB_URI = "https://gs1.org/voc/";
   private static final String URN_PREFIX = "urn:epcglobal:cbv:";
