@@ -71,4 +71,9 @@ public class ConverterUtil {
       final String bareString, final String fieldName, final String format) {
     return converter.toCbvVocabulary(bareString, fieldName, format);
   }
+
+  // Convert the short names with corresponding identifier
+  public static String shortNameReplacer(final String gs1Identifier) {
+    return converter.shortNameReplacer(gs1Identifier);
+  }
 }

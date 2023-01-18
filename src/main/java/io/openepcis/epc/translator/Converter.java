@@ -18,6 +18,7 @@ package io.openepcis.epc.translator;
 import io.openepcis.epc.translator.converter.*;
 import io.openepcis.epc.translator.exception.UnsupportedGS1IdentifierException;
 import io.openepcis.epc.translator.exception.ValidationException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,8 @@ public class Converter {
   private final Set<io.openepcis.epc.translator.converter.Converter> classLevelTranslator =
       new HashSet<>();
   private final EventVocabularyFormatter eventVocabularyFormatter = new EventVocabularyFormatter();
+
+  private final Map<String, String> shortNameKeyIdentifier = new HashMap<>();
 
   public Converter() {
     // Add all EPC instance-level converter
@@ -57,6 +60,25 @@ public class Converter {
     classLevelTranslator.add(new GCNConverter(true));
     classLevelTranslator.add(new CPIConverter(true));
     classLevelTranslator.add(new ITIPConverter(true));
+
+    // Add the key value pair for the identifier
+    shortNameKeyIdentifier.put("/gtin/", "/01/");
+    shortNameKeyIdentifier.put("/itip/", "/8006/");
+    shortNameKeyIdentifier.put("/cpi/", "/8010/");
+    shortNameKeyIdentifier.put("/gln/", "/414/");
+    shortNameKeyIdentifier.put("/party/", "/417/");
+    shortNameKeyIdentifier.put("/gsrnp/", "/8017/");
+    shortNameKeyIdentifier.put("/gsrn/", "/8018/");
+    shortNameKeyIdentifier.put("/gcn/", "/255/");
+    shortNameKeyIdentifier.put("/sscc/", "/00/");
+    shortNameKeyIdentifier.put("/gdti/", "/253/");
+    shortNameKeyIdentifier.put("/ginc/", "/401/");
+    shortNameKeyIdentifier.put("/gsin/", "/402/");
+    shortNameKeyIdentifier.put("/grai/", "/8003/");
+    shortNameKeyIdentifier.put("/giai/", "/8004/");
+    shortNameKeyIdentifier.put("/cpv/", "/22/");
+    shortNameKeyIdentifier.put("/lot/", "/10/");
+    shortNameKeyIdentifier.put("/ser/", "/21/");
   }
 
   /**
@@ -247,5 +269,30 @@ public class Converter {
     return bareString == null || bareString.trim().equals("") || fieldName == null
         ? bareString
         : eventVocabularyFormatter.cbvVocabulary(bareString, fieldName, format);
+  }
+
+  /**
+   * Method to replace the short names for keys/key extensions with AIs. Used during sensorElement
+   * deviceId, rawData, etc. during pre-hash string generation in event hash generator.
+   *
+   * @param gs1Identifier GS1 WebURI vocabulary whose identifier vocabulary needs to be replaced ex:
+   *     https://example.org/giai/401234599999
+   * @return it would return the corresponding converted identifier ex:
+   *     https://id.gs1.org/8004/401234599999
+   */
+  public String shortNameReplacer(String gs1Identifier) {
+    // If the identifier contains any key from hash map replace with key extension number
+    for (Map.Entry<String, String> entry : shortNameKeyIdentifier.entrySet()) {
+      if (gs1Identifier.contains(entry.getKey())) {
+        if (!entry.getKey().equals("/lot/") && !entry.getKey().equals("/ser/")) {
+          gs1Identifier =
+              gs1Identifier.replace(
+                  gs1Identifier.substring(0, gs1Identifier.indexOf(entry.getKey())),
+                  "https://id.gs1.org");
+        }
+        gs1Identifier = gs1Identifier.replace(entry.getKey(), entry.getValue());
+      }
+    }
+    return gs1Identifier;
   }
 }
