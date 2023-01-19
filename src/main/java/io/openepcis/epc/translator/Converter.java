@@ -15,6 +15,7 @@
  */
 package io.openepcis.epc.translator;
 
+import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.converter.*;
 import io.openepcis.epc.translator.exception.UnsupportedGS1IdentifierException;
 import io.openepcis.epc.translator.exception.ValidationException;
@@ -280,7 +281,7 @@ public class Converter {
    * @return it would return the corresponding converted identifier ex:
    *     https://id.gs1.org/8004/401234599999
    */
-  public String shortNameReplacer(String gs1Identifier) {
+  public final String shortNameReplacer(String gs1Identifier) {
     // If the identifier contains any key from hash map replace with key extension number
     for (Map.Entry<String, String> entry : shortNameKeyIdentifier.entrySet()) {
       if (gs1Identifier.contains(entry.getKey())) {
@@ -288,9 +289,17 @@ public class Converter {
           gs1Identifier =
               gs1Identifier.replace(
                   gs1Identifier.substring(0, gs1Identifier.indexOf(entry.getKey())),
-                  "https://id.gs1.org");
+                  Constants.GS1_IDENTIFIER_DOMAIN);
         }
         gs1Identifier = gs1Identifier.replace(entry.getKey(), entry.getValue());
+      } else if (gs1Identifier.contains(entry.getValue())
+          && (!entry.getKey().equals("/10/") && !entry.getKey().equals("/21/"))
+          && !gs1Identifier.startsWith(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        // If the identifier key is already present then only replace the domain to GS1
+        gs1Identifier =
+            gs1Identifier.replace(
+                gs1Identifier.substring(0, gs1Identifier.indexOf(entry.getValue())),
+                Constants.GS1_IDENTIFIER_DOMAIN);
       }
     }
     return gs1Identifier;

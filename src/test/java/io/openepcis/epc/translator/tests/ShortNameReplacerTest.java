@@ -66,5 +66,9 @@ public class ShortNameReplacerTest {
 
     gs1Identifier = "https://id.example/4343884394893";
     assertEquals("https://id.example/4343884394893", converter.shortNameReplacer(gs1Identifier));
+
+    gs1Identifier = "https://example.com/253/4012345000054987";
+    assertEquals(
+        "https://id.gs1.org/253/4012345000054987", converter.shortNameReplacer(gs1Identifier));
   }
 }
