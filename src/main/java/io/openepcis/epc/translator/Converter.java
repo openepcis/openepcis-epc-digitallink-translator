@@ -269,7 +269,7 @@ public class Converter {
       final String bareString, final String fieldName, final String format) {
     return bareString == null || bareString.trim().equals("") || fieldName == null
         ? bareString
-        : eventVocabularyFormatter.cbvVocabulary(bareString, fieldName, format);
+        : eventVocabularyFormatter.toCbvVocabulary(bareString, fieldName, format);
   }
 
   /**

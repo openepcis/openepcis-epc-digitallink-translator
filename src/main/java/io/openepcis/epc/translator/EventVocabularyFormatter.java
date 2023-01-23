@@ -16,11 +16,10 @@
 package io.openepcis.epc.translator;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.Map;
 
-@NoArgsConstructor(access = AccessLevel.NONE)
 public class EventVocabularyFormatter implements VocabularyFormat {
   private static final String WEB_URI_PREFIX = "https://ref.gs1.org/cbv/";
   private static final String GS1_WEB_URI = "https://gs1.org/voc/";
@@ -73,39 +72,57 @@ public class EventVocabularyFormatter implements VocabularyFormat {
           SRC_DEST_GS1_PREFIX,
           ERR_REASON_GS1_PREFIX);
 
+  private static final Map<String, String> CURIE_PREFIX_MAPPER = new HashMap<>();
+
+  public EventVocabularyFormatter() {
+    CURIE_PREFIX_MAPPER.put("bizstep", BIZ_STEP_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("disposition", DISPOSITION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("persistentdisposition", DISPOSITION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("biztransactionlist", BIZ_TRANSACTION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("biztransaction", BIZ_TRANSACTION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("sourcelist", SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("destinationlist", SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("source", SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("destination", SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("errordeclaration", ERR_REASON_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put("reason", ERR_REASON_CURIE_PREFIX);
+  }
+
   // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event
   // hash generator.
   public String canonicalWebURIVocabulary(final String urnVocabulary) {
 
+    String webURI;
+
     if (urnVocabulary.startsWith(BIZ_STEP_URN_PREFIX)) {
-      // For Business Step remove the urn:epcglobal:cbv:bizstep: and replace with
+      // Business Step remove the urn:epcglobal:cbv:bizstep: and replace with
       // https://ns.gs1.org/voc/Bizstep-
-      return BIZ_STEP_WEB_URI_PREFIX + urnVocabulary.substring(urnVocabulary.lastIndexOf(":") + 1);
+      webURI = BIZ_STEP_WEB_URI_PREFIX;
 
     } else if (urnVocabulary.startsWith(DISPOSITION_URN_PREFIX)) {
-      // For Disposition remove the urn:epcglobal:cbv:disp: and replace with
+      // Disposition remove the urn:epcglobal:cbv:disp: and replace with
       // https://ns.gs1.org/voc/Disp-
-      return DISPOSITION_WEB_URI_PREFIX
-          + urnVocabulary.substring(urnVocabulary.lastIndexOf(":") + 1);
+      webURI = DISPOSITION_WEB_URI_PREFIX;
 
     } else if (urnVocabulary.startsWith(BIZ_TRANSACTION_URN_PREFIX)) {
-      // For BizTransaction type remove the urn:epcglobal:cbv:btt and replace with
+      // BizTransaction type remove the urn:epcglobal:cbv:btt and replace with
       // https://ns.gs1.org/voc/BTT-
-      return BIZ_TRANSACTION_WEB_URI_PREFIX
-          + urnVocabulary.substring(urnVocabulary.lastIndexOf(":") + 1);
+      webURI = BIZ_TRANSACTION_WEB_URI_PREFIX;
 
     } else if (urnVocabulary.startsWith(SRC_DEST_URN_PREFIX)) {
-      // For Source and Destination remove the urn:epcglobal:cbv:sdt: and replace with
+      // Source and Destination remove the urn:epcglobal:cbv:sdt: and replace with
       // https://ns.gs1.org/voc/SDT-
-      return SRC_DEST_WEB_URI_PREFIX + urnVocabulary.substring(urnVocabulary.lastIndexOf(":") + 1);
+      webURI = SRC_DEST_WEB_URI_PREFIX;
 
     } else if (urnVocabulary.startsWith(ERR_REASON_URN_PREFIX)) {
       // For ErrorDeclaration reason remove the urn:epcglobal:cbv:er: and replace with
       // https://ns.gs1.org/voc/ER-
-      return ERR_REASON_WEB_URI_PREFIX
-          + urnVocabulary.substring(urnVocabulary.lastIndexOf(":") + 1);
+      webURI = ERR_REASON_WEB_URI_PREFIX;
+    } else {
+      return urnVocabulary;
     }
-    return urnVocabulary;
+
+    return webURI + urnVocabulary.substring(urnVocabulary.lastIndexOf(":") + 1);
   }
 
   // Method to convert the CBV WebURI formatted vocabularies into URN vocabulary. Used during
@@ -165,49 +182,67 @@ public class EventVocabularyFormatter implements VocabularyFormat {
 
   // Method to convert the BareString vocabularies into CBV formatted URN/WebURI vocabulary. Used
   // during JSON/JSON-LD -> XML conversion.
-  public String cbvVocabulary(
+  public String toCbvVocabulary(
       final String bareString, final String fieldName, final String format) {
+
+    String prefix;
+    String value = curieStringFinder(fieldName, bareString);
+
     // Check for the fieldName and based on that return the respective CBV formatted vocabulary in
     // either WebURI or URN format.
-    if (fieldName.equals("bizStep")) {
-      // Convert BareString bizStep into CBV formatted URN/WebURI bizStep
-      return format.equalsIgnoreCase(WEBURI_FORMATTED)
-          ? BIZ_STEP_WEB_URI_PREFIX + bareString
-          : BIZ_STEP_URN_PREFIX + bareString;
+    switch (fieldName.toLowerCase()) {
+      case "bizstep":
+        // Convert BareString bizStep into CBV formatted URN/WebURI bizStep
+        prefix =
+            format.equalsIgnoreCase(WEBURI_FORMATTED)
+                ? BIZ_STEP_WEB_URI_PREFIX
+                : BIZ_STEP_URN_PREFIX;
+        break;
+      case "disposition", "persistentdisposition":
+        // Convert BareString Disposition/PersistentDisposition into CBV formatted URN/WebURI
+        prefix =
+            format.equalsIgnoreCase(WEBURI_FORMATTED)
+                ? DISPOSITION_WEB_URI_PREFIX
+                : DISPOSITION_URN_PREFIX;
+        break;
+      case "biztransactionlist", "biztransaction":
+        // Convert BareString bizTransaction type into CBV formatted URN/WebURI bizTransaction
+        prefix =
+            format.equalsIgnoreCase(WEBURI_FORMATTED)
+                ? BIZ_TRANSACTION_WEB_URI_PREFIX
+                : BIZ_TRANSACTION_URN_PREFIX;
+        break;
+      case "sourcelist", "destinationlist", "source", "destination":
+        // Convert BareString Source/Destination type into CBV formatted URN/WebURI
+        // Source/Destination
+        prefix =
+            format.equalsIgnoreCase(WEBURI_FORMATTED)
+                ? SRC_DEST_WEB_URI_PREFIX
+                : SRC_DEST_URN_PREFIX;
+        break;
+      case "errordeclaration", "reason":
+        // Convert BareString ErrorDeclaration Reason into CBV formatted URN/WebURI ErrorDeclaration
+        // Reason
+        prefix =
+            format.equalsIgnoreCase(WEBURI_FORMATTED)
+                ? ERR_REASON_WEB_URI_PREFIX
+                : ERR_REASON_URN_PREFIX;
+        break;
+      default:
+        return bareString;
+    }
+    return prefix + value;
+  }
 
-    } else if (fieldName.equalsIgnoreCase("disposition")
-        || fieldName.equalsIgnoreCase("persistentDisposition")) {
-      // Convert BareString Disposition/PersistentDisposition into CBV formatted URN/WebURI
-      // Disposition/PersistentDisposition
-      return format.equalsIgnoreCase(WEBURI_FORMATTED)
-          ? DISPOSITION_WEB_URI_PREFIX + bareString
-          : DISPOSITION_URN_PREFIX + bareString;
+  // Method to check if the value matches any of the curie string if so format according to curie
+  // string
+  private String curieStringFinder(final String fieldName, String fieldValue) {
+    String prefix = CURIE_PREFIX_MAPPER.get(fieldName.toLowerCase());
 
-    } else if (fieldName.equalsIgnoreCase("bizTransactionList")
-        || fieldName.equalsIgnoreCase("bizTransaction")) {
-      // Convert BareString bizTransaction type into CBV formatted URN/WebURI bizTransaction
-      return format.equalsIgnoreCase(WEBURI_FORMATTED)
-          ? BIZ_TRANSACTION_WEB_URI_PREFIX + bareString
-          : BIZ_TRANSACTION_URN_PREFIX + bareString;
-
-    } else if (fieldName.equalsIgnoreCase("sourceList")
-        || fieldName.equalsIgnoreCase("destinationList")
-        || fieldName.equalsIgnoreCase("source")
-        || fieldName.equalsIgnoreCase("destination")) {
-      // Convert BareString Source/Destination type into CBV formatted URN/WebURI Source/Destination
-      return format.equalsIgnoreCase(WEBURI_FORMATTED)
-          ? SRC_DEST_WEB_URI_PREFIX + bareString
-          : SRC_DEST_URN_PREFIX + bareString;
-
-    } else if (fieldName.equalsIgnoreCase("errorDeclaration")
-        || fieldName.equalsIgnoreCase("reason")) {
-      // Convert BareString ErrorDeclaration Reason into CBV formatted URN/WebURI ErrorDeclaration
-      // Reason
-      return format.equalsIgnoreCase(WEBURI_FORMATTED)
-          ? ERR_REASON_WEB_URI_PREFIX + bareString
-          : ERR_REASON_URN_PREFIX + bareString;
+    if (prefix == null) {
+      return fieldValue;
     }
 
-    return bareString;
+    return fieldValue.contains(prefix) ? fieldValue.substring(prefix.length()) : fieldValue;
   }
 }
