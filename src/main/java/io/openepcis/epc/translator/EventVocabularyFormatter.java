@@ -15,6 +15,7 @@
  */
 package io.openepcis.epc.translator;
 
+import io.openepcis.epc.translator.constants.Constants;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,9 @@ public class EventVocabularyFormatter implements VocabularyFormat {
 
   private static final Map<String, String> CURIE_PREFIX_MAPPER = new HashMap<>();
 
+  private final Map<String, String> shortNameKeyIdentifier = new HashMap<>();
+  private final List<String> excludeSerial = List.of("/lot/", "/ser/", "/10/", "/21/");
+
   public EventVocabularyFormatter() {
     CURIE_PREFIX_MAPPER.put("bizstep", BIZ_STEP_CURIE_PREFIX);
     CURIE_PREFIX_MAPPER.put("disposition", DISPOSITION_CURIE_PREFIX);
@@ -86,6 +90,25 @@ public class EventVocabularyFormatter implements VocabularyFormat {
     CURIE_PREFIX_MAPPER.put("destination", SRC_DEST_CURIE_PREFIX);
     CURIE_PREFIX_MAPPER.put("errordeclaration", ERR_REASON_CURIE_PREFIX);
     CURIE_PREFIX_MAPPER.put("reason", ERR_REASON_CURIE_PREFIX);
+
+    // Add the key value pair for the identifier
+    shortNameKeyIdentifier.put("/gtin/", "/01/");
+    shortNameKeyIdentifier.put("/itip/", "/8006/");
+    shortNameKeyIdentifier.put("/cpi/", "/8010/");
+    shortNameKeyIdentifier.put("/gln/", "/414/");
+    shortNameKeyIdentifier.put("/party/", "/417/");
+    shortNameKeyIdentifier.put("/gsrnp/", "/8017/");
+    shortNameKeyIdentifier.put("/gsrn/", "/8018/");
+    shortNameKeyIdentifier.put("/gcn/", "/255/");
+    shortNameKeyIdentifier.put("/sscc/", "/00/");
+    shortNameKeyIdentifier.put("/gdti/", "/253/");
+    shortNameKeyIdentifier.put("/ginc/", "/401/");
+    shortNameKeyIdentifier.put("/gsin/", "/402/");
+    shortNameKeyIdentifier.put("/grai/", "/8003/");
+    shortNameKeyIdentifier.put("/giai/", "/8004/");
+    shortNameKeyIdentifier.put("/cpv/", "/22/");
+    shortNameKeyIdentifier.put("/lot/", "/10/");
+    shortNameKeyIdentifier.put("/ser/", "/21/");
   }
 
   // Method to convert the CBV URN formatted vocabularies into WebURI vocabulary. Used during event
@@ -244,5 +267,30 @@ public class EventVocabularyFormatter implements VocabularyFormat {
     }
 
     return fieldValue.contains(prefix) ? fieldValue.substring(prefix.length()) : fieldValue;
+  }
+
+  // Method to replace the domain and key with respective identifier during preHash generation
+  public final String shortNameReplacer(String gs1Identifier) {
+    // If the identifier contains any key from hash map replace with key extension number
+    for (Map.Entry<String, String> entry : shortNameKeyIdentifier.entrySet()) {
+      if (gs1Identifier.contains(entry.getKey())) {
+        if (!excludeSerial.contains(entry.getKey())) {
+          gs1Identifier =
+              gs1Identifier.replace(
+                  gs1Identifier.substring(0, gs1Identifier.indexOf(entry.getKey())),
+                  Constants.GS1_IDENTIFIER_DOMAIN);
+        }
+        gs1Identifier = gs1Identifier.replace(entry.getKey(), entry.getValue());
+      } else if (gs1Identifier.contains(entry.getValue())
+          && (!excludeSerial.contains(entry.getValue()))
+          && !gs1Identifier.startsWith(Constants.GS1_IDENTIFIER_DOMAIN)) {
+        // If the identifier key is already present then only replace the domain to GS1
+        gs1Identifier =
+            gs1Identifier.replace(
+                gs1Identifier.substring(0, gs1Identifier.indexOf(entry.getValue())),
+                Constants.GS1_IDENTIFIER_DOMAIN);
+      }
+    }
+    return gs1Identifier;
   }
 }
