@@ -209,7 +209,7 @@ public class EventVocabularyFormatter implements VocabularyFormat {
       final String bareString, final String fieldName, final String format) {
 
     String prefix;
-    String value = curieStringFinder(fieldName, bareString);
+    String bareStringValue = curieStringFinder(fieldName, bareString);
 
     // Check for the fieldName and based on that return the respective CBV formatted vocabulary in
     // either WebURI or URN format.
@@ -254,7 +254,12 @@ public class EventVocabularyFormatter implements VocabularyFormat {
       default:
         return bareString;
     }
-    return prefix + value;
+
+    // If bareString value contains any of the GS1 standard character then return the same if not
+    // send transformed value with prefix.
+    return bareStringValue.contains(":") || bareStringValue.contains("/")
+        ? bareStringValue
+        : prefix + bareStringValue;
   }
 
   // Method to check if the value matches any of the curie string if so format according to curie

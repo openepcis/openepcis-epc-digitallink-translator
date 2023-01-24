@@ -67,6 +67,10 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:epcglobal:cbv:bizstep:shipping",
         converter.toCbvVocabulary("cbv:BizStep-shipping", "bizStep", "urn"));
+
+    assertEquals(
+        "urn:gs1:epcisapp:rail:BizStep:shipping",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:BizStep:shipping", "bizStep", "urn"));
   }
 
   @Test
@@ -116,6 +120,10 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:epcglobal:cbv:disp:in_progress",
         converter.toCbvVocabulary("cbv:Disp-in_progress", "disposition", "Urn"));
+
+    assertEquals(
+        "urn:gs1:epcisapp:rail:Disp:in_progress",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:Disp:in_progress", "disposition", "urn"));
   }
 
   @Test
@@ -156,6 +164,10 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:epcglobal:cbv:btt:inv",
         converter.toCbvVocabulary("cbv:BTT-inv", "bizTransaction", "Urn"));
+
+    assertEquals(
+        "urn:gs1:epcisapp:rail:btt:passage",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:btt:passage", "bizTransaction", "weburi"));
   }
 
   @Test
@@ -220,6 +232,10 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:epcglobal:cbv:sdt:location",
         converter.toCbvVocabulary("cbv:SDT-location", "Destination", "Urn"));
+
+    assertEquals(
+        "urn:gs1:epcisapp:rail:SDT:location",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:SDT:location", "destination", "urn"));
   }
 
   @Test
@@ -258,5 +274,9 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:epcglobal:cbv:er:did_not_occur",
         converter.toCbvVocabulary("cbv:ER-did_not_occur", "reason", "Urn"));
+
+    assertEquals(
+        "urn:gs1:epcisapp:rail:er:did_not_occur",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:er:did_not_occur", "reason", "WebURI"));
   }
 }
