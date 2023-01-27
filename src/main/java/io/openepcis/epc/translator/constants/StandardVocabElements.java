@@ -18,13 +18,13 @@ package io.openepcis.epc.translator.constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 
 public enum StandardVocabElements {
-  BIZ_STEP("urn:epcglobal:cbv:bizstep:", "https://ns.gs1.org/cbv/Bizstep-"),
-  DISPOSITION("urn:epcglobal:cbv:disp:", "https://ns.gs1.org/cbv/Disp-"),
-  BIZ_TRANSACTION_TYPE("urn:epcglobal:cbv:btt:", "https://ns.gs1.org/cbv/BTT-"),
-  SOURCE_DEST_TYPE("urn:epcglobal:cbv:sdt:", "https://ns.gs1.org/cbv/SDT-"),
-  ERROR_REASON("urn:epcglobal:cbv:er:", "https://ns.gs1.org/cbv/ER-"),
-  MEASUREMENT_TYPE("gs1:", "https://gs1.org/voc/"),
-  ALERT_TYPE("gs1:", "https://gs1.org/voc/");
+  BIZ_STEP("urn:epcglobal:cbv:bizstep:", Constants.GS1_CBV_DOMAIN + "Bizstep-"),
+  DISPOSITION("urn:epcglobal:cbv:disp:", Constants.GS1_CBV_DOMAIN + "Disp-"),
+  BIZ_TRANSACTION_TYPE("urn:epcglobal:cbv:btt:", Constants.GS1_CBV_DOMAIN + "BTT-"),
+  SOURCE_DEST_TYPE("urn:epcglobal:cbv:sdt:", Constants.GS1_CBV_DOMAIN + "SDT-"),
+  ERROR_REASON("urn:epcglobal:cbv:er:", Constants.GS1_CBV_DOMAIN + "ER-"),
+  MEASUREMENT_TYPE("gs1:", Constants.GS1_VOC_DOMAIN),
+  ALERT_TYPE("gs1:", Constants.GS1_VOC_DOMAIN);
 
   private final String urnPrefix;
   private final String dlPrefix;

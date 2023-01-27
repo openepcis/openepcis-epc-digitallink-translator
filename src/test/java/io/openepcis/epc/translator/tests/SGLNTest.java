@@ -70,14 +70,12 @@ public class SGLNTest {
         "https://id.gs1.org/414/4374736473640/254/\"%&'()*+,-./19:;<=>?",
         converter.toURI("urn:epc:id:sgln:437473647364..\"%&'()*+,-./19:;<=>?"));
     assertEquals(
-        "https://id.gs1.org/414/4374736473640/254/0",
-        converter.toURI("urn:epc:id:sgln:437473647364..0"));
+        "https://id.gs1.org/414/4374736473640", converter.toURI("urn:epc:id:sgln:437473647364..0"));
     assertEquals(
         "https://id.gs1.org/414/7857834384782/254/0394903",
         converter.toURI("urn:epc:id:sgln:785783.438478.0394903"));
     assertEquals(
-        "https://id.gs1.org/414/4374736473640/254/0",
-        converter.toURI("urn:epc:id:sgln:4374736473.64.0"));
+        "https://id.gs1.org/414/4374736473640", converter.toURI("urn:epc:id:sgln:4374736473.64.0"));
 
     // SGLN URI with invalid format
     sgln = "hps://id.gs1.org/414/1234567890123/254/1111";

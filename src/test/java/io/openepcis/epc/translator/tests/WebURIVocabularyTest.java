@@ -81,6 +81,9 @@ public class WebURIVocabularyTest {
     assertEquals(
         "urn:example:department:disposition:custom_disposition",
         converter.toWebURIVocabulary(disposition));
+
+    assertEquals(null, converter.toWebURIVocabulary(null));
+    assertEquals("", converter.toWebURIVocabulary(""));
   }
 
   @Test

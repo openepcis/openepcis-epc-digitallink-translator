@@ -21,6 +21,7 @@ import io.openepcis.epc.translator.exception.ValidationException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 public class Converter {
 
@@ -201,7 +202,7 @@ public class Converter {
    *     or https://ref.gs1.org/voc/BTT-po
    */
   public String toWebURIVocabulary(final String urnVocabulary) {
-    return urnVocabulary == null || urnVocabulary.trim().equals("")
+    return StringUtils.isBlank(urnVocabulary)
         ? urnVocabulary
         : eventVocabularyFormatter.canonicalWebURIVocabulary(urnVocabulary);
   }
@@ -215,7 +216,7 @@ public class Converter {
    *     urn:epcglobal:cbv:btt:po.
    */
   public String toUrnVocabulary(final String webUriVocabulary) {
-    return webUriVocabulary == null || webUriVocabulary.trim().equals("")
+    return StringUtils.isBlank(webUriVocabulary)
         ? webUriVocabulary
         : eventVocabularyFormatter.canonicalString(webUriVocabulary);
   }
@@ -228,7 +229,7 @@ public class Converter {
    * @return returns the converted bare string vocabulary ex: departing or receiving.
    */
   public String toBareStringVocabulary(final String eventVocabulary) {
-    return eventVocabulary == null || eventVocabulary.trim().equals("")
+    return StringUtils.isBlank(eventVocabulary)
         ? eventVocabulary
         : eventVocabularyFormatter.bareString(eventVocabulary);
   }
@@ -244,8 +245,25 @@ public class Converter {
    */
   public String toCbvVocabulary(
       final String bareString, final String fieldName, final String format) {
-    return bareString == null || bareString.trim().equals("") || fieldName == null
+    return StringUtils.isBlank(bareString)
+            || StringUtils.isBlank(fieldName)
+            || StringUtils.isBlank(format)
         ? bareString
-        : eventVocabularyFormatter.cbvVocabulary(bareString, fieldName, format);
+        : eventVocabularyFormatter.toCbvVocabulary(bareString, fieldName, format);
+  }
+
+  /**
+   * Method to replace the short names for keys/key extensions with AIs. Used during sensorElement
+   * deviceId, rawData, etc. during pre-hash string generation in event hash generator.
+   *
+   * @param gs1Identifier GS1 WebURI vocabulary whose identifier vocabulary needs to be replaced ex:
+   *     https://example.org/giai/401234599999
+   * @return it would return the corresponding converted identifier ex:
+   *     https://id.gs1.org/8004/401234599999
+   */
+  public final String shortNameReplacer(final String gs1Identifier) {
+    return StringUtils.isBlank(gs1Identifier)
+        ? gs1Identifier
+        : eventVocabularyFormatter.shortNameReplacer(gs1Identifier);
   }
 }

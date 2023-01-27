@@ -63,7 +63,11 @@ public class SGLNConverter implements Converter {
       if (serial.length() == 0) {
         return Constants.GS1_IDENTIFIER_DOMAIN + SGLN_URI_PART + sgln;
       } else {
-        return Constants.GS1_IDENTIFIER_DOMAIN + SGLN_URI_PART + sgln + SGLN_SERIAL_PART + serial;
+        // Add serial part if not 0
+        return Constants.GS1_IDENTIFIER_DOMAIN
+            + SGLN_URI_PART
+            + sgln
+            + ((!serial.equals("0")) ? SGLN_SERIAL_PART + serial : "");
       }
     } catch (Exception exception) {
       throw new ValidationException(
