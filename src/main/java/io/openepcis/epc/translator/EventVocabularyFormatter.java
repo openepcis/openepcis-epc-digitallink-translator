@@ -15,6 +15,8 @@
  */
 package io.openepcis.epc.translator;
 
+import static io.openepcis.epc.translator.constants.Constants.*;
+
 import io.openepcis.epc.translator.constants.Constants;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,30 +24,26 @@ import java.util.List;
 import java.util.Map;
 
 public class EventVocabularyFormatter implements VocabularyFormat {
-  private static final String WEB_URI_PREFIX = "https://ref.gs1.org/cbv/";
-  private static final String GS1_WEB_URI = "https://gs1.org/voc/";
-  private static final String URN_PREFIX = "urn:epcglobal:cbv:";
-  private static final String WEBURI_FORMATTED = "WebURI";
-  private static final String BIZ_STEP_URN_PREFIX = URN_PREFIX + "bizstep:";
+  private static final String BIZ_STEP_URN_PREFIX = GS1_URN_CBV_PREFIX + "bizstep:";
   private static final String BIZ_STEP_CURIE_PREFIX = "cbv:BizStep-";
-  private static final String DISPOSITION_URN_PREFIX = URN_PREFIX + "disp:";
+  private static final String DISPOSITION_URN_PREFIX = GS1_URN_CBV_PREFIX + "disp:";
   private static final String DISPOSITION_CURIE_PREFIX = "cbv:Disp-";
-  private static final String BIZ_TRANSACTION_URN_PREFIX = URN_PREFIX + "btt:";
+  private static final String BIZ_TRANSACTION_URN_PREFIX = GS1_URN_CBV_PREFIX + "btt:";
   private static final String BIZ_TRANSACTION_CURIE_PREFIX = "cbv:BTT-";
-  private static final String SRC_DEST_URN_PREFIX = URN_PREFIX + "sdt:";
+  private static final String SRC_DEST_URN_PREFIX = GS1_URN_CBV_PREFIX + "sdt:";
   private static final String SRC_DEST_CURIE_PREFIX = "cbv:SDT-";
-  private static final String ERR_REASON_URN_PREFIX = URN_PREFIX + "er:";
+  private static final String ERR_REASON_URN_PREFIX = GS1_URN_CBV_PREFIX + "er:";
   private static final String ERR_REASON_CURIE_PREFIX = "cbv:ER-";
-  private static final String BIZ_STEP_WEB_URI_PREFIX = WEB_URI_PREFIX + "BizStep-";
-  private static final String DISPOSITION_WEB_URI_PREFIX = WEB_URI_PREFIX + "Disp-";
-  private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = WEB_URI_PREFIX + "BTT-";
-  private static final String SRC_DEST_WEB_URI_PREFIX = WEB_URI_PREFIX + "SDT-";
-  private static final String ERR_REASON_WEB_URI_PREFIX = WEB_URI_PREFIX + "ER-";
-  private static final String BIZ_STEP_GS1_PREFIX = GS1_WEB_URI + "BizStep-";
-  private static final String DISPOSITION_GS1_PREFIX = GS1_WEB_URI + "Disp-";
-  private static final String BIZ_TRANSACTION_GS1_PREFIX = GS1_WEB_URI + "BTT-";
-  private static final String SRC_DEST_GS1_PREFIX = GS1_WEB_URI + "SDT-";
-  private static final String ERR_REASON_GS1_PREFIX = GS1_WEB_URI + "ER-";
+  private static final String BIZ_STEP_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "BizStep-";
+  private static final String DISPOSITION_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "Disp-";
+  private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "BTT-";
+  private static final String SRC_DEST_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "SDT-";
+  private static final String ERR_REASON_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "ER-";
+  private static final String BIZ_STEP_GS1_PREFIX = GS1_VOC_DOMAIN + "BizStep-";
+  private static final String DISPOSITION_GS1_PREFIX = GS1_VOC_DOMAIN + "Disp-";
+  private static final String BIZ_TRANSACTION_GS1_PREFIX = GS1_VOC_DOMAIN + "BTT-";
+  private static final String SRC_DEST_GS1_PREFIX = GS1_VOC_DOMAIN + "SDT-";
+  private static final String ERR_REASON_GS1_PREFIX = GS1_VOC_DOMAIN + "ER-";
   private static final List<String> URN_FORMATTED_CBV_STRING =
       Arrays.asList(
           BIZ_STEP_URN_PREFIX,
@@ -75,10 +73,10 @@ public class EventVocabularyFormatter implements VocabularyFormat {
 
   private static final Map<String, String> CURIE_PREFIX_MAPPER = new HashMap<>();
 
-  private final Map<String, String> shortNameKeyIdentifier = new HashMap<>();
-  private final List<String> excludeSerial = List.of("/lot/", "/ser/", "/10/", "/21/");
+  private static final Map<String, String> shortNameKeyIdentifier = new HashMap<>();
+  private static final List<String> excludeSerial = List.of("/lot/", "/ser/", "/10/", "/21/");
 
-  public EventVocabularyFormatter() {
+  static {
     CURIE_PREFIX_MAPPER.put("bizstep", BIZ_STEP_CURIE_PREFIX);
     CURIE_PREFIX_MAPPER.put("disposition", DISPOSITION_CURIE_PREFIX);
     CURIE_PREFIX_MAPPER.put("persistentdisposition", DISPOSITION_CURIE_PREFIX);
@@ -207,7 +205,6 @@ public class EventVocabularyFormatter implements VocabularyFormat {
   // during JSON/JSON-LD -> XML conversion.
   public String toCbvVocabulary(
       final String bareString, final String fieldName, final String format) {
-
     String prefix;
     String bareStringValue = curieStringFinder(fieldName, bareString);
 
@@ -265,6 +262,7 @@ public class EventVocabularyFormatter implements VocabularyFormat {
   // Method to check if the value matches any of the curie string if so format according to curie
   // string
   private String curieStringFinder(final String fieldName, String fieldValue) {
+
     String prefix = CURIE_PREFIX_MAPPER.get(fieldName.toLowerCase());
 
     if (prefix == null) {

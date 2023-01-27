@@ -73,6 +73,9 @@ public class UrnVocabularyTest {
     assertEquals(
         "https://example.com/department/My_Own_Disposition",
         converter.toUrnVocabulary(disposition));
+
+    assertEquals(null, converter.toUrnVocabulary(null));
+    assertEquals("", converter.toUrnVocabulary(""));
   }
 
   @Test

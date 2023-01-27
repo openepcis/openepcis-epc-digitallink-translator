@@ -102,6 +102,7 @@ public class BareStringVocabularyTest {
     assertEquals("returned", converter.toBareStringVocabulary(disposition));
 
     assertEquals("cbv:in_progress", converter.toBareStringVocabulary("cbv:in_progress"));
+    assertNull(converter.toBareStringVocabulary(null));
   }
 
   @Test
@@ -144,6 +145,7 @@ public class BareStringVocabularyTest {
     assertEquals("bol", converter.toBareStringVocabulary(bizTransactionType));
 
     assertEquals("cbv:desadv", converter.toBareStringVocabulary("cbv:desadv"));
+    assertNull(converter.toBareStringVocabulary(null));
   }
 
   @Test
@@ -192,6 +194,7 @@ public class BareStringVocabularyTest {
     assertEquals("location", converter.toBareStringVocabulary(srcDestinationString));
 
     assertEquals("cbv:owning_party", converter.toBareStringVocabulary("cbv:owning_party"));
+    assertNull(converter.toBareStringVocabulary(null));
   }
 
   @Test

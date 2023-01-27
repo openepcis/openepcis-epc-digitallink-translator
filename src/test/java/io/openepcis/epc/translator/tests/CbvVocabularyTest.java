@@ -71,6 +71,14 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:gs1:epcisapp:rail:BizStep:shipping",
         converter.toCbvVocabulary("urn:gs1:epcisapp:rail:BizStep:shipping", "bizStep", "urn"));
+
+    assertNull(converter.toCbvVocabulary(null, "bizStep", "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:BizStep:shipping",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:BizStep:shipping", null, "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:BizStep:shipping",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:BizStep:shipping", "bizStep", null));
   }
 
   @Test
@@ -124,6 +132,15 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:gs1:epcisapp:rail:Disp:in_progress",
         converter.toCbvVocabulary("urn:gs1:epcisapp:rail:Disp:in_progress", "disposition", "urn"));
+
+    assertNull(converter.toCbvVocabulary(null, "disposition", "urn"));
+    assertNull(converter.toCbvVocabulary(null, "disposition", "webURI"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:Disp:in_progress",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:Disp:in_progress", null, "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:Disp:in_progress",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:Disp:in_progress", "disposition", null));
   }
 
   @Test
@@ -168,6 +185,15 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:gs1:epcisapp:rail:btt:passage",
         converter.toCbvVocabulary("urn:gs1:epcisapp:rail:btt:passage", "bizTransaction", "weburi"));
+
+    assertNull(converter.toCbvVocabulary(null, "bizTransaction", "urn"));
+    assertNull(converter.toCbvVocabulary(null, "bizTransaction", "webURI"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:btt:passage",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:btt:passage", null, "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:btt:passage",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:btt:passage", "bizTransaction", null));
   }
 
   @Test
@@ -236,6 +262,16 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:gs1:epcisapp:rail:SDT:location",
         converter.toCbvVocabulary("urn:gs1:epcisapp:rail:SDT:location", "destination", "urn"));
+
+    assertNull(converter.toCbvVocabulary(null, "destination", "urn"));
+    assertNull(converter.toCbvVocabulary(null, "destination", "webURI"));
+    assertEquals(" ", converter.toCbvVocabulary(" ", null, "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:SDT:location",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:SDT:location", null, "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:SDT:location",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:SDT:location", "destination", null));
   }
 
   @Test
@@ -278,5 +314,15 @@ public class CbvVocabularyTest {
     assertEquals(
         "urn:gs1:epcisapp:rail:er:did_not_occur",
         converter.toCbvVocabulary("urn:gs1:epcisapp:rail:er:did_not_occur", "reason", "WebURI"));
+
+    assertNull(converter.toCbvVocabulary(null, "reason", "urn"));
+    assertNull(converter.toCbvVocabulary(null, "reason", "webURI"));
+    assertEquals(" ", converter.toCbvVocabulary(" ", "reason", "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:er:did_not_occur",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:er:did_not_occur", null, "urn"));
+    assertEquals(
+        "urn:gs1:epcisapp:rail:er:did_not_occur",
+        converter.toCbvVocabulary("urn:gs1:epcisapp:rail:er:did_not_occur", "reason", null));
   }
 }
