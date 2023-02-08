@@ -15,61 +15,41 @@
  */
 package io.openepcis.epc.translator;
 
-import static io.openepcis.epc.translator.constants.Constants.*;
+import static io.openepcis.constants.EPCIS.WEBURI;
 
-import io.openepcis.epc.translator.constants.Constants;
+import io.openepcis.constants.EPCIS;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class EventVocabularyFormatter implements VocabularyFormat {
-  private static final String BIZ_STEP_URN_PREFIX = GS1_URN_CBV_PREFIX + "bizstep:";
-  private static final String BIZ_STEP_CURIE_PREFIX = "cbv:BizStep-";
-  private static final String DISPOSITION_URN_PREFIX = GS1_URN_CBV_PREFIX + "disp:";
-  private static final String DISPOSITION_CURIE_PREFIX = "cbv:Disp-";
-  private static final String BIZ_TRANSACTION_URN_PREFIX = GS1_URN_CBV_PREFIX + "btt:";
-  private static final String BIZ_TRANSACTION_CURIE_PREFIX = "cbv:BTT-";
-  private static final String SRC_DEST_URN_PREFIX = GS1_URN_CBV_PREFIX + "sdt:";
-  private static final String SRC_DEST_CURIE_PREFIX = "cbv:SDT-";
-  private static final String ERR_REASON_URN_PREFIX = GS1_URN_CBV_PREFIX + "er:";
-  private static final String ERR_REASON_CURIE_PREFIX = "cbv:ER-";
-  private static final String BIZ_STEP_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "BizStep-";
-  private static final String DISPOSITION_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "Disp-";
-  private static final String BIZ_TRANSACTION_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "BTT-";
-  private static final String SRC_DEST_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "SDT-";
-  private static final String ERR_REASON_WEB_URI_PREFIX = GS1_CBV_DOMAIN + "ER-";
-  private static final String BIZ_STEP_GS1_PREFIX = GS1_VOC_DOMAIN + "BizStep-";
-  private static final String DISPOSITION_GS1_PREFIX = GS1_VOC_DOMAIN + "Disp-";
-  private static final String BIZ_TRANSACTION_GS1_PREFIX = GS1_VOC_DOMAIN + "BTT-";
-  private static final String SRC_DEST_GS1_PREFIX = GS1_VOC_DOMAIN + "SDT-";
-  private static final String ERR_REASON_GS1_PREFIX = GS1_VOC_DOMAIN + "ER-";
   private static final List<String> URN_FORMATTED_CBV_STRING =
       Arrays.asList(
-          BIZ_STEP_URN_PREFIX,
-          DISPOSITION_URN_PREFIX,
-          BIZ_TRANSACTION_URN_PREFIX,
-          SRC_DEST_URN_PREFIX,
-          ERR_REASON_URN_PREFIX);
+          EPCIS.BIZ_STEP_URN_PREFIX,
+          EPCIS.DISPOSITION_URN_PREFIX,
+          EPCIS.BIZ_TRANSACTION_URN_PREFIX,
+          EPCIS.SRC_DEST_URN_PREFIX,
+          EPCIS.ERROR_REASON_URN_PREFIX);
   private static final List<String> CURIE_FORMATTED_CBV_STRING =
       Arrays.asList(
-          BIZ_STEP_CURIE_PREFIX,
-          DISPOSITION_CURIE_PREFIX,
-          BIZ_TRANSACTION_CURIE_PREFIX,
-          SRC_DEST_CURIE_PREFIX,
-          ERR_REASON_CURIE_PREFIX);
+          EPCIS.BIZ_STEP_CURIE_PREFIX,
+          EPCIS.DISPOSITION_CURIE_PREFIX,
+          EPCIS.BIZ_TRANSACTION_CURIE_PREFIX,
+          EPCIS.SRC_DEST_CURIE_PREFIX,
+          EPCIS.ERR_REASON_CURIE_PREFIX);
   private static final List<String> WEBURI_FORMATTED_CBV_STRING =
       Arrays.asList(
-          BIZ_STEP_WEB_URI_PREFIX,
-          DISPOSITION_WEB_URI_PREFIX,
-          BIZ_TRANSACTION_WEB_URI_PREFIX,
-          SRC_DEST_WEB_URI_PREFIX,
-          ERR_REASON_WEB_URI_PREFIX,
-          BIZ_STEP_GS1_PREFIX,
-          DISPOSITION_GS1_PREFIX,
-          BIZ_TRANSACTION_GS1_PREFIX,
-          SRC_DEST_GS1_PREFIX,
-          ERR_REASON_GS1_PREFIX);
+          EPCIS.BIZ_STEP_WEBURI_CBV_PREFIX,
+          EPCIS.DISPOSITION_WEBURI_CBV_PREFIX,
+          EPCIS.BIZ_TRANSACTION_WEBURI_CBV_PREFIX,
+          EPCIS.SRC_DEST_WEBURI_CBV_PREFIX,
+          EPCIS.ERR_REASON_WEBURI_CBV_PREFIX,
+          EPCIS.BIZ_STEP_WEBURI_VOC_PREFIX,
+          EPCIS.DISPOSITION_WEBURI_VOC_PREFIX,
+          EPCIS.BIZ_TRANSACTION_WEBURI_VOC_PREFIX,
+          EPCIS.SRC_DEST_WEBURI_VOC_PREFIX,
+          EPCIS.ERR_REASON_WEBURI_VOC_PREFIX);
 
   private static final Map<String, String> CURIE_PREFIX_MAPPER = new HashMap<>();
 
@@ -77,17 +57,20 @@ public class EventVocabularyFormatter implements VocabularyFormat {
   private static final List<String> excludeSerial = List.of("/lot/", "/ser/", "/10/", "/21/");
 
   static {
-    CURIE_PREFIX_MAPPER.put("bizstep", BIZ_STEP_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("disposition", DISPOSITION_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("persistentdisposition", DISPOSITION_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("biztransactionlist", BIZ_TRANSACTION_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("biztransaction", BIZ_TRANSACTION_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("sourcelist", SRC_DEST_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("destinationlist", SRC_DEST_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("source", SRC_DEST_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("destination", SRC_DEST_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("errordeclaration", ERR_REASON_CURIE_PREFIX);
-    CURIE_PREFIX_MAPPER.put("reason", ERR_REASON_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.BIZ_STEP.toLowerCase(), EPCIS.BIZ_STEP_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.DISPOSITION, EPCIS.DISPOSITION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(
+        EPCIS.PERSISTENT_DISPOSITION.toLowerCase(), EPCIS.DISPOSITION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(
+        EPCIS.BIZ_TRANSACTION_LIST.toLowerCase(), EPCIS.BIZ_TRANSACTION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(
+        EPCIS.BIZ_TRANSACTION.toLowerCase(), EPCIS.BIZ_TRANSACTION_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.SOURCE_LIST.toLowerCase(), EPCIS.SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.DESTINATION_LIST.toLowerCase(), EPCIS.SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.SOURCE, EPCIS.SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.DESTINATION, EPCIS.SRC_DEST_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.ERROR_DECLARATION.toLowerCase(), EPCIS.ERR_REASON_CURIE_PREFIX);
+    CURIE_PREFIX_MAPPER.put(EPCIS.REASON, EPCIS.ERR_REASON_CURIE_PREFIX);
 
     // Add the key value pair for the identifier
     shortNameKeyIdentifier.put("/gtin/", "/01/");
@@ -115,30 +98,30 @@ public class EventVocabularyFormatter implements VocabularyFormat {
 
     String webURI;
 
-    if (urnVocabulary.startsWith(BIZ_STEP_URN_PREFIX)) {
+    if (urnVocabulary.startsWith(EPCIS.BIZ_STEP_URN_PREFIX)) {
       // Business Step remove the urn:epcglobal:cbv:bizstep: and replace with
       // https://ns.gs1.org/voc/Bizstep-
-      webURI = BIZ_STEP_WEB_URI_PREFIX;
+      webURI = EPCIS.BIZ_STEP_WEBURI_CBV_PREFIX;
 
-    } else if (urnVocabulary.startsWith(DISPOSITION_URN_PREFIX)) {
+    } else if (urnVocabulary.startsWith(EPCIS.DISPOSITION_URN_PREFIX)) {
       // Disposition remove the urn:epcglobal:cbv:disp: and replace with
       // https://ns.gs1.org/voc/Disp-
-      webURI = DISPOSITION_WEB_URI_PREFIX;
+      webURI = EPCIS.DISPOSITION_WEBURI_CBV_PREFIX;
 
-    } else if (urnVocabulary.startsWith(BIZ_TRANSACTION_URN_PREFIX)) {
+    } else if (urnVocabulary.startsWith(EPCIS.BIZ_TRANSACTION_URN_PREFIX)) {
       // BizTransaction type remove the urn:epcglobal:cbv:btt and replace with
       // https://ns.gs1.org/voc/BTT-
-      webURI = BIZ_TRANSACTION_WEB_URI_PREFIX;
+      webURI = EPCIS.BIZ_TRANSACTION_WEBURI_CBV_PREFIX;
 
-    } else if (urnVocabulary.startsWith(SRC_DEST_URN_PREFIX)) {
+    } else if (urnVocabulary.startsWith(EPCIS.SRC_DEST_URN_PREFIX)) {
       // Source and Destination remove the urn:epcglobal:cbv:sdt: and replace with
       // https://ns.gs1.org/voc/SDT-
-      webURI = SRC_DEST_WEB_URI_PREFIX;
+      webURI = EPCIS.SRC_DEST_WEBURI_CBV_PREFIX;
 
-    } else if (urnVocabulary.startsWith(ERR_REASON_URN_PREFIX)) {
+    } else if (urnVocabulary.startsWith(EPCIS.ERROR_REASON_URN_PREFIX)) {
       // For ErrorDeclaration reason remove the urn:epcglobal:cbv:er: and replace with
       // https://ns.gs1.org/voc/ER-
-      webURI = ERR_REASON_WEB_URI_PREFIX;
+      webURI = EPCIS.ERR_REASON_WEBURI_CBV_PREFIX;
     } else {
       return urnVocabulary;
     }
@@ -150,33 +133,33 @@ public class EventVocabularyFormatter implements VocabularyFormat {
   // JSON/JSON-LD conversion to XML.
   public String canonicalString(final String webUriVocabulary) {
 
-    if (webUriVocabulary.startsWith(BIZ_STEP_WEB_URI_PREFIX)) {
+    if (webUriVocabulary.startsWith(EPCIS.BIZ_STEP_WEBURI_CBV_PREFIX)) {
       // For Business Step remove the https://ns.gs1.org/voc/Bizstep- and replace with
       // urn:epcglobal:cbv:bizstep:
-      return BIZ_STEP_URN_PREFIX
+      return EPCIS.BIZ_STEP_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(DISPOSITION_WEB_URI_PREFIX)) {
+    } else if (webUriVocabulary.startsWith(EPCIS.DISPOSITION_WEBURI_CBV_PREFIX)) {
       // For Disposition remove https://ns.gs1.org/voc/Disp- and replace with
       // urn:epcglobal:cbv:disp:
-      return DISPOSITION_URN_PREFIX
+      return EPCIS.DISPOSITION_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(BIZ_TRANSACTION_WEB_URI_PREFIX)) {
+    } else if (webUriVocabulary.startsWith(EPCIS.BIZ_TRANSACTION_WEBURI_CBV_PREFIX)) {
       // For Business Transaction remove https://ns.gs1.org/voc/BTT- and replace with
       // urn:epcglobal:cbv:btt:
-      return BIZ_TRANSACTION_URN_PREFIX
+      return EPCIS.BIZ_TRANSACTION_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(SRC_DEST_WEB_URI_PREFIX)) {
+    } else if (webUriVocabulary.startsWith(EPCIS.SRC_DEST_WEBURI_CBV_PREFIX)) {
       // For Source/Destination remove prefix https://ns.gs1.org/voc/SDT- and replace with
       // urn:epcglobal:cbv:sdt:
-      return SRC_DEST_URN_PREFIX
+      return EPCIS.SRC_DEST_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(ERR_REASON_WEB_URI_PREFIX)) {
+    } else if (webUriVocabulary.startsWith(EPCIS.ERR_REASON_WEBURI_CBV_PREFIX)) {
       // For Error Reason remove https://ns.gs1.org/voc/ER- and replace with urn:epcglobal:cbv:er:
-      return ERR_REASON_URN_PREFIX
+      return EPCIS.ERROR_REASON_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
     }
 
@@ -214,39 +197,39 @@ public class EventVocabularyFormatter implements VocabularyFormat {
       case "bizstep":
         // Convert BareString bizStep into CBV formatted URN/WebURI bizStep
         prefix =
-            format.equalsIgnoreCase(WEBURI_FORMATTED)
-                ? BIZ_STEP_WEB_URI_PREFIX
-                : BIZ_STEP_URN_PREFIX;
+            format.equalsIgnoreCase(WEBURI)
+                ? EPCIS.BIZ_STEP_WEBURI_CBV_PREFIX
+                : EPCIS.BIZ_STEP_URN_PREFIX;
         break;
       case "disposition", "persistentdisposition":
         // Convert BareString Disposition/PersistentDisposition into CBV formatted URN/WebURI
         prefix =
-            format.equalsIgnoreCase(WEBURI_FORMATTED)
-                ? DISPOSITION_WEB_URI_PREFIX
-                : DISPOSITION_URN_PREFIX;
+            format.equalsIgnoreCase(WEBURI)
+                ? EPCIS.DISPOSITION_WEBURI_CBV_PREFIX
+                : EPCIS.DISPOSITION_URN_PREFIX;
         break;
       case "biztransactionlist", "biztransaction":
         // Convert BareString bizTransaction type into CBV formatted URN/WebURI bizTransaction
         prefix =
-            format.equalsIgnoreCase(WEBURI_FORMATTED)
-                ? BIZ_TRANSACTION_WEB_URI_PREFIX
-                : BIZ_TRANSACTION_URN_PREFIX;
+            format.equalsIgnoreCase(WEBURI)
+                ? EPCIS.BIZ_TRANSACTION_WEBURI_CBV_PREFIX
+                : EPCIS.BIZ_TRANSACTION_URN_PREFIX;
         break;
       case "sourcelist", "destinationlist", "source", "destination":
         // Convert BareString Source/Destination type into CBV formatted URN/WebURI
         // Source/Destination
         prefix =
-            format.equalsIgnoreCase(WEBURI_FORMATTED)
-                ? SRC_DEST_WEB_URI_PREFIX
-                : SRC_DEST_URN_PREFIX;
+            format.equalsIgnoreCase(WEBURI)
+                ? EPCIS.SRC_DEST_WEBURI_CBV_PREFIX
+                : EPCIS.SRC_DEST_URN_PREFIX;
         break;
       case "errordeclaration", "reason":
         // Convert BareString ErrorDeclaration Reason into CBV formatted URN/WebURI ErrorDeclaration
         // Reason
         prefix =
-            format.equalsIgnoreCase(WEBURI_FORMATTED)
-                ? ERR_REASON_WEB_URI_PREFIX
-                : ERR_REASON_URN_PREFIX;
+            format.equalsIgnoreCase(WEBURI)
+                ? EPCIS.ERR_REASON_WEBURI_CBV_PREFIX
+                : EPCIS.ERROR_REASON_URN_PREFIX;
         break;
       default:
         return bareString;
@@ -281,17 +264,17 @@ public class EventVocabularyFormatter implements VocabularyFormat {
           gs1Identifier =
               gs1Identifier.replace(
                   gs1Identifier.substring(0, gs1Identifier.indexOf(entry.getKey())),
-                  Constants.GS1_IDENTIFIER_DOMAIN);
+                  EPCIS.GS1_IDENTIFIER_DOMAIN);
         }
         gs1Identifier = gs1Identifier.replace(entry.getKey(), entry.getValue());
       } else if (gs1Identifier.contains(entry.getValue())
           && (!excludeSerial.contains(entry.getValue()))
-          && !gs1Identifier.startsWith(Constants.GS1_IDENTIFIER_DOMAIN)) {
+          && !gs1Identifier.startsWith(EPCIS.GS1_IDENTIFIER_DOMAIN)) {
         // If the identifier key is already present then only replace the domain to GS1
         gs1Identifier =
             gs1Identifier.replace(
                 gs1Identifier.substring(0, gs1Identifier.indexOf(entry.getValue())),
-                Constants.GS1_IDENTIFIER_DOMAIN);
+                EPCIS.GS1_IDENTIFIER_DOMAIN);
       }
     }
     return gs1Identifier;

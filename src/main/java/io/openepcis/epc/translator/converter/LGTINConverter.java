@@ -15,8 +15,10 @@
  */
 package io.openepcis.epc.translator.converter;
 
+import static io.openepcis.constants.EPCIS.GS1_IDENTIFIER_DOMAIN;
+import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslatorInfo.*;
+
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
-import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.LGTINValidator;
 import java.util.HashMap;
@@ -56,11 +58,7 @@ public class LGTINConverter implements Converter {
           gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
       lgtin = lgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(lgtin.substring(0, 13));
       final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
-      return Constants.GS1_IDENTIFIER_DOMAIN
-          + LGTIN_URI_PART
-          + lgtin
-          + LGTIN_SERIAL_PART
-          + serialNumber;
+      return GS1_IDENTIFIER_DOMAIN + LGTIN_URI_PART + lgtin + LGTIN_SERIAL_PART + serialNumber;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of LGTIN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -87,7 +85,7 @@ public class LGTINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of LGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -111,25 +109,24 @@ public class LGTINConverter implements Converter {
               + serial;
 
       // If dlURI contains GS1 domain then captured and canonical are same
-      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
-        buildURN.put(Constants.CANONICAL_DL, dlURI);
+      if (dlURI.contains(GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(CANONICAL_DL, dlURI);
       } else {
         // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
-            dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
-        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(LGTIN_URI_PART)), GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(CANONICAL_DL, canonicalDL);
       }
 
-      buildURN.put(Constants.AS_CAPTURED, dlURI);
-      buildURN.put(Constants.AS_URN, asURN);
+      buildURN.put(AS_CAPTURED, dlURI);
+      buildURN.put(AS_URN, asURN);
       buildURN.put("lgtin", lgtin);
-      buildURN.put(Constants.SERIAL, serial);
+      buildURN.put(SERIAL, serial);
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the LGTIN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -161,7 +158,7 @@ public class LGTINConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of LGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

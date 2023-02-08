@@ -15,8 +15,10 @@
  */
 package io.openepcis.epc.translator.converter;
 
+import static io.openepcis.constants.EPCIS.GS1_IDENTIFIER_DOMAIN;
+import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslatorInfo.*;
+
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
-import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GRAIValidator;
 import java.util.HashMap;
@@ -64,10 +66,10 @@ public class GRAIConverter implements Converter {
       grai = grai.substring(0, 12) + UPCEANLogicImpl.calcChecksum(grai.substring(0, 12));
 
       if (isClassLevel) {
-        return Constants.GS1_IDENTIFIER_DOMAIN + GRAI_URI_PART + grai;
+        return GS1_IDENTIFIER_DOMAIN + GRAI_URI_PART + grai;
       } else {
         final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
-        return Constants.GS1_IDENTIFIER_DOMAIN + GRAI_URI_PART + grai + serialNumber;
+        return GS1_IDENTIFIER_DOMAIN + GRAI_URI_PART + grai + serialNumber;
       }
     } catch (Exception exception) {
       throw new ValidationException(
@@ -99,7 +101,7 @@ public class GRAIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GRAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -124,24 +126,23 @@ public class GRAIConverter implements Converter {
       }
 
       // If dlURI contains GS1 domain then captured and canonical are same
-      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
-        buildURN.put(Constants.CANONICAL_DL, dlURI);
+      if (dlURI.contains(GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(CANONICAL_DL, dlURI);
       } else {
         // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
-            dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(GRAI_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
-        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(GRAI_URI_PART)), GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(CANONICAL_DL, canonicalDL);
       }
 
-      buildURN.put(Constants.AS_CAPTURED, dlURI);
-      buildURN.put(Constants.AS_URN, asURN);
+      buildURN.put(AS_CAPTURED, dlURI);
+      buildURN.put(AS_URN, asURN);
       buildURN.put("grai", grai);
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the GRAI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -187,7 +188,7 @@ public class GRAIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GRAI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

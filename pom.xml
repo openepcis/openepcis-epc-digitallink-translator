@@ -90,6 +90,14 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+
+        <!-- Add constants as dependencies -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-epcis-constants</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
