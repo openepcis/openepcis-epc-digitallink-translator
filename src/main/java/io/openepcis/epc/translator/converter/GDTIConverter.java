@@ -15,8 +15,10 @@
  */
 package io.openepcis.epc.translator.converter;
 
+import static io.openepcis.constants.EPCIS.GS1_IDENTIFIER_DOMAIN;
+import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslatorInfo.*;
+
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
-import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.GDTIValidator;
 import java.util.HashMap;
@@ -67,7 +69,7 @@ public class GDTIConverter implements Converter {
       if (!isClassLevel) {
         gdti = gdti + urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
       }
-      return Constants.GS1_IDENTIFIER_DOMAIN + GDTI_URI_PART + gdti;
+      return GS1_IDENTIFIER_DOMAIN + GDTI_URI_PART + gdti;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of GDTI identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -100,7 +102,7 @@ public class GDTIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GDTI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -122,28 +124,27 @@ public class GDTIConverter implements Converter {
             dlURI.substring(dlURI.indexOf(GDTI_URI_PART) + GDTI_URI_PART.length() + 13);
         asURN =
             "urn:epc:id:gdti:" + gdti.substring(0, gcpLength) + "." + gdtiSubString + "." + serial;
-        buildURN.put(Constants.SERIAL, serial);
+        buildURN.put(SERIAL, serial);
       }
 
       // If dlURI contains GS1 domain then captured and canonical are same
-      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
-        buildURN.put(Constants.CANONICAL_DL, dlURI);
+      if (dlURI.contains(GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(CANONICAL_DL, dlURI);
       } else {
         // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
-            dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(GDTI_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
-        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(GDTI_URI_PART)), GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(CANONICAL_DL, canonicalDL);
       }
 
-      buildURN.put(Constants.AS_CAPTURED, dlURI);
-      buildURN.put(Constants.AS_URN, asURN);
+      buildURN.put(AS_CAPTURED, dlURI);
+      buildURN.put(AS_URN, asURN);
       buildURN.put("gdti", gdti);
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the GDTI identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -189,7 +190,7 @@ public class GDTIConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of GDTI identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

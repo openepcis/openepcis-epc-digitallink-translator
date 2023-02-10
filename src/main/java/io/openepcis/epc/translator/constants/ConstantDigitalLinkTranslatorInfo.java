@@ -19,16 +19,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Constants {
-  public static final String GS1_IDENTIFIER_DOMAIN = "https://id.gs1.org";
-  public static final String GS1_CBV_DOMAIN = "https://ref.gs1.org/cbv/";
-  public static final String GS1_VOC_DOMAIN = "https://gs1.org/voc/";
-  public static final String GS1_URN_CBV_PREFIX = "urn:epcglobal:cbv:";
-
+public class ConstantDigitalLinkTranslatorInfo {
   public static final String AS_CAPTURED = "asCaptured";
   public static final String CANONICAL_DL = "canonicalDL";
   public static final String AS_URN = "asURN";
   public static final String SERIAL = "serial";
   public static final String GCP_LENGTH = " GCP Length : ";
-  public static final String WEBURI_FORMATTED = "WebURI";
 }

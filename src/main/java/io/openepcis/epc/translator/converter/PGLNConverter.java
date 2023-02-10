@@ -15,8 +15,10 @@
  */
 package io.openepcis.epc.translator.converter;
 
+import static io.openepcis.constants.EPCIS.GS1_IDENTIFIER_DOMAIN;
+import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslatorInfo.*;
+
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
-import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.exception.ValidationException;
 import io.openepcis.epc.translator.validation.PGLNValidator;
 import java.util.HashMap;
@@ -48,7 +50,7 @@ public class PGLNConverter implements Converter {
       final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
       String pgln = gcp + urn.substring(urn.indexOf(".") + 1);
       pgln = pgln.substring(0, 12) + UPCEANLogicImpl.calcChecksum(pgln.substring(0, 12));
-      return Constants.GS1_IDENTIFIER_DOMAIN + PGLN_URI_PART + pgln;
+      return GS1_IDENTIFIER_DOMAIN + PGLN_URI_PART + pgln;
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of PGLN identifier from URN to digital link WebURI,\nPlease check the provided identifier : "
@@ -72,7 +74,7 @@ public class PGLNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of PGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -91,24 +93,23 @@ public class PGLNConverter implements Converter {
               + pgln.substring(gcpLength, pgln.length() - 1);
 
       // If dlURI contains GS1 domain then captured and canonical are same
-      if (dlURI.contains(Constants.GS1_IDENTIFIER_DOMAIN)) {
-        buildURN.put(Constants.CANONICAL_DL, dlURI);
+      if (dlURI.contains(GS1_IDENTIFIER_DOMAIN)) {
+        buildURN.put(CANONICAL_DL, dlURI);
       } else {
         // If dlURI does not contain GS1 domain then canonicalDL is based on GS1 domain
         final String canonicalDL =
-            dlURI.replace(
-                dlURI.substring(0, dlURI.indexOf(PGLN_URI_PART)), Constants.GS1_IDENTIFIER_DOMAIN);
-        buildURN.put(Constants.CANONICAL_DL, canonicalDL);
+            dlURI.replace(dlURI.substring(0, dlURI.indexOf(PGLN_URI_PART)), GS1_IDENTIFIER_DOMAIN);
+        buildURN.put(CANONICAL_DL, canonicalDL);
       }
 
-      buildURN.put(Constants.AS_CAPTURED, dlURI);
-      buildURN.put(Constants.AS_URN, asURN);
+      buildURN.put(AS_CAPTURED, dlURI);
+      buildURN.put(AS_URN, asURN);
       buildURN.put("pgln", pgln);
     } catch (Exception exception) {
       throw new ValidationException(
           "The conversion of the PGLN identifier from digital link WebURI to URN when creating the URN map encountered an error,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());
@@ -136,7 +137,7 @@ public class PGLNConverter implements Converter {
       throw new ValidationException(
           "Exception occurred during the conversion of PGLN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
               + dlURI
-              + Constants.GCP_LENGTH
+              + GCP_LENGTH
               + gcpLength
               + "\n"
               + exception.getMessage());

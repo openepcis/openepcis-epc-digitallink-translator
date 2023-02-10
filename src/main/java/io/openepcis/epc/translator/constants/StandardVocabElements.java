@@ -15,16 +15,21 @@
  */
 package io.openepcis.epc.translator.constants;
 
+import static io.openepcis.constants.EPCIS.GS1_CBV_DOMAIN;
+import static io.openepcis.constants.EPCIS.GS1_VOC_DOMAIN;
+
+import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.translator.exception.ValidationException;
 
 public enum StandardVocabElements {
-  BIZ_STEP("urn:epcglobal:cbv:bizstep:", Constants.GS1_CBV_DOMAIN + "Bizstep-"),
-  DISPOSITION("urn:epcglobal:cbv:disp:", Constants.GS1_CBV_DOMAIN + "Disp-"),
-  BIZ_TRANSACTION_TYPE("urn:epcglobal:cbv:btt:", Constants.GS1_CBV_DOMAIN + "BTT-"),
-  SOURCE_DEST_TYPE("urn:epcglobal:cbv:sdt:", Constants.GS1_CBV_DOMAIN + "SDT-"),
-  ERROR_REASON("urn:epcglobal:cbv:er:", Constants.GS1_CBV_DOMAIN + "ER-"),
-  MEASUREMENT_TYPE("gs1:", Constants.GS1_VOC_DOMAIN),
-  ALERT_TYPE("gs1:", Constants.GS1_VOC_DOMAIN);
+  BIZ_STEP(EPCIS.BIZ_STEP_URN_PREFIX, GS1_CBV_DOMAIN + EPCIS.BIZ_STEP_WEBURI_PREFIX),
+  DISPOSITION(EPCIS.DISPOSITION_URN_PREFIX, GS1_CBV_DOMAIN + EPCIS.DISP_WEBURI_PREFIX),
+  BIZ_TRANSACTION_TYPE(
+      EPCIS.BIZ_TRANSACTION_URN_PREFIX, GS1_CBV_DOMAIN + EPCIS.BIZ_TRANSACTION_WEBURI_PREFIX),
+  SOURCE_DEST_TYPE(EPCIS.SRC_DEST_URN_PREFIX, GS1_CBV_DOMAIN + EPCIS.SRC_DEST_WEBURI_PREFIX),
+  ERROR_REASON(EPCIS.ERROR_REASON_URN_PREFIX, GS1_CBV_DOMAIN + EPCIS.ERROR_REASON_WEBURI_PREFIX),
+  MEASUREMENT_TYPE(EPCIS.GS1_PREFIX, GS1_VOC_DOMAIN),
+  ALERT_TYPE(EPCIS.GS1_PREFIX, GS1_VOC_DOMAIN);
 
   private final String urnPrefix;
   private final String dlPrefix;
