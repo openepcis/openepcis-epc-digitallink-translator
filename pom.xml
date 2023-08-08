@@ -114,7 +114,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</url>
+                            <uri>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</uri>
                             <outputFileName>gcpprefixformatlist.json</outputFileName>
                             <!-- default target location, just to demonstrate the parameter -->
                             <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
