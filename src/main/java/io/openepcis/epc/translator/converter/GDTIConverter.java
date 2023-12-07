@@ -20,10 +20,10 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.GDTIValidator;
 import java.util.HashMap;
 import java.util.Map;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class GDTIConverter implements Converter {
 
@@ -64,7 +64,7 @@ public class GDTIConverter implements Converter {
           urn.substring(urn.indexOf(GDTI_URN_PART) + GDTI_URN_PART.length(), urn.indexOf('.'));
       String gdti =
           gcp + urn.substring(urn.indexOf('.') + 1, urn.indexOf(".", urn.indexOf(".") + 1));
-      gdti = gdti.substring(0, 12) + UPCEANLogicImpl.calcChecksum(gdti.substring(0, 12));
+      gdti = gdti.substring(0, 12) + ConverterUtil.checksum(gdti.substring(0, 12));
 
       if (!isClassLevel) {
         gdti = gdti + urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);

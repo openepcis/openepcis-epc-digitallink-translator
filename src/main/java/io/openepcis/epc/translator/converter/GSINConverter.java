@@ -20,10 +20,10 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.GSINValidator;
 import java.util.HashMap;
 import java.util.Map;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class GSINConverter implements Converter {
 
@@ -51,7 +51,7 @@ public class GSINConverter implements Converter {
       String gsin =
           urn.substring(urn.indexOf(GSIN_URN_PART) + GSIN_URN_PART.length(), urn.indexOf("."))
               + urn.substring(urn.indexOf(".") + 1);
-      gsin = gsin.substring(0, 16) + UPCEANLogicImpl.calcChecksum(gsin.substring(0, 16));
+      gsin = gsin.substring(0, 16) + ConverterUtil.checksum(gsin.substring(0, 16));
       return GS1_IDENTIFIER_DOMAIN + GSIN_URI_PART + gsin;
     } catch (Exception exception) {
       throw new ValidationException(

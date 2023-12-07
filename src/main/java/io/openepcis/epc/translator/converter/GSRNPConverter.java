@@ -21,10 +21,10 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslatorInfo;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.GSRNPValidator;
 import java.util.HashMap;
 import java.util.Map;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class GSRNPConverter implements Converter {
 
@@ -50,7 +50,7 @@ public class GSRNPConverter implements Converter {
       // If the URN passed the validation then convert the URN to URI
       final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
       String gsrnp = gcp + urn.substring(urn.indexOf('.') + 1);
-      gsrnp = gsrnp.substring(0, 17) + UPCEANLogicImpl.calcChecksum(gsrnp.substring(0, 17));
+      gsrnp = gsrnp.substring(0, 17) + ConverterUtil.checksum(gsrnp.substring(0, 17));
       return GS1_IDENTIFIER_DOMAIN + GSRNP_URI_PART + gsrnp;
     } catch (Exception exception) {
       throw new ValidationException(

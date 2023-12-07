@@ -91,4 +91,23 @@ public class ConverterUtil {
   public static String shortNameReplacer(final String gs1Identifier) {
     return converter.shortNameReplacer(gs1Identifier);
   }
+
+  public static char checksum(final String s) {
+    int odd = 0;
+    int even = 0;
+    int index;
+    for(index = s.length() - 1; index >= 0; --index) {
+      if ((s.length() - index) % 2 == 0) {
+        even += Character.digit(s.charAt(index), 10);
+      } else {
+        odd += Character.digit(s.charAt(index), 10);
+      }
+    }
+    index = 10 - (even + 3 * odd) % 10;
+    if (index >= 10) {
+      index = 0;
+    }
+    return Character.forDigit(index, 10);
+  }
+
 }

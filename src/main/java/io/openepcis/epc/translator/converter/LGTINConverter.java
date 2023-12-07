@@ -20,11 +20,11 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.LGTINValidator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class LGTINConverter implements Converter {
 
@@ -56,7 +56,7 @@ public class LGTINConverter implements Converter {
                   urn.indexOf(LGTIN_URN_PART) + LGTIN_URN_PART.length(), urn.indexOf('.'));
       String lgtin =
           gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
-      lgtin = lgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(lgtin.substring(0, 13));
+      lgtin = lgtin.substring(0, 13) + ConverterUtil.checksum(lgtin.substring(0, 13));
       final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
       return GS1_IDENTIFIER_DOMAIN + LGTIN_URI_PART + lgtin + LGTIN_SERIAL_PART + serialNumber;
     } catch (Exception exception) {

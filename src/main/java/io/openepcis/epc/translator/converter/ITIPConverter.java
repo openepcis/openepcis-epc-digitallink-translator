@@ -20,12 +20,12 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.ITIPValidator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class ITIPConverter implements Converter {
 
@@ -86,7 +86,7 @@ public class ITIPConverter implements Converter {
                   StringUtils.ordinalIndexOf(urn, ".", 4));
       itip =
           itip.substring(0, 13)
-              + UPCEANLogicImpl.calcChecksum(itip.substring(0, 13))
+              + ConverterUtil.checksum(itip.substring(0, 13))
               + itip.substring(13);
 
       if (isClassLevel) {

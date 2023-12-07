@@ -20,10 +20,10 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.SSCCValidator;
 import java.util.HashMap;
 import java.util.Map;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class SSCCConverter implements Converter {
 
@@ -50,7 +50,7 @@ public class SSCCConverter implements Converter {
           urn.charAt(urn.indexOf('.') + 1)
               + urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf('.'));
       String sscc = gcp + urn.substring(urn.indexOf('.') + 2);
-      sscc = sscc.substring(0, 17) + UPCEANLogicImpl.calcChecksum(sscc.substring(0, 17));
+      sscc = sscc.substring(0, 17) + ConverterUtil.checksum(sscc.substring(0, 17));
       sscc = GS1_IDENTIFIER_DOMAIN + SSCC_URI_PART + sscc;
       return sscc;
     } catch (Exception exception) {

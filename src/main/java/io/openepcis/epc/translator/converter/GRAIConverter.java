@@ -20,11 +20,11 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.GRAIValidator;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.NoArgsConstructor;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 @NoArgsConstructor
 public class GRAIConverter implements Converter {
@@ -63,7 +63,7 @@ public class GRAIConverter implements Converter {
           urn.substring(urn.indexOf(GRAI_URN_PART) + GRAI_URN_PART.length(), urn.indexOf('.'));
       String grai =
           gcp + urn.substring(urn.indexOf('.') + 1, urn.indexOf(".", urn.indexOf(".") + 1));
-      grai = grai.substring(0, 12) + UPCEANLogicImpl.calcChecksum(grai.substring(0, 12));
+      grai = grai.substring(0, 12) + ConverterUtil.checksum(grai.substring(0, 12));
 
       if (isClassLevel) {
         return GS1_IDENTIFIER_DOMAIN + GRAI_URI_PART + grai;

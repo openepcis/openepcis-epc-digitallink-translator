@@ -20,11 +20,11 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.SGLNValidator;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class SGLNConverter implements Converter {
 
@@ -59,7 +59,7 @@ public class SGLNConverter implements Converter {
               + urn.substring(
                   StringUtils.ordinalIndexOf(urn, ".", 1) + 1,
                   StringUtils.ordinalIndexOf(urn, ".", 2));
-      sgln = sgln + UPCEANLogicImpl.calcChecksum(sgln);
+      sgln = sgln + ConverterUtil.checksum(sgln);
       final String serial = urn.substring(StringUtils.ordinalIndexOf(urn, ".", 2) + 1);
 
       if (serial.length() == 0) {

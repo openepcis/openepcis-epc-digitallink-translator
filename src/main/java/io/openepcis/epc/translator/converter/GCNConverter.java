@@ -20,10 +20,10 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.GCNValidator;
 import java.util.HashMap;
 import java.util.Map;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class GCNConverter implements Converter {
 
@@ -61,7 +61,7 @@ public class GCNConverter implements Converter {
       final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
       String sgcn =
           gcp + urn.substring(urn.indexOf('.') + 1, urn.indexOf(".", urn.indexOf(".") + 1));
-      sgcn = sgcn.substring(0, 12) + UPCEANLogicImpl.calcChecksum(sgcn.substring(0, 12));
+      sgcn = sgcn.substring(0, 12) + ConverterUtil.checksum(sgcn.substring(0, 12));
 
       if (!isClassLevel) {
         sgcn = sgcn + urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);

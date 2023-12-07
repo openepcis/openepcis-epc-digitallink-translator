@@ -20,11 +20,11 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.SGTINValidator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class SGTINConverter implements Converter {
 
@@ -72,7 +72,7 @@ public class SGTINConverter implements Converter {
                   urn.indexOf(SGTIN_URN_PART) + SGTIN_URN_PART.length(), urn.indexOf('.'));
       String sgtin =
           gcp + urn.substring(urn.indexOf('.') + 2, urn.indexOf(".", urn.indexOf(".") + 1));
-      sgtin = sgtin.substring(0, 13) + UPCEANLogicImpl.calcChecksum(sgtin.substring(0, 13));
+      sgtin = sgtin.substring(0, 13) + ConverterUtil.checksum(sgtin.substring(0, 13));
 
       if (isClassLevel) {
         sgtin = GS1_IDENTIFIER_DOMAIN + SGTIN_URI_PART + sgtin;

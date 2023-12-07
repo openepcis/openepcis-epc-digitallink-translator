@@ -20,12 +20,12 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.UPUIValidator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class UPUIConverter implements Converter {
 
@@ -61,7 +61,7 @@ public class UPUIConverter implements Converter {
               + urn.substring(
                   StringUtils.ordinalIndexOf(urn, ".", 1) + 2,
                   StringUtils.ordinalIndexOf(urn, ".", 2));
-      upui = upui + UPCEANLogicImpl.calcChecksum(upui);
+      upui = upui + ConverterUtil.checksum(upui);
       final String serialNumber = urn.substring(StringUtils.ordinalIndexOf(urn, ".", 2) + 1);
       return GS1_IDENTIFIER_DOMAIN + UPUI_URI_PART + upui + UPUI_SERIAL_PART + serialNumber;
     } catch (Exception exception) {

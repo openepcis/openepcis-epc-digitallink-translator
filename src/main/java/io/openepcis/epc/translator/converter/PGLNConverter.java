@@ -20,10 +20,10 @@ import static io.openepcis.epc.translator.constants.ConstantDigitalLinkTranslato
 
 import io.openepcis.epc.translator.DefaultGCPLengthProvider;
 import io.openepcis.epc.translator.exception.ValidationException;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.epc.translator.validation.PGLNValidator;
 import java.util.HashMap;
 import java.util.Map;
-import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
 
 public class PGLNConverter implements Converter {
 
@@ -49,7 +49,7 @@ public class PGLNConverter implements Converter {
       // If the URN passed the validation then convert the URN to URI
       final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
       String pgln = gcp + urn.substring(urn.indexOf(".") + 1);
-      pgln = pgln.substring(0, 12) + UPCEANLogicImpl.calcChecksum(pgln.substring(0, 12));
+      pgln = pgln.substring(0, 12) + ConverterUtil.checksum(pgln.substring(0, 12));
       return GS1_IDENTIFIER_DOMAIN + PGLN_URI_PART + pgln;
     } catch (Exception exception) {
       throw new ValidationException(
