@@ -112,8 +112,9 @@
                         <configuration>
                             <uri>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</uri>
                             <outputFileName>gcpprefixformatlist.json</outputFileName>
-                            <!-- default target location, just to demonstrate the parameter -->
                             <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <skipCache>true</skipCache>
                         </configuration>
                     </execution>
                 </executions>
