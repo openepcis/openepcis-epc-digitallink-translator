@@ -153,9 +153,9 @@ public class CPITest {
             .toURNForClassLevelIdentifier("https://id.gs1.org/8010/8585885039434/38", 12)
             .get("asURN"));
     assertEquals(
-        "urn:epc:idpat:cpi:950788503943.4/38.*",
+        "urn:epc:idpat:cpi:9500885.039434/38.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/8010/9507885039434/38")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8010/9500885039434/38")
             .get("asURN"));
 
     // Class level URN to Web URI
