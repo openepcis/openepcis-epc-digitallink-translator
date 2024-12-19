@@ -24,7 +24,7 @@
     <parent>
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>999-SNAPSHOT</version>
     </parent>
 
     <artifactId>openepcis-epc-digitallink-translator</artifactId>
@@ -114,7 +114,8 @@
                             <outputFileName>gcpprefixformatlist.json</outputFileName>
                             <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
                             <overwrite>true</overwrite>
-                            <skipCache>true</skipCache>
+                            <skipCache>false</skipCache>
+                            <failOnError>false</failOnError>
                         </configuration>
                     </execution>
                 </executions>
