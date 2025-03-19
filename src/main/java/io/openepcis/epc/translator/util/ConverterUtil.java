@@ -96,7 +96,7 @@ public class ConverterUtil {
     int odd = 0;
     int even = 0;
     int index;
-    for(index = s.length() - 1; index >= 0; --index) {
+    for (index = s.length() - 1; index >= 0; --index) {
       if ((s.length() - index) % 2 == 0) {
         even += Character.digit(s.charAt(index), 10);
       } else {
@@ -109,5 +109,4 @@ public class ConverterUtil {
     }
     return Character.forDigit(index, 10);
   }
-
 }
