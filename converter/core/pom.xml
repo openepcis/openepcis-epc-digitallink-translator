@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.openepcis</groupId>
+        <artifactId>openepcis-digital-link-converter-parent</artifactId>
+        <version>999-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>openepcis-digital-link-converter-core</artifactId>
+    <name>openepcis-digital-link-converter-core</name>
+    <description>OpenEPCIS Identifiers converter from URN to DL WebURI and vice versa.</description>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- GS1 AI constants  -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-epcis-constants</artifactId>
+        </dependency>
+
+        <!-- Validator to validate GS1 AI against respective rules (validator/core) -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-digital-link-validator-core</artifactId>
+        </dependency>
+
+        <!-- For Getter/Setter and other methods -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <!-- Jackson related dependencies for JSON modifications -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- For logging various messages -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- For junit tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- Download the GS1 specified GCP Length from URL only during the build to avoid downloading everytime -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <uri>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</uri>
+                            <outputFileName>gcpprefixformatlist.json</outputFileName>
+                            <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
+                            <overwrite>false</overwrite>
+                            <skipCache>true</skipCache>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
+</project>

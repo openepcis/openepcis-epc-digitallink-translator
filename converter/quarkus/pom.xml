@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.openepcis</groupId>
+        <artifactId>openepcis-digital-link-converter-parent</artifactId>
+        <version>999-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>io.openepcis.quarkus</groupId>
+    <artifactId>quarkus-digital-link-converter-parent</artifactId>
+    <name>quarkus-digital-link-converter-parent</name>
+    <packaging>pom</packaging>
+    <description>Quarkus OpenEPCIS Identifiers Converter Parent</description>
+
+    <modules>
+        <module>runtime</module>
+        <module>deployment</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Core Validator (validator/core)  -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-digital-link-validator-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Core Converter (converter/core) -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-digital-link-converter-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Quarkus Converter Runtime (converter/quarkus/runtime) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-digital-link-converter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Quarkus Converter Deployment (converter/quarkus/deployment) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-digital-link-converter-deployment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <!-- sonatype releases -->
+        <repository>
+            <id>sonatype-releases</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/releases</url>
+        </repository>
+        <!-- sonatype snapshots -->
+        <repository>
+            <id>sonatype-staging</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>

@@ -1,0 +1,36 @@
+{
+  "data": "https://openepcis.io",
+  "mimeType": "image/jpeg",
+  "qrWidth": 300,
+  "qrHeight": 300,
+  "margin": 3,
+  "backgroundColor": {
+    "red": 255,
+    "green": 255,
+    "blue": 255,
+    "alpha": 255
+  },
+  "gradientStart": {
+    "red": 59,
+    "green": 130,
+    "blue": 246,
+    "alpha": 255
+  },
+  "gradientEnd": {
+    "red": 59,
+    "green": 130,
+    "blue": 246,
+    "alpha": 255
+  },
+  "useRadialGradient": true,
+  "drawFinderGradient": true,
+  "moduleShape": "CIRCLE",
+  "displayLabel": "OpenEPCIS Theme Sample QR",
+  "displayLabelFontColor": {
+    "red": 59,
+    "green": 130,
+    "blue": 246,
+    "alpha": 255
+  },
+  "logoScale": 0.2
+}

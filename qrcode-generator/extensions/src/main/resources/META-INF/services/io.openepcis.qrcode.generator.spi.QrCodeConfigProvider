@@ -1,0 +1,2 @@
+io.openepcis.qrcode.generator.spi.impl.OpenEPCISQrCodeConfigHandler
+io.openepcis.qrcode.generator.spi.impl.GS1QrCodeConfigHandler

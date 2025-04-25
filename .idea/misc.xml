@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="Quarkus" url="file://$PROJECT_DIR$/converter/quarkus/deployment" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/converter/quarkus/runtime" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/qrcode-generator/core" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/qrcode-generator/extensions" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/qrcode-generator/quarkus/deployment" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/qrcode-generator/quarkus/quarkus-app" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/qrcode-generator/quarkus/runtime" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/qrcode-generator/rest-api" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/validator/quarkus/deployment" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/validator/quarkus/runtime" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/../openepcis-models/quarkus/deployment" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/../openepcis-models/quarkus/runtime" />
+    <file type="Qute" url="file://$PROJECT_DIR$/converter/quarkus/deployment" />
+    <file type="Qute" url="file://$PROJECT_DIR$/qrcode-generator/quarkus/deployment" />
+    <file type="Qute" url="file://$PROJECT_DIR$/validator/quarkus/deployment" />
+    <file type="Qute" url="file://$PROJECT_DIR$/../openepcis-models/quarkus/deployment" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/../openepcis-models/core/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/epcis/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/gs1-web-vocab/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/quarkus/deployment/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/quarkus/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/quarkus/runtime/pom.xml" />
+        <option value="$PROJECT_DIR$/../openepcis-models/rest/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="corretto-21" project-jdk-type="JavaSDK" />
+  <component name="ProjectType">
+    <option name="id" value="jpab" />
+  </component>
+</project>
