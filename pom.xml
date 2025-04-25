@@ -1,24 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
-    Copyright 2022-2024 benelog GmbH & Co. KG
+    Copyright (c) 2022-2025 benelog GmbH & Co. KG
+    All rights reserved.
 
-        Licensed under the Apache License, Version 2.0 (the "License");
-        you may not use this file except in compliance with the License.
-        You may obtain a copy of the License at
+    Unauthorized copying, modification, distribution,
+    or use of this work, via any medium, is strictly prohibited.
 
-        http://www.apache.org/licenses/LICENSE-2.0
-
-        Unless required by applicable law or agreed to in writing, software
-        distributed under the License is distributed on an "AS IS" BASIS,
-        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        See the License for the specific language governing permissions and
-        limitations under the License.
+    benelog GmbH & Co. KG reserves all rights not expressly granted herein,
+    including the right to sell licenses for using this work.
 
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -27,10 +22,11 @@
         <version>999-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openepcis-epc-digitallink-translator</artifactId>
-    <name>openepcis-epc-digitallink-translator</name>
-    <description>openEPCIS EPC GS1 Digital Link Translation Tools</description>
-    <url>https://github.com/openepcis/openepcis-epc-digitallink-translator</url>
+    <artifactId>openepcis-digital-link-toolkit-build</artifactId>
+    <name>openepcis-digital-link-toolkit-build</name>
+    <packaging>pom</packaging>
+    <description>OpenEPCIS EPC GS1 Digital Link Tools to validate, convert and generate scannable QR code for GS1 Application Identifiers.</description>
+    <url>https://github.com/openepcis/openepcis-epc-digital-link-translator</url>
 
     <licenses>
         <license>
@@ -41,113 +37,125 @@
 
     <developers>
         <developer>
-            <name>Sven Boeckelmann</name>
-            <email>sven.boeckelmann@benelog.com</email>
+            <name>Aravinda Baliga B</name>
+            <email>aravinda.baliga@benelog.com</email>
             <organization>benelog GmbH &amp; Co. KG</organization>
             <organizationUrl>https://www.benelog.com</organizationUrl>
         </developer>
         <developer>
-            <name>Aravinda Baliga B</name>
-            <email>aravinda.baliga@benelog.com</email>
+            <name>Sven Boeckelmann</name>
+            <email>sven.boeckelmann@benelog.com</email>
             <organization>benelog GmbH &amp; Co. KG</organization>
             <organizationUrl>https://www.benelog.com</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/openepcis/openepcis-epc-digitallink-translator.git</connection>
-        <developerConnection>scm:git:ssh://github.com:openepcis/openepcis-epc-digitallink-translator.git</developerConnection>
-        <url>https://github.com/openepcis/openepcis-epc-digitallink-translator/tree/main</url>
+        <connection>scm:git:git://github.com/openepcis/openepcis-epc-digital-link-translator.git</connection>
+        <developerConnection>scm:git:ssh://github.com:openepcis/openepcis-epc-digital-link-translator.git</developerConnection>
+        <url>https://github.com/openepcis/openepcis-epc-digital-link-translator/tree/main</url>
     </scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
+    <modules>
+        <module>validator</module>
+        <module>converter</module>
+        <module>qrcode-generator</module>
+    </modules>
 
-        <!-- Add constants as dependencies -->
-        <dependency>
-            <groupId>io.openepcis</groupId>
-            <artifactId>openepcis-epcis-constants</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <!-- GS1 AI constants for pre-defined EPCIS Constants  -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-epcis-constants</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-    </dependencies>
+            <!-- Core Validator (validator/core)  -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-digital-link-validator-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <executions>
-                    <execution>
-                        <!-- the wget goal actually binds itself to this phase by default -->
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <uri>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</uri>
-                            <outputFileName>gcpprefixformatlist.json</outputFileName>
-                            <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <skipCache>false</skipCache>
-                            <failOnError>false</failOnError>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+            <!-- Quarkus Validator Runtime (validator/quarkus/runtime) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-digital-link-validator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-    <profiles>
-        <profile>
-            <id>coverage</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>report</id>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                                <phase>verify</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+            <!-- Quarkus Validator Deployment (validator/quarkus/deployment) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-digital-link-validator-deployment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Core Converter (converter/core) -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-digital-link-converter-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Quarkus Converter Runtime (converter/quarkus/runtime) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-digital-link-converter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Quarkus Converter Deployment (converter/quarkus/deployment) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-digital-link-converter-deployment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- QR Code Generator (qrcode-generator/core) -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-qrcode-generator-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- QR Code Generator Custom Extensions (qrcode-generator/extensions) -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-qrcode-generator-extensions</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Quarkus QR Code Generator runtime (qrcode-generator/quarkus/runtime) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-qr-code-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Quarkus QR Code Generator runtime (qrcode-generator/quarkus/runtime) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-qr-code-generator-deployment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Quarkus QR Code Generator app (qrcode-generator/quarkus/app) -->
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-qr-code-generator-app</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- REST API for QR Code Generator (qrcode-generator/rest-api) -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-qrcode-generator-rest-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <!-- sonatype releases -->
@@ -165,5 +173,36 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <profiles>
+        <profile>
+            <id>ci-build</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.cosium.code</groupId>
+                        <artifactId>git-code-format-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>

@@ -1,0 +1,44 @@
+quarkus:
+  swagger-ui:
+    always-include: true
+    title: "OpenAPI QR Code Generator Service"
+    footer: "&#169; 2020-2025 - benelog GmbH & Co KG"
+
+  http:
+    cors:
+      ~: true
+      methods: GET,POST, OPTIONS
+      origins: "/.*/"
+    port: 9002
+
+  container-image:
+    group: openepcis
+    name: qr-code-generator-service
+    additional-tags:
+      - latest
+
+  banner:
+    path: "openepcis-banner.txt"
+
+  package:
+    jar:
+      type: "uber-jar"
+
+mp:
+  openapi:
+    filter: "io.openepcis.qrcode.generator.generator.filter.CustomOASFilter"
+
+    extensions:
+      smallrye:
+        operationIdStrategy: METHOD
+        info:
+          title: "OpenEPCIS QR Code Service API"
+          version: "1.0.0"
+          description: "OpenEPCIS EPC GS1 Digital Link Tool to generate the QR code based on the provided GS1 AI."
+          contact:
+            email: "info@openepcis.io"
+            name: "OpenEPCIS | benelog GmbH & Co. KG"
+            url: "https://openepcis.io"
+            license:
+              name: "Apache 2.0"
+              url: "http://www.apache.org/licenses/LICENSE-2.0.html"

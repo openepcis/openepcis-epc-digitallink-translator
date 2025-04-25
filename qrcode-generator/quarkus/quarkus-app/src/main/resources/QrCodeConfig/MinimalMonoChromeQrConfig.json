@@ -1,0 +1,31 @@
+{
+  "data": "https://openepcis.io",
+  "backgroundColor": {
+    "red": 34,
+    "green": 34,
+    "blue": 34,
+    "alpha": 255
+  },
+  "gradientStart": {
+    "red": 220,
+    "green": 220,
+    "blue": 220,
+    "alpha": 255
+  },
+  "gradientEnd": {
+    "red": 180,
+    "green": 180,
+    "blue": 180,
+    "alpha": 255
+  },
+  "logoResourceUrl": "https://monochrome.io/logo.png",
+  "logoScale": 0.25,
+  "moduleShape": "DIAMOND",
+  "displayLabel": "OpenEPCIS Custom QR",
+  "displayLabelFontColor": {
+    "red": 255,
+    "green": 255,
+    "blue": 255,
+    "alpha": 255
+  }
+}
