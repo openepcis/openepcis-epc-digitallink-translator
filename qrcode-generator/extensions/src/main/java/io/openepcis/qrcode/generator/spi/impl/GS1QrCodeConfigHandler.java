@@ -45,8 +45,6 @@ public class GS1QrCodeConfigHandler implements QrCodeConfigProvider {
                 .finderColor(new Color(0, 44, 108, 255))
                 .useRadialGradient(true)
                 .drawFinderGradient(true)
-                .displayLabel("GS1")
-                .displayLabelFontColor(new Color(0, 44, 108, 255))
                 .logoResourceUrl(logoResourceUrl)
                 .logoScale(0.16f)
                 .build();

@@ -45,8 +45,6 @@ public class OpenEPCISQrCodeConfigHandler implements QrCodeConfigProvider {
                 .useRadialGradient(true)
                 .drawFinderGradient(true)
                 .moduleShape(QrCodeConfig.ModuleShape.CIRCLE)
-                .displayLabel("OpenEPCIS")
-                .displayLabelFontColor(new Color(59, 130, 246, 255))
                 .logoResourceUrl(logoResourceUrl)
                 .logoScale(0.2f)
                 .build();
