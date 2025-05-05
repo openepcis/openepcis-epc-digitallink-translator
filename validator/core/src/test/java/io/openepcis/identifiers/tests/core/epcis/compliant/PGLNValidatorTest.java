@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -84,5 +85,24 @@ class PGLNValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://horrem.kerpen.de/417/9359267746574", 6);
     ApplicationIdentifierValidationTestUtil.assertValid("https://horrem.kerpen.de/417/7337677829387", 6);
     ApplicationIdentifierValidationTestUtil.assertValid("https://horrem.kerpen.de/417/5345364356436", 12);
+  }
+
+  // Test for Check digit
+  @Test
+  @Order(5)
+  void validateCheckDigit() throws ValidationException {
+    final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
+
+    // Valid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/417/1234567890128", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://horrem.kerpen.de/417/1234567121222", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://horrem.kerpen.de/417/9359074384785", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://horrem.kerpen.de/417/9359044384784", validationContext);
+
+    // Invalid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/417/1234567890129", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://horrem.kerpen.de/417/1234567121223", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://horrem.kerpen.de/417/9359074384784", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://horrem.kerpen.de/417/9359044384782", validationContext);
   }
 }

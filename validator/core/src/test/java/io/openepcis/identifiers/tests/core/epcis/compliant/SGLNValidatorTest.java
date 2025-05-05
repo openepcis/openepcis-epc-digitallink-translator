@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -98,4 +99,33 @@ class SGLNValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/414/4374736473640/254/1243", 10);
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/414/4374736473640", 10);
   }
+
+  // Test for Check digit
+  @Test
+  @Order(5)
+  void validateCheckDigit() throws ValidationException {
+    final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
+
+    // Valid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/414/1234567890128/254/1234", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://deutscheBahn.de/train/414/1234567121222/254/1234", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/414/9359074384785/254/0394903", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/414/9359044384784", validationContext);
+
+    // Invalid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/414/1234567890127/254/4390493", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/414/1234567121225/254/12", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/414/9359074384783/254/1243", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/414/9359044384789", validationContext);
+  }
+
+  // Test for Check digit
+  @Test
+  @Order(5)
+  void validateCheckDigit1() throws ValidationException {
+    final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
+
+    // Valid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/414/1234567890128/254/1234", validationContext);
+ }
 }

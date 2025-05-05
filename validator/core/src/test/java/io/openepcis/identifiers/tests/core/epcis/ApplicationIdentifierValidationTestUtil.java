@@ -10,36 +10,25 @@
  */
 package io.openepcis.identifiers.tests.core.epcis;
 
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
 import io.openepcis.identifiers.validator.exception.ValidationException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 
+/**
+ * Utility for asserting validity or invalidity of GS1 application identifiers.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApplicationIdentifierValidationTestUtil {
 
     // Create a shared ValidatorFactory instance for all tests.
-    private static final ValidatorFactory validatorFactory = new ValidatorFactory();
+    private static final ValidatorFactory VALIDATOR_FACTORY = new ValidatorFactory();
+
 
     /**
-     * Asserts that the given identifier is valid. If a ValidationException is thrown, the test will
-     * fail.
-     *
-     * @param identifier       the GS1 identifier to validate
-     * @param isEpcisCompliant true if the identifier should be validated as an EPCIS compliant identifier
-     * @param gcpLength        optional GCP length parameter (if applicable)
-     */
-    public static void assertValid(final String identifier, final boolean isEpcisCompliant, Integer... gcpLength) {
-        try {
-            boolean result = validatorFactory.validateIdentifier(identifier, isEpcisCompliant, gcpLength);
-            Assertions.assertTrue(result, "Identifier should be valid: " + identifier);
-        } catch (ValidationException e) {
-            //System.out.println(e.getMessage());
-            Assertions.fail("Did not expect ValidationException for identifier: " + identifier + " - " + e.getMessage());
-        }
-    }
-
-    /**
-     * Asserts that the given identifier is valid. If a ValidationException is thrown, the test will
-     * fail.
+     * Asserts that the given identifier is valid. If a ValidationException is thrown, the test will fail.
      *
      * @param identifier the GS1 identifier to validate
      * @param gcpLength  optional GCP length parameter (if applicable)
@@ -47,6 +36,34 @@ public class ApplicationIdentifierValidationTestUtil {
     public static void assertValid(final String identifier, Integer... gcpLength) {
         assertValid(identifier, true, gcpLength);
     }
+
+    /**
+     * Asserts that the given identifier is valid. If a ValidationException is thrown, the test will fail.
+     *
+     * @param identifier       the GS1 identifier to validate
+     * @param isEpcisCompliant true if the identifier should be validated as an EPCIS compliant identifier
+     * @param gcpLength        optional GCP length parameter (if applicable)
+     */
+    public static void assertValid(final String identifier, final boolean isEpcisCompliant, final Integer... gcpLength) {
+        assertValid(identifier, buildContext(isEpcisCompliant, gcpLength));
+    }
+
+    /**
+     * Asserts that the given identifier is valid under the provided context.
+     *
+     * @param identifier        the GS1 identifier to validate
+     * @param validationContext the validation context
+     */
+    public static void assertValid(final String identifier, final ValidationContext validationContext) {
+        try {
+            boolean result = VALIDATOR_FACTORY.validateIdentifier(identifier, validationContext);
+            Assertions.assertTrue(result, "Identifier should be valid: " + identifier);
+        } catch (ValidationException e) {
+            //System.out.println(e.getMessage());
+            Assertions.fail("Did not expect ValidationException for identifier: " + identifier + " - " + e.getMessage());
+        }
+    }
+
 
     /**
      * Asserts that the given identifier is invalid by expecting a ValidationException. If a valid
@@ -68,12 +85,36 @@ public class ApplicationIdentifierValidationTestUtil {
      * @param gcpLength        optional GCP length parameter (if applicable)
      */
     public static void assertInvalid(final String identifier, final boolean isEpcisCompliant, Integer... gcpLength) {
+        assertInvalid(identifier, buildContext(isEpcisCompliant, gcpLength));
+    }
+
+    public static void assertInvalid(final String identifier, final ValidationContext validationContext) {
         try {
-            validatorFactory.validateIdentifier(identifier, isEpcisCompliant, gcpLength);
+            VALIDATOR_FACTORY.validateIdentifier(identifier, validationContext);
             Assertions.fail("Expected ValidationException for identifier: " + identifier);
         } catch (Exception e) {
             // Expected exception; test passes.
             //System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * Builds a {@link ValidationContext} with the given EPCIS compliance flag
+     * and optional GCP length.
+     *
+     * @param isEpcisCompliant  whether to enforce EPCIS compliance
+     * @param gcpLengthOptional optional GCP length (first element used if present)
+     * @return a configured ValidationContext
+     */
+    private static ValidationContext buildContext(final boolean isEpcisCompliant, final Integer... gcpLengthOptional) {
+        final ValidationContext.ValidationContextBuilder builder = ValidationContext.builder()
+                .epcisCompliant(isEpcisCompliant)
+                .validateCheckDigit(false);
+
+        if (gcpLengthOptional != null && gcpLengthOptional.length > 0) {
+            builder.gcpLength(gcpLengthOptional[0]);
+        }
+
+        return builder.build();
     }
 }

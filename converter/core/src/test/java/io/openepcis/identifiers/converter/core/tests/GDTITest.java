@@ -66,10 +66,10 @@ public class GDTITest {
         // Valid GDTI
         assertEquals(
                 "urn:epc:id:gdti:1234567890.12.A",
-                converter.toURN("https://id.gs1.org/253/1234567890123A", 10).get("asURN"));
+                converter.toURN("https://id.gs1.org/253/1234567890128A", 10).get("asURN"));
         assertEquals(
                 "urn:epc:id:gdti:1234567890.12.A",
-                converter.toURN("https://benelog1.de/253/1234567890123A", 10).get("asURN"));
+                converter.toURN("https://benelog1.de/253/1234567890128A", 10).get("asURN"));
         assertEquals(
                 "urn:epc:id:gdti:893489348949..\":?>",
                 converter.toURN("https://id.gs1.org/253/8934893489494\":?>", 12).get("asURN"));
@@ -81,7 +81,7 @@ public class GDTITest {
                 converter.toURN("https://id.gs1.org/253/1247575784846!", 6).get("asURN"));
         assertEquals(
                 "urn:epc:id:gdti:93589983.9444.8!\"%&\"+",
-                converter.toURN("https://id.gs1.org/253/93589983944448!\"%&\"+").get("asURN"));
+                converter.toURN("https://id.gs1.org/253/93589983944438!\"%&\"+").get("asURN"));
 
         /** GDTI Class level identifiers conversion */
 
@@ -115,22 +115,22 @@ public class GDTITest {
         assertEquals(
                 "urn:epc:idpat:gdti:1234567890.12.*",
                 converter
-                        .toURNForClassLevelIdentifier("https://id.gs1.org/253/1234567890123", 10)
+                        .toURNForClassLevelIdentifier("https://id.gs1.org/253/1234567890128", 10)
                         .get("asURN"));
         assertEquals(
                 "urn:epc:idpat:gdti:656980789012..*",
                 converter
-                        .toURNForClassLevelIdentifier("https://id.gs1.org/253/6569807890123")
+                        .toURNForClassLevelIdentifier("https://id.gs1.org/253/6569807890121")
                         .get("asURN"));
         assertEquals(
                 "urn:epc:idpat:gdti:843848923823..*",
                 converter
-                        .toURNForClassLevelIdentifier("https://id.gs1.org/253/8438489238239", 12)
+                        .toURNForClassLevelIdentifier("https://id.gs1.org/253/8438489238232", 12)
                         .get("asURN"));
         assertEquals(
                 "urn:epc:idpat:gdti:8438001238.23.*",
                 converter
-                        .toURNForClassLevelIdentifier("https://google.fb.org/253/8438001238239")
+                        .toURNForClassLevelIdentifier("https://google.fb.org/253/8438001238238")
                         .get("asURN"));
 
         // Class level URN to Web URI conversion

@@ -62,63 +62,29 @@ public class ValidatorFactory {
         this.validators.add(new SGTINValidator());
     }
 
-    /**
-     * Validates the provided GS1 identifier.
-     *
-     * <p>This method determines whether the identifier should be validated as an instance-level (URN)
-     * or class-level (Digital Link URI) identifier based on the presence of a GCP length parameter.
-     * If a GCP length is provided, the identifier is validated as a URI; otherwise, it is validated
-     * as a URN.
-     *
-     * @param identifier the GS1 identifier to validate
-     * @param gcpLength  an optional parameter representing the Global Company Prefix length to use in
-     *                   validation for DL URI
-     * @return true if the identifier is valid according to the first supporting validator, false
-     * otherwise
-     * @throws UnsupportedGS1IdentifierException if no validator supports the provided identifier
-     *                                           format
-     */
-    public boolean validateIdentifier(final String identifier, final Integer... gcpLength) {
-        return validateIdentifier(identifier, true, gcpLength);
-    }
 
     /**
-     * Validates the provided GS1 identifier.
+     * Validate a GS1 identifier string using the provided options.
      *
-     * <p>This method determines whether the identifier should be validated as an instance-level (URN)
-     * or class-level (Digital Link URI) identifier based on the presence of a GCP length parameter.
-     * If a GCP length is provided, the identifier is validated as a URI; otherwise, it is validated
-     * as a URN.
-     *
-     * @param identifier       the GS1 identifier to validate
-     * @param isEpcisCompliant true if the identifier should be validated as an EPCIS compliant identifier
-     * @param gcpLength        an optional parameter representing the Global Company Prefix length to use in validation for DL URI
-     * @return true if the identifier is valid according to the first supporting validator, false
-     * otherwise
-     * @throws UnsupportedGS1IdentifierException if no validator supports the provided identifier
-     *                                           format
+     * @param identifier        the raw GS1 identifier to validate (URN or Digital Link URI)
+     * @param validationContext the validation flags:
+     *                          epcisCompliant    – enforce EPCIS-compliant if true
+     *                          validateCheckDigit– perform check-digit verification if true
+     *                          gcpLength         – non-null for URI mode, null for URN mode
+     * @return true if the identifier passes all checks in the first matching validator;
+     * false if that validator’s validate method returns false
+     * @throws UnsupportedGS1IdentifierException if no registered validator supports this identifier under the
+     *                                           given epcisCompliant setting
      */
-
-    public boolean validateIdentifier(final String identifier, final boolean isEpcisCompliant, final Integer... gcpLength) {
-        // No GCP length provided: validate URN identifiers
-        if (gcpLength == null || gcpLength.length == 0) {
-            for (final ApplicationIdentifierValidator validator : validators) {
-                if (validator.supportsValidation(identifier, isEpcisCompliant)) {
-                    return validator.validate(identifier, isEpcisCompliant);
-                }
-            }
-        } else {
-            // GCP length provided: validate as URI identifier with the specified GCP length.
-            for (final ApplicationIdentifierValidator validator : validators) {
-                if (validator.supportsValidation(identifier, isEpcisCompliant)) {
-                    // Use the first element of the gcpLength array since only one length is expected.
-                    return validator.validate(identifier, isEpcisCompliant, gcpLength[0]);
-                }
+    public boolean validateIdentifier(final String identifier, final ValidationContext validationContext) {
+        // Iterate through all registered validators and check if they support the identifier.
+        for (final ApplicationIdentifierValidator validator : validators) {
+            if (validator.supportsValidation(identifier, validationContext.isEpcisCompliant())) {
+                return validator.validate(identifier, validationContext);
             }
         }
 
         // If no validator supports the identifier, throw an exception.
-        throw new UnsupportedGS1IdentifierException(
-                String.format("Identifier did not match any GS1 identifiers format: %s", identifier));
+        throw new UnsupportedGS1IdentifierException(String.format("Identifier did not match any GS1 identifiers format: %s", identifier));
     }
 }

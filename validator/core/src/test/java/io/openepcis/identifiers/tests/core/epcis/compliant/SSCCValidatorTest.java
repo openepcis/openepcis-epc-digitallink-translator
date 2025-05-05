@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -87,5 +88,22 @@ class SSCCValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://marriot.in/blr/123/00/758758475845784857", 6);
     ApplicationIdentifierValidationTestUtil.assertValid("https://marriot.in/blr/123/00/936658475845784857", 12);
     ApplicationIdentifierValidationTestUtil.assertValid("https://marriot.in/blr/123/00/893594046673734737", 12);
+  }
+
+  // Test for valid EPC URI identifiers.
+  @Test
+  @Order(5)
+  void validateCheckDigitTest() throws ValidationException {
+    final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
+
+    // Valid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/00/012345678901234560", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://marriot.in/blr/123/00/012345678901232344", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://marriot.in/blr/123/00/994039403490349033", validationContext);
+
+    // Invalid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://marriot.in/blr/123/00/012345678901234561", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://marriot.in/blr/123/00/012345678901232345", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://marriot.in/blr/123/00/994039403490349035", validationContext);
   }
 }

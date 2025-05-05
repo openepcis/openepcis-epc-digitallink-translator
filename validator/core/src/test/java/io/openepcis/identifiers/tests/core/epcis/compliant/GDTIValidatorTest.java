@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.junit.jupiter.api.MethodOrderer;
@@ -130,5 +131,22 @@ class GDTIValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/253/12345678901234", 10);
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/253/8438489238239", 12);
     ApplicationIdentifierValidationTestUtil.assertValid("https://google.fb.org/253/8438489238239", 12);
+  }
+
+  // Test to validate for Check digit
+  @Test
+  @Order(8)
+  void validateCheckDigitTest() throws ValidationException {
+    final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
+
+    // Valid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/253/12345678901286", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/253/8438489238232", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://google.fb.org/253/123456789012845678901234567890", validationContext);
+
+    // Invalid Check Digit
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/253/12345678901299", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/253/8438489238236", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://google.fb.org/253/123456789012545678901234567890", validationContext);
   }
 }

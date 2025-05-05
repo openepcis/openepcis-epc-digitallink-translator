@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -150,5 +151,24 @@ class GCNValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/255/4343884394893", 8);
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/255/7438748374382", 9);
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/255/5787674634636", 12);
+  }
+
+  // Test for check digit validation
+  @Test
+  @Order(9)
+  void validCheckDigitTest() throws ValidationException {
+    final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
+
+    // Valid check digit
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/255/1234567890128", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/255/4343884394893", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/255/43943943493924", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/255/300096758845786", validationContext);
+
+    // Invalid check digit
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/255/1234567890129", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/255/4343884394895", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/255/43943943493914", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/255/300096758845886", validationContext);
   }
 }

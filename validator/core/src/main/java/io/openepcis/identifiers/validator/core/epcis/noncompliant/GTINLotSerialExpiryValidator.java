@@ -1,13 +1,16 @@
 package io.openepcis.identifiers.validator.core.epcis.noncompliant;
 
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
 import io.openepcis.identifiers.validator.core.Matcher;
+import io.openepcis.identifiers.validator.core.util.CheckDigitValidator;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static io.openepcis.constants.ApplicationIdentifierConstants.*;
+
 /**
  * Additional class to validate the identifiers: GTIN + Batch/Lot + Serial Number + Expiry Date.
  * Example: <a href="https://id.gs1.org/01/09520123456788/10/ABC1/21/12345?17=180426">https://id.gs1.org/01/09520123456788/10/ABC1/21/12345?17=180426</a>
@@ -32,13 +35,24 @@ public class GTINLotSerialExpiryValidator implements ApplicationIdentifierValida
                         "Invalid Identifier, DL URI should consist of 14 digit GTIN (Ex: https://id.gs1.org/01/09520123456788), Please check the DL URI : %s") {
                     @Override
                     public void validate(final String uri, final int gcpLength) throws ValidationException {
-                        super.validate(uri, gcpLength);
+                        super.validate(uri);
 
                         // Check the provided GCP Length is between 6 and 12 digits
                         if (!(gcpLength >= 6 && gcpLength <= 12)) {
                             throw new ValidationException(
                                     String.format("Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s", gcpLength));
                         }
+                    }
+
+                    @Override
+                    public void validate(final String uri, final ValidationContext validationContext) throws ValidationException {
+                        validate(uri, validationContext.getGcpLength());
+
+                        if (!validationContext.isValidateCheckDigit()) {
+                            return;
+                        }
+
+                        CheckDigitValidator.validateGTIN(uri);
                     }
                 });
 
@@ -83,34 +97,17 @@ public class GTINLotSerialExpiryValidator implements ApplicationIdentifierValida
     }
 
     @Override
-    public boolean validate(final String identifier, final Integer... gcpLength) {
+    public boolean validate(final String identifier, final ValidationContext validationContext) {
         // For Digital Link URIs, ensure a valid GCP length is provided.
-        if (gcpLength == null || gcpLength.length == 0 || gcpLength[0] == null) {
+        if (validationContext.getGcpLength() == null) {
             throw new ValidationException("Digital Link URI detected. Use validate(String, int) to validate Digital Link URIs with a GCP length.");
         }
 
         for (final Matcher matcher : URI_MATCHERS) {
-            matcher.validate(identifier, gcpLength[0]);
+            matcher.validate(identifier, validationContext);
         }
 
         // if validation success then return true
         return true;
-    }
-
-    @Override
-    public boolean validate(final String identifier) {
-        return validate(identifier, (Integer) null);
-    }
-
-    @Override
-    public boolean validate(final String identifier, final boolean isEpcisCompliant, final Integer... gcpLength) {
-        // if isEpcisCompliant is true then return false as the identifier is not EPCIS compliant
-        // else if contains the DL URI part: "/01/", "/10/", "/21/" and "?17=" then validate the identifier
-        if (supportsValidation(identifier, isEpcisCompliant)) {
-            return validate(identifier, gcpLength);
-        }
-
-        // else return false
-        return false;
     }
 }
