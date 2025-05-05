@@ -250,7 +250,7 @@ public class QrCodeGenerator {
             final String mimeFormat = StringUtils.substringAfter(config.getMimeType(), "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(bufferedImage, mimeFormat, byteArrayOutputStream);
-            ImageIO.write(bufferedImage, mimeFormat, new File("fileName" + ".png"));
+            //ImageIO.write(bufferedImage, mimeFormat, new File("fileName" + ".png"));
 
             log.debug("Generating the QR code completed.");
             return byteArrayOutputStream.toByteArray();
