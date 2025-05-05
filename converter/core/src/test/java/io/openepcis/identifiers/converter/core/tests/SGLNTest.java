@@ -101,24 +101,24 @@ public class SGLNTest {
     // Valid SGLN URI with serial number
     assertEquals(
         "urn:epc:id:sgln:123456.789012.1234",
-        converter.toURN("https://id.gs1.org/414/1234567890123/254/1234", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/414/1234567890128/254/1234", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:123456.789012.1234",
         converter
-            .toURN("https://deutscheBahn.de/train/414/1234567890123/254/1234", 6)
+            .toURN("https://deutscheBahn.de/train/414/1234567890128/254/1234", 6)
             .get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:93590743.8478.0394903",
-        converter.toURN("https://id.gs1.org/414/9359074384782/254/0394903").get("asURN"));
+        converter.toURN("https://id.gs1.org/414/9359074384785/254/0394903").get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:93590443.8478.0",
-        converter.toURN("https://id.gs1.org/414/9359044384782").get("asURN"));
+        converter.toURN("https://id.gs1.org/414/9359044384784").get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:93592393.8493.4390493",
-        converter.toURN("https://id.gs1.org/414/9359239384938/254/4390493").get("asURN"));
+        converter.toURN("https://id.gs1.org/414/9359239384933/254/4390493").get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:688000938493..0",
-        converter.toURN("https://id.gs1.org/414/6880009384938", 12).get("asURN"));
+        converter.toURN("https://id.gs1.org/414/6880009384936", 12).get("asURN"));
     assertEquals(
         "urn:epc:id:sgln:4374736473.64.0",
         converter.toURN("https://id.gs1.org/414/4374736473640", 10).get("asURN"));

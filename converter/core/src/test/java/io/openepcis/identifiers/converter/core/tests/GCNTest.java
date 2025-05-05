@@ -76,11 +76,11 @@ public class GCNTest {
         TestIdentifiers.toURN(sgcn, 12);
 
         // Valid SGCN URI
-        assertEquals("urn:epc:id:sgcn:123456789012..4", converter.toURN("https://id.gs1.org/255/12345678901234", 12).get("asURN"));
-        assertEquals("urn:epc:id:sgcn:123456789012..4", converter.toURN("https://gs1.in/255/12345678901234", 12).get("asURN"));
+        assertEquals("urn:epc:id:sgcn:123456789012..4", converter.toURN("https://id.gs1.org/255/12345678901284", 12).get("asURN"));
+        assertEquals("urn:epc:id:sgcn:123456789012..4", converter.toURN("https://gs1.in/255/12345678901284", 12).get("asURN"));
         assertEquals("urn:epc:id:sgcn:439439.434939.4", converter.toURN("https://id.gs1.org/255/43943943493924", 6).get("asURN"));
         assertEquals("urn:epc:id:sgcn:439439434939..4", converter.toURN("https://id.gs1.org/255/43943943493924", 12).get("asURN"));
-        assertEquals("urn:epc:id:sgcn:300096.758845.86", converter.toURN("https://id.gs1.org/255/300096758845486").get("asURN"));
+        assertEquals("urn:epc:id:sgcn:300096.758845.86", converter.toURN("https://id.gs1.org/255/300096758845786").get("asURN"));
 
         /** Class level GCN identifier conversion */
 
@@ -110,12 +110,12 @@ public class GCNTest {
         assertEquals(
                 "urn:epc:idpat:sgcn:123456789.012.*",
                 converter
-                        .toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890123", 9)
+                        .toURNForClassLevelIdentifier("https://id.gs1.org/255/1234567890128", 9)
                         .get("asURN"));
         assertEquals(
                 "urn:epc:idpat:sgcn:656256789012..*",
                 converter
-                        .toURNForClassLevelIdentifier("https://id.gs1.org/255/6562567890123")
+                        .toURNForClassLevelIdentifier("https://id.gs1.org/255/6562567890127")
                         .get("asURN"));
         assertEquals(
                 "urn:epc:idpat:sgcn:283892.329328.*",
@@ -125,12 +125,12 @@ public class GCNTest {
         assertEquals(
                 "urn:epc:idpat:sgcn:757845748574..*",
                 converter
-                        .toURNForClassLevelIdentifier("https://id.gs1.org/255/7578457485748", 12)
+                        .toURNForClassLevelIdentifier("https://id.gs1.org/255/7578457485747", 12)
                         .get("asURN"));
         assertEquals(
                 "urn:epc:idpat:sgcn:93588154.8574.*",
                 converter
-                        .toURNForClassLevelIdentifier("https://example.com/255/9358815485748")
+                        .toURNForClassLevelIdentifier("https://example.com/255/9358815485743")
                         .get("asURN"));
 
         // Class level URN to Web URI Conversion

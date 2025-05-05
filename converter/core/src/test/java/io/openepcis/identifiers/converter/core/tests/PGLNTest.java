@@ -97,9 +97,9 @@ public class PGLNTest {
         converter.toURN("https://horrem.kerpen.de/417/9359267746574").get("asURN"));
     assertEquals(
         "urn:epc:id:pgln:7337677.82938",
-        converter.toURN("https://horrem.kerpen.de/417/7337677829387").get("asURN"));
+        converter.toURN("https://horrem.kerpen.de/417/7337677829386").get("asURN"));
     assertEquals(
         "urn:epc:id:pgln:534536435643.",
-        converter.toURN("https://horrem.kerpen.de/417/5345364356436", 12).get("asURN"));
+        converter.toURN("https://horrem.kerpen.de/417/5345364356437", 12).get("asURN"));
   }
 }

@@ -10,20 +10,15 @@
  */
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 
 public class IdentifierValidator {
   private static final ValidatorFactory validatorFactory = new ValidatorFactory();
 
-  // Simply invoke the factory; let any ValidationException propagate.
-  public static void validate(final String identifier) {
-    validatorFactory.validateIdentifier(identifier);
-  }
-
   // Same for the variant that requires a GCP length.
-  public static void validate(final String identifier, final int gcpLength)
-      throws ValidationException {
-    validatorFactory.validateIdentifier(identifier, gcpLength);
+  public static void validate(final String identifier, final ValidationContext validationContext) throws ValidationException {
+    validatorFactory.validateIdentifier(identifier, validationContext);
   }
 }

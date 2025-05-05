@@ -77,18 +77,18 @@ public class GSINTest {
     // Valid GSIN
     assertEquals(
         "urn:epc:id:gsin:1234567890.512345",
-        converter.toURN("https://id.gs1.org/402/12345678905123456", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/402/12345678905123457", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:1234567890.512345",
-        converter.toURN("https://benelog.com/horrem/402/12345678905123456", 10).get("asURN"));
+        converter.toURN("https://benelog.com/horrem/402/12345678905123457", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:9524989358.953939",
-        converter.toURN("https://benelog.com/horrem/402/95249893589539394").get("asURN"));
+        converter.toURN("https://benelog.com/horrem/402/95249893589539398").get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:952044.5495834983",
-        converter.toURN("https://benelog.com/horrem/402/95204454958349836").get("asURN"));
+        converter.toURN("https://benelog.com/horrem/402/95204454958349832").get("asURN"));
     assertEquals(
         "urn:epc:id:gsin:952059.8495045904",
-        converter.toURN("https://https://id.gs1.org/402/95205984950459045", 6).get("asURN"));
+        converter.toURN("https://https://id.gs1.org/402/95205984950459042", 6).get("asURN"));
   }
 }

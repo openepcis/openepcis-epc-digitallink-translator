@@ -94,10 +94,10 @@ public class SSCCTest {
     // Valid SSCC URI
     assertEquals(
         "urn:epc:id:sscc:123456.07890123456",
-        converter.toURN("https://id.gs1.org/00/012345678901234567", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/00/012345678901234560", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sscc:123456.07890123456",
-        converter.toURN("https://marriot.in/blr/123/00/012345678901234567", 6).get("asURN"));
+        converter.toURN("https://marriot.in/blr/123/00/012345678901234560", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sscc:9403940349.9034903",
         converter.toURN("https://marriot.in/blr/123/00/994039403490349033", 10).get("asURN"));
@@ -106,9 +106,9 @@ public class SSCCTest {
         converter.toURN("https://marriot.in/blr/123/00/758758475845784857", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sscc:3665847.9584578485",
-        converter.toURN("https://marriot.in/blr/123/00/936658475845784857").get("asURN"));
+        converter.toURN("https://marriot.in/blr/123/00/936658475845784850").get("asURN"));
     assertEquals(
         "urn:epc:id:sscc:93594046.867373473",
-        converter.toURN("https://marriot.in/blr/123/00/893594046673734737").get("asURN"));
+        converter.toURN("https://marriot.in/blr/123/00/893594046673734738").get("asURN"));
   }
 }

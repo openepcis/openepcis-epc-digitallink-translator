@@ -82,13 +82,13 @@ public class GRAITest {
     // GRAI with valid URI
     assertEquals(
         "urn:epc:id:grai:123456.789012.4ABCD",
-        converter.toURN("https://id.gs1.org/8003/12345678901234ABCD", 6).get("asURN"));
+        converter.toURN("https://id.gs1.org/8003/12345678901284ABCD", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:123456.789012.4ABCD",
-        converter.toURN("https://youtube.com.org/8003/12345678901234ABCD", 6).get("asURN"));
+        converter.toURN("https://youtube.com.org/8003/12345678901284ABCD", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:1234567890.12.AABC",
-        converter.toURN("https://id.gs1.org/8003/1234567890123AABC", 10).get("asURN"));
+        converter.toURN("https://id.gs1.org/8003/1234567890128AABC", 10).get("asURN"));
     assertEquals(
         "urn:epc:id:grai:438478.374837.3:;<>=?AZ_az",
         converter.toURN("https://id.gs1.org/8003/43847837483703:;<>=?AZ_az", 6).get("asURN"));
@@ -127,22 +127,22 @@ public class GRAITest {
     assertEquals(
         "urn:epc:idpat:grai:1234567890.12.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890123", 10)
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890128", 10)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:grai:1234567890.12.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890123")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890128")
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:grai:784283728372..*",
         converter
-            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283728", 12)
+            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283729", 12)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:grai:7842837.28372.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283728")
+            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283729")
             .get("asURN"));
 
     // Conversion from URN to Web URI

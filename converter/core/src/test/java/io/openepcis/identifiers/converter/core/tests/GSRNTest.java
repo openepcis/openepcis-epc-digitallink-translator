@@ -70,8 +70,8 @@ public class GSRNTest {
     // Valid GSRN URI
     assertEquals("urn:epc:id:gsrn:1234567890.1234567", converter.toURN("https://id.gs1.org/8018/123456789012345675", 10).get("asURN"));
     assertEquals("urn:epc:id:gsrn:1234567890.1234567", converter.toURN("https://hp.com/laptop/8018/123456789012345675", 10).get("asURN"));
-    assertEquals("urn:epc:id:gsrn:301037.67524514251", converter.toURN("https://hp.com/laptop/8018/301037675245142514", 6).get("asURN"));
-    assertEquals("urn:epc:id:gsrn:302241.75382839283", converter.toURN("https://hp.com/laptop/8018/302241753828392839").get("asURN"));
-    assertEquals("urn:epc:id:gsrn:65467348373.982982", converter.toURN("https://hp.com/laptop/8018/654673483739829829", 11).get("asURN"));
+    assertEquals("urn:epc:id:gsrn:301037.67524514251", converter.toURN("https://hp.com/laptop/8018/301037675245142512", 6).get("asURN"));
+    assertEquals("urn:epc:id:gsrn:302241.75382839283", converter.toURN("https://hp.com/laptop/8018/302241753828392832").get("asURN"));
+    assertEquals("urn:epc:id:gsrn:65467348373.982982", converter.toURN("https://hp.com/laptop/8018/654673483739829824", 11).get("asURN"));
   }
 }

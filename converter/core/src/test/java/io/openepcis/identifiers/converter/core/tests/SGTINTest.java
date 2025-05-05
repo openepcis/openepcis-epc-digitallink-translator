@@ -104,10 +104,10 @@ public class SGTINTest {
         converter.toURN("https://id.gs1.org/01/12345678901231/21//19:;<=>?AZ_az", 6).get("asURN"));
     assertEquals(
         "urn:epc:id:sgtin:9046539.520374.9302932",
-        converter.toURN("https://lidl.de/food/frozen/01/59046539203740/21/9302932").get("asURN"));
+        converter.toURN("https://lidl.de/food/frozen/01/59046539203747/21/9302932").get("asURN"));
     assertEquals(
         "urn:epc:id:sgtin:0085859.689450.94304903",
-        converter.toURN("https://lidl.de/food/frozen/01/60085859894506/21/94304903").get("asURN"));
+        converter.toURN("https://lidl.de/food/frozen/01/60085859894507/21/94304903").get("asURN"));
 
     /** Class level GTIN identifiers testing with valid and invalid scenarios */
 
@@ -139,17 +139,17 @@ public class SGTINTest {
     assertEquals(
         "urn:epc:idpat:sgtin:234567.1890123.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/01/12345678901234", 6)
+            .toURNForClassLevelIdentifier("https://id.gs1.org/01/12345678901231", 6)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:sgtin:858858858545.8.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/01/88588588585452", 12)
+            .toURNForClassLevelIdentifier("https://id.gs1.org/01/88588588585457", 12)
             .get("asURN"));
     assertEquals(
         "urn:epc:idpat:sgtin:93593755.88545.*",
         converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/01/89359375585452")
+            .toURNForClassLevelIdentifier("https://id.gs1.org/01/89359375585450")
             .get("asURN"));
 
     // URN to Web URI conversion

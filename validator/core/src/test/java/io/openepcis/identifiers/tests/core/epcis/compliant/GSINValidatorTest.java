@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -75,5 +76,21 @@ class GSINValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://benelog.com/horrem/402/95249893589539394", 10);
     ApplicationIdentifierValidationTestUtil.assertValid("https://benelog.com/horrem/402/95204454958349836", 10);
     ApplicationIdentifierValidationTestUtil.assertValid("https://https://id.gs1.org/402/95205984950459045", 6);
+  }
+
+  @Test
+  @Order(5)
+  void checkDigitTest() throws ValidationException {
+    final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
+
+    // Valid Check digit
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/402/12345678905123457", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://benelog.com/horrem/402/95204454958349832", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://benelog.com/horrem/402/95485984950459046", validationContext);
+
+    // Invalid Check digit
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://benelog.com/horrem/402/12345678905123459", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://benelog.com/horrem/402/95204454958349831", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://https://id.gs1.org/402/95485984950459047", validationContext);
   }
 }

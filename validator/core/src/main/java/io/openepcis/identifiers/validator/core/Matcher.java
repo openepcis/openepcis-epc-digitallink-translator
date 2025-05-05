@@ -10,25 +10,32 @@
  */
 package io.openepcis.identifiers.validator.core;
 
+import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.exception.ValidationException;
 
 public class Matcher {
-  private final String pattern;
-  private final String message;
+    private final String pattern;
+    private final String message;
 
-  public Matcher(final String pattern, final String message) {
-    this.pattern = pattern;
-    this.message = message;
-  }
-
-  /** Validates the input string against the pattern. Returns true if valid, false otherwise. */
-  public void validate(final String urn) throws ValidationException {
-    if (!urn.matches(pattern)) {
-      throw new ValidationException(String.format(message, urn));
+    public Matcher(final String pattern, final String message) {
+        this.pattern = pattern;
+        this.message = message;
     }
-  }
 
-  public void validate(final String uri, final int gcpLength) throws ValidationException {
-    this.validate(uri);
-  }
+    /**
+     * Validates the input string against the pattern. Returns true if valid, false otherwise.
+     */
+    public void validate(final String urn) throws ValidationException {
+        if (!urn.matches(pattern)) {
+            throw new ValidationException(String.format(message, urn));
+        }
+    }
+
+    public void validate(final String uri, final int gcpLength) throws ValidationException {
+        this.validate(uri);
+    }
+
+    public void validate(final String uri, final ValidationContext validationContext) throws ValidationException {
+        this.validate(uri, validationContext.getGcpLength());
+    }
 }
