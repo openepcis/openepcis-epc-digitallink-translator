@@ -87,4 +87,19 @@ public class ValidatorFactory {
         // If no validator supports the identifier, throw an exception.
         throw new UnsupportedGS1IdentifierException(String.format("Identifier did not match any GS1 identifiers format: %s", identifier));
     }
+
+    /**
+     * Validate a GS1 identifier string using the provided options.
+     *
+     * @param identifier        the raw GS1 identifier to validate (URN or Digital Link URI)
+     * @param gcpLength         GCP length
+     * @return true if the identifier passes all checks in the first matching validator;
+     * false if that validator’s validate method returns false
+     * @throws UnsupportedGS1IdentifierException if no registered validator supports this identifier under the
+     *                                           given epcisCompliant setting
+     */
+    @Deprecated(forRemoval = true, since = "1.0.0")
+    public boolean validateIdentifier(final String identifier, final int gcpLength) {
+        return validateIdentifier(identifier, ValidationContext.builder().gcpLength(gcpLength).build());
+    }
 }

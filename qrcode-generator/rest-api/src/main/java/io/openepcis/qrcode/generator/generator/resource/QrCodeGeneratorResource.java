@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -37,6 +38,10 @@ import java.util.List;
 public class QrCodeGeneratorResource {
     @Inject
     QrCodeGenerator qrCodeGenerator;
+
+    @ConfigProperty(name = "gs1.digital-link.base-url", defaultValue = QrCodeConstants.GS1_IDENTIFIER_DOMAIN)
+    String gs1DigitalLinkBaseUrl;
+
 
     // Method to generate the QR Code based on user provided specifications as QrCodeConfig and return
     @POST
@@ -138,7 +143,7 @@ public class QrCodeGeneratorResource {
             )
             @RestHeader("QR-Design-Preset") String designPreset) {
 
-        final String dlUrl = QrCodeConstants.GS1_IDENTIFIER_DOMAIN + path;
+        final String dlUrl = gs1DigitalLinkBaseUrl + path;
         final QrCodeConfig.QrCodeConfigBuilder cfgBuilder = QrCodeConfig.builder().data(dlUrl);
 
         // Set the mimeType if matches one of the value from Image.io mime type
