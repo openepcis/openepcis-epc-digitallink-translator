@@ -1,4 +1,4 @@
-package io.openepcis.qrcode.generator.generator;
+package io.openepcis.qrcode.generator;
 
 import io.quarkus.vertx.web.Route;
 import io.vertx.ext.web.RoutingContext;

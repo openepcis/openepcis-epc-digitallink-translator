@@ -1,4 +1,4 @@
-package io.openepcis.qrcode.generator.generator.exception;
+package io.openepcis.qrcode.generator.exception;
 
 import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import lombok.Data;
@@ -38,9 +38,9 @@ public class ExceptionMapper {
         final ProblemResponseBody responseBody = new ProblemResponseBody();
         responseBody.setType(EXCEPTION_OCCURRED_DURING_CREATION_OF_QR_CODE);
         responseBody.setTitle("Access denied for QR Code Generator");
-        responseBody.setStatus(RestResponse.StatusCode.UNAUTHORIZED);
+        responseBody.setStatus(RestResponse.StatusCode.BAD_REQUEST);
         responseBody.setDetail(exception.getMessage());
-        return RestResponse.status(RestResponse.Status.UNAUTHORIZED, responseBody);
+        return RestResponse.status(RestResponse.Status.BAD_REQUEST, responseBody);
     }
 
 

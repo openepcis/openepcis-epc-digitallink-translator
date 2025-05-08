@@ -1,4 +1,4 @@
-package io.openepcis.qrcode.generator.generator.filter;
+package io.openepcis.qrcode.generator.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

@@ -1,4 +1,4 @@
-package io.openepcis.qrcode.generator.generator.resource;
+package io.openepcis.qrcode.generator.resource;
 
 import io.openepcis.qrcode.generator.QrCodeConfig;
 import io.openepcis.qrcode.generator.QrCodeGenerator;
