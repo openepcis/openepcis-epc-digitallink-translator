@@ -75,6 +75,6 @@ public interface ApplicationIdentifierValidator {
     }
 
     default boolean validate(final String identifier, final Integer gcpLength) {
-        return validate(identifier, ValidationContext.builder().gcpLength(gcpLength).build());
+        return validate(identifier, ValidationContext.builder().validateCheckDigit(false).gcpLength(gcpLength).build());
     }
 }
