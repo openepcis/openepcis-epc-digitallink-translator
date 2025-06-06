@@ -10,17 +10,16 @@
  */
 package io.openepcis.identifiers.converter.core.tests;
 
-import static org.junit.Assert.assertEquals;
-
 import io.openepcis.identifiers.converter.Converter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ShortNameReplacerTest {
 
   private Converter converter;
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
     converter = new Converter();
   }

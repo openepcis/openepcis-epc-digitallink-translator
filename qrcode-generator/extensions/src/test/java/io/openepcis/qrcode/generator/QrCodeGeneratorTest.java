@@ -1,8 +1,8 @@
 package io.openepcis.qrcode.generator;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ public class QrCodeGeneratorTest {
 
     private QrCodeGenerator barCodeGenerator;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         barCodeGenerator = new QrCodeGenerator();
     }

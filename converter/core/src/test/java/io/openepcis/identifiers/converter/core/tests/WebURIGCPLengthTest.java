@@ -10,12 +10,10 @@
  */
 package io.openepcis.identifiers.converter.core.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-
 import io.openepcis.identifiers.converter.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.validator.exception.UnsupportedGS1IdentifierException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class WebURIGCPLengthTest {
 

@@ -11,11 +11,12 @@
 package io.openepcis.qrcode.generator;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.awt.*;
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -27,7 +28,7 @@ public class QrCodeGeneratorTest {
     // Attempt to load a logo from resources
     private final String logoResourceUrl = QrCodeGeneratorTest.class.getClassLoader().getResource("images/Logo.png").toString();
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         barCodeGenerator = new QrCodeGenerator();
     }

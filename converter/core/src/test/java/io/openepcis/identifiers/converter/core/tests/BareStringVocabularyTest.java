@@ -10,18 +10,17 @@
  */
 package io.openepcis.identifiers.converter.core.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import io.openepcis.identifiers.converter.Converter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 public class BareStringVocabularyTest {
 
   private Converter converter;
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
     converter = new Converter();
   }
@@ -29,7 +28,7 @@ public class BareStringVocabularyTest {
   @Test
   public void BizStepBareStringTest() {
     String bizStep = "https://ref.gs1.org/cbv/BizStep-departing";
-    assertEquals("departing", converter.toBareStringVocabulary(bizStep));
+    Assertions.assertEquals("departing", converter.toBareStringVocabulary(bizStep));
 
     bizStep = "https://ref.gs1.org/cbv/BizStep-commissioning";
     assertEquals("commissioning", converter.toBareStringVocabulary(bizStep));

@@ -10,10 +10,9 @@
  */
 package io.openepcis.identifiers.converter.core.tests;
 
-import static org.junit.Assert.assertThrows;
-
 import io.openepcis.identifiers.converter.Converter;
 import io.openepcis.identifiers.validator.exception.ValidationException;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestIdentifiers {
 
