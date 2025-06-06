@@ -17,6 +17,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import io.openepcis.qrcode.generator.spi.service.QrCodeConfigService;
+import io.openepcis.qrcode.generator.util.GS1DigitalLinkParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,22 +33,41 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.List;
+import java.util.*;
 
+/**
+ * QrCodeGenerator generates a QR code image with optional logo, display label, and HRI,
+ * ensuring all visual elements are proportionate to the QR code's dimensions.
+ */
 @Slf4j
 public class QrCodeGenerator {
 
     protected final QrCodeConfigService qrCodeConfigService = QrCodeConfigService.getInstance();
+    private static Font OCR_B_FONT;
+
+    static {
+        try {
+            // Load the OCR-B font from the system or classpath
+            OCR_B_FONT = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(QrCodeGenerator.class.getResourceAsStream("/OCR-B/font/OCR-B.ttf")))
+                    .deriveFont(Font.PLAIN, 12);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(OCR_B_FONT);
+            log.info("Loaded OCR-B font: " + OCR_B_FONT.getFontName());
+        } catch (Exception e) {
+            log.error("Failed to load OCR-B font: " + e.getMessage(), e);
+            OCR_B_FONT = new Font("SansSerif", Font.PLAIN, 12); // Fallback to default font if loading fails
+        }
+    }
 
     /**
-     * Generates a QR code image based on the provided configuration.
+     * Generates a QR code image according to the provided configuration.
      *
-     * @param qrCodeConfig The configuration object containing all the parameters for QR code generation.
+     * @param qrCodeConfig Configuration object containing parameters for QR code generation.
+     * @return Byte array of the generated image (QR code, optionally with HRI).
      */
     public byte[] generateQRCode(final QrCodeConfig qrCodeConfig) {
-        log.debug("Started generating the QR code based on provided config.");
+        log.debug("Generating QR code with config: {}", qrCodeConfig);
+
         try {
             // Use SPI to apply default configuration values (if any provider supports the provided name)
             final QrCodeConfig config = qrCodeConfigService.applyDefaultConfig(qrCodeConfig);
@@ -59,269 +79,166 @@ public class QrCodeGenerator {
             encodingHints.put(EncodeHintType.MARGIN, config.getMargin());
 
             // Create a Zxing QRCodeWriter object to generate the QR code.
-            final QRCodeWriter writer = new QRCodeWriter();
-
-            // Encode the data into a BitMatrix, specifying format, dimensions, and hints.
-            final String encodeURL = config.isCompressWithUppercase() ? StringUtils.upperCase(config.getData()) : config.getData();
-            final BitMatrix bitMatrix = writer.encode(StringUtils.trim(encodeURL), BarcodeFormat.QR_CODE, 1, 1, encodingHints);
+            final String qrContent = config.isCompressWithUppercase() ? StringUtils.upperCase(config.getData()) : config.getData();
+            final QRCodeWriter qrWriter = new QRCodeWriter();
+            final BitMatrix bitMatrix = qrWriter.encode(StringUtils.trim(qrContent), BarcodeFormat.QR_CODE, 1, 1, encodingHints);
 
             // Create a BufferedImage (ARGB) to hold the QR code image.
-            final BufferedImage bufferedImage = new BufferedImage(config.getQrWidth(), config.getQrHeight(), BufferedImage.TYPE_INT_RGB);
+            final BufferedImage qrImage = new BufferedImage(config.getQrWidth(), config.getQrHeight(), BufferedImage.TYPE_INT_RGB);
+            final Graphics2D qrGraphics = qrImage.createGraphics();
+            qrGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            qrGraphics.setColor(config.getBackgroundColor());
+            qrGraphics.fillRect(0, 0, config.getQrWidth(), config.getQrHeight());
 
-            // Graphics2D for drawing on the image.
-            final Graphics2D g2d = bufferedImage.createGraphics();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // Fill background
-            g2d.setColor(config.getBackgroundColor());
-            g2d.fillRect(0, 0, config.getQrWidth(), config.getQrHeight());
-
-            // Compute module sizes from the BitMatrix
+            // Compute module size (pixels per matrix cell)
             final int matrixWidth = bitMatrix.getWidth();
             final int matrixHeight = bitMatrix.getHeight();
             final float moduleSizeX = (float) config.getQrWidth() / matrixWidth;
             final float moduleSizeY = (float) config.getQrHeight() / matrixHeight;
             final float moduleSize = Math.min(moduleSizeX, moduleSizeY);
 
-            // Prepare the Paint (gradient or solid) for modules
+            // Paint for modules (gradient or solid)
             final Paint modulePaint =
-                    createGradientPaint(0, 0, config.getQrWidth(), config.getQrHeight(), config.getGradientStart(), config.getGradientEnd(), config.isUseRadialGradient());
+                    createGradientPaint(config.getQrWidth(), config.getQrHeight(),
+                            config.getGradientStart(), config.getGradientEnd(), config.isUseRadialGradient());
 
-            // Determine the Logos center bounding box to skip any QR code modules being drawn there
-            int centerX = 0, centerY = 0, logoW = 0, logoH = 0;
-            boolean skipCenter = false;
-            if (config.getLogoResourceUrl() != null && StringUtils.isNotBlank(config.getLogoResourceUrl().toString())) {
+            // Calculate logo bounding box (centered, proportional to QR size)
+            int logoX = 0, logoY = 0, logoW = 0, logoH = 0;
+            boolean skipLogoArea = false;
+            if (config.getLogoResourceUrl() != null && StringUtils.isNotBlank(config.getLogoResourceUrl())) {
                 // Pre-calculate the bounding box for the logo
                 logoW = (int) (config.getQrWidth() * config.getLogoScale());
                 logoH = (int) (config.getQrHeight() * config.getLogoScale());
-                centerX = (config.getQrWidth() - logoW) / 2;
-                centerY = (config.getQrHeight() - logoH) / 2;
-                skipCenter = true; // We want to skip drawing modules in that center area
+                logoX = (config.getQrWidth() - logoW) / 2;
+                logoY = (config.getQrHeight() - logoH) / 2;
+                skipLogoArea = true; // We want to skip drawing modules in that center area
             }
 
-            // Step-1 : Draw regular modules (excluding finder pattern areas, and excluding center area if
-            // skipCenter is true)
+            // Draw regular modules (excluding finder pattern areas, and excluding center area if skipLogoArea is true
             for (int y = 0; y < matrixHeight; y++) {
                 for (int x = 0; x < matrixWidth; x++) {
                     boolean isFinder = isInFinderPattern(x, y, matrixWidth, matrixHeight);
 
                     if (bitMatrix.get(x, y) && !isFinder) {
-                        // Convert (x,y) in the matrix to actual pixel coords
+                        // Convert (x,y) in the matrix to actual pixel cords
                         final float px = x * moduleSizeX;
                         final float py = y * moduleSizeY;
                         final float moduleRight = px + moduleSizeX;
                         final float moduleBottom = py + moduleSizeY;
 
                         // If we must skip the center bounding box for the logo:
-                        if (skipCenter
-                                && doesOverlap(px, py, moduleRight, moduleBottom, centerX, centerY, logoW, logoH)) {
+                        if (skipLogoArea
+                                && doesOverlap(px, py, moduleRight, moduleBottom, logoX, logoY, logoW, logoH)) {
                             // do NOT draw here, leave blank for the Logo
                             continue;
                         }
 
                         // Otherwise, draw the module
-                        drawSingleModule(
-                                g2d,
-                                x,
-                                y,
-                                moduleSizeX,
-                                moduleSizeY,
-                                moduleSize,
-                                config.getModuleShape(),
-                                config.isDrawShadows(),
-                                config.getShadowColor(),
-                                config.getShadowOffsetPct(),
-                                modulePaint);
+                        drawSingleModule(qrGraphics, x, y, moduleSizeX, moduleSizeY, moduleSize, config.getModuleShape(), config.isDrawShadows(), config.getShadowColor(), config.getShadowOffsetPct(), modulePaint);
                     }
                 }
             }
 
-            // Step-2: Draw the finder patterns (3 corner squares) for easy detection by QR code readers
+            // Draw the finder patterns (3 corner squares) for easy detection by QR code readers
             final Paint finderPaint = (config.isDrawFinderGradient()) ? modulePaint : config.getFinderColor();
-            // top-left
-            drawFinderPattern(
-                    g2d,
-                    bitMatrix,
-                    0,
-                    0,
-                    7,
-                    moduleSizeX,
-                    moduleSizeY,
-                    moduleSize,
-                    config.getModuleShape(),
-                    config.isDrawShadows(),
-                    config.getShadowColor(),
-                    config.getShadowOffsetPct(),
-                    finderPaint);
+            drawFinderPattern(qrGraphics, bitMatrix, 0, 0, moduleSize, config, finderPaint); // top-left
+            drawFinderPattern(qrGraphics, bitMatrix, matrixWidth - 7, 0, moduleSize, config, finderPaint);  // top-right
+            drawFinderPattern(qrGraphics, bitMatrix, 0, matrixHeight - 7, moduleSize, config, finderPaint); // bottom-left
 
-            // top-right
-            drawFinderPattern(
-                    g2d,
-                    bitMatrix,
-                    matrixWidth - 7,
-                    0,
-                    7,
-                    moduleSizeX,
-                    moduleSizeY,
-                    moduleSize,
-                    config.getModuleShape(),
-                    config.isDrawShadows(),
-                    config.getShadowColor(),
-                    config.getShadowOffsetPct(),
-                    finderPaint);
-
-            // bottom-left
-            drawFinderPattern(
-                    g2d,
-                    bitMatrix,
-                    0,
-                    matrixHeight - 7,
-                    7,
-                    moduleSizeX,
-                    moduleSizeY,
-                    moduleSize,
-                    config.getModuleShape(),
-                    config.isDrawShadows(),
-                    config.getShadowColor(),
-                    config.getShadowOffsetPct(),
-                    finderPaint);
-
-            // Step-3: Place the logo in the center if provided
-            if (skipCenter) {
-                try {
-                    final BufferedImage logo;
-                    final String logoInput = config.getLogoResourceUrl();
-                    final URI logoUri = new URI(logoInput);
-
-                    if (!logoUri.isAbsolute()) {
-                        // Treat as a relative file path. Adjust the base directory as needed.
-                        final File logoFile = new File(logoInput);
-                        if (!logoFile.exists()) {
-                            log.error("Relative logo file not found: " + logoFile.getAbsolutePath());
-                            throw new QrCodeGeneratorException("Relative logo file not found: " + logoFile.getAbsolutePath());
-                        }
-                        logo = ImageIO.read(logoFile);
-                    } else {
-                        // Absolute URI; convert to URL
-                        final URL logoUrl = logoUri.toURL();
-                        if ("file".equalsIgnoreCase(logoUrl.getProtocol())) {
-                            // For local file URLs, read from file.
-                            final File logoFile = new File(logoUrl.toURI());
-
-                            if (!logoFile.exists()) {
-                                log.error("Logo file not found: " + logoFile.getAbsolutePath());
-                                throw new QrCodeGeneratorException("Logo file not found: " + logoFile.getAbsolutePath());
-                            }
-                            logo = ImageIO.read(logoFile);
-                        } else {
-                            // For remote URLs, read directly.
-                            logo = ImageIO.read(logoUrl);
-                        }
-                    }
-
-                    if (logo != null) {
-                        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                        // Draw the logo onto the blank region
-                        g2d.drawImage(logo, centerX, centerY, logoW, logoH, null);
-                    }
-                } catch (Exception ex) {
-                    // You can either log the error or wrap it in your custom exception.
-                    log.error("Error generating the QR code: " + ex.getMessage(), ex);
-                    throw new QrCodeGeneratorException("Error generating the QR code: " + ex.getMessage(), ex);
-                }
+            // Step-3: Draw the logo in the center if provided
+            if (skipLogoArea) {
+                drawLogo(qrGraphics, config.getLogoResourceUrl(), logoX, logoY, logoW, logoH);
             }
 
-            // ---- Step-4: Draw the company name, if provided
-            if (config.getDisplayLabel() != null && !config.getDisplayLabel().isEmpty()) {
-                g2d.setColor(config.getDisplayLabelFontColor());
-                g2d.setFont(new Font("Arial", Font.PLAIN, (int) (config.getQrWidth() * 0.03)));
-                final FontMetrics fm = g2d.getFontMetrics();
-                final int textWidth = fm.stringWidth(config.getDisplayLabel());
-                final int textHeight = fm.getHeight();
-                final int x = config.getQrWidth() - textWidth - 10;
-                final int y = config.getQrHeight() - 10 - textHeight;
-                g2d.drawString(config.getDisplayLabel(), x, y + fm.getAscent());
+            // Draw display label, right-aligned, proportional font size
+            if (StringUtils.isNotBlank(config.getDisplayLabel())) {
+                final float fontSize = config.getQrHeight() * 0.03f;
+                qrGraphics.setColor(config.getDisplayLabelFontColor());
+                qrGraphics.setFont(new Font("Arial", Font.PLAIN, Math.round(fontSize)));
+                final FontMetrics fm = qrGraphics.getFontMetrics();
+                final int labelWidth = fm.stringWidth(config.getDisplayLabel());
+                final int x = Math.round(config.getQrWidth() - labelWidth - config.getQrWidth() * 0.02f);
+                final int y = Math.round(config.getQrHeight() - config.getQrHeight() * 0.02f - fm.getHeight());
+                qrGraphics.drawString(config.getDisplayLabel(), x, y + fm.getAscent());
             }
 
             // Dispose Graphics
-            g2d.dispose();
+            qrGraphics.dispose();
 
-            // Step-5: Write the image to a ByteArrayOutputStream using that format and return bytes[]
-            final String mimeFormat = StringUtils.substringAfter(config.getMimeType(), "/");
+            // If HRI enabled return generated QR Code image with HRI image
+            if (qrCodeConfig.isAddHri()) {
+                log.debug("Adding HRI data to the QR code image");
+                return writeHRIData(config, qrImage);
+            }
+
+            // If HRI is not enabled, return only the QR code image
+            log.debug("Returning only the QR code image");
+            return writeImageToBytes(qrImage, config.getMimeType());
+        } catch (Exception e) {
+            log.error("Error generating the QR code: " + e.getMessage(), e);
+            throw new QrCodeGeneratorException("Error generating the QR code: " + e.getMessage(), e);
+        }
+
+    }
+
+
+    /**
+     * Writes an image to a byte array in the requested format.
+     */
+    private byte[] writeImageToBytes(final BufferedImage image, final String mimeType) {
+        try {
+            final String formatName = StringUtils.substringAfter(mimeType, "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, mimeFormat, byteArrayOutputStream);
-            //ImageIO.write(bufferedImage, mimeFormat, new File("fileName" + ".png"));
-
-            log.debug("Generating the QR code completed.");
+            ImageIO.write(image, formatName, byteArrayOutputStream);
+            //ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
-            log.error("Error generating the QR Code " + e.getMessage(), e);
-            throw new QrCodeGeneratorException(e.getMessage(), e);
+            log.error("Error writing image to bytes: " + e.getMessage(), e);
+            throw new QrCodeGeneratorException("Error writing image to bytes: " + e.getMessage(), e);
         }
     }
 
     /**
      * Helper to see if the module’s bounding box overlaps the center logo area
      */
-    private boolean doesOverlap(
-            float left,
-            float top,
-            float right,
-            float bottom,
-            int logoX,
-            int logoY,
-            int logoW,
-            int logoH) {
+    private boolean doesOverlap(float left, float top,
+                                float right, float bottom,
+                                int logoX, int logoY,
+                                int logoW, int logoH) {
         if (right < logoX) return false; // module is left of logo
         if (left > logoX + logoW) return false; // module is right of logo
         if (bottom < logoY) return false; // module is above logo
-        if (top > logoY + logoH) return false; // module is below logo
-        return true;
+        return !(top > logoY + logoH); // module is below logo
     }
 
     /**
      * Creates either a linear or radial gradient paint based on user preferences.
      */
-    private Paint createGradientPaint(
-            final float x1,
-            final float y1,
-            final float x2,
-            final float y2,
-            final Color color1,
-            final Color color2,
-            final boolean useRadialGradient) {
+    private Paint createGradientPaint(final float x2, final float y2,
+                                      final Color color1, final Color color2,
+                                      final boolean useRadialGradient) {
         // Check if a radial gradient is requested.
         if (useRadialGradient) {
-            // Calculate the center x-coordinate of the radial gradient.
-            final float cx = (x1 + x2) / 2f;
-
-            // Calculate the center y-coordinate of the radial gradient.
-            final float cy = (y1 + y2) / 2f;
-
-            // Calculate the radius of the radial gradient.
-            final float radius = Math.max(x2 - x1, y2 - y1) / 2f;
-
-            // Define the distribution of colors in the gradient (start and end).
-            final float[] dist = {0f, 1f};
-
-            // Define the colors for the gradient.
-            final Color[] colors = {color1, color2};
+            final float cx = ((float) 0 + x2) / 2f; // Calculate the center x-coordinate of the radial gradient.
+            final float cy = ((float) 0 + y2) / 2f; // Calculate the center y-coordinate of the radial gradient.
+            final float radius = Math.max(x2 - (float) 0, y2 - (float) 0) / 2f; // Calculate the radius of the radial gradient.
+            final float[] dist = {0f, 1f}; // Define the distribution of colors in the gradient (start and end).
+            final Color[] colors = {color1, color2}; // Define the colors for the gradient.
 
             // Create and return a RadialGradientPaint object.
             return new RadialGradientPaint(
                     cx, cy, radius, dist, colors, MultipleGradientPaint.CycleMethod.NO_CYCLE);
         } else {
-            // Create and return a Linear GradientPaint object. Linear gradient from top-left to
-            // bottom-right
-            return new GradientPaint(x1, y1, color1, x2, y2, color2);
+            // Create and return a Linear GradientPaint object. Linear gradient from top-left to bottom-right
+            return new GradientPaint((float) 0, (float) 0, color1, x2, y2, color2);
         }
     }
 
     /**
      * Checks if a module belongs to one of the 3 standard finder patterns (7x7).
      */
-    private boolean isInFinderPattern(
-            final int x, final int y, final int matrixWidth, final int matrixHeight) {
+    private boolean isInFinderPattern(final int x, final int y,
+                                      final int matrixWidth, final int matrixHeight) {
         // Define the size of the finder pattern (7x7).
         final int finderSize = 7;
 
@@ -336,29 +253,18 @@ public class QrCodeGenerator {
         }
 
         // Check if the module is within the bottom-left finder pattern.
-        if (x < finderSize && y >= matrixHeight - finderSize) {
-            return true;
-        }
+        return x < finderSize && y >= matrixHeight - finderSize;
 
         // If none of the finder pattern conditions are met, return false.
-        return false;
     }
 
     /**
      * Draws a single module (pixel) with optional shadow and custom shape.
      */
-    private void drawSingleModule(
-            final Graphics2D g2d,
-            final int x,
-            final int y,
-            final float moduleSizeX,
-            final float moduleSizeY,
-            final float moduleSize,
-            final QrCodeConfig.ModuleShape shape,
-            final boolean drawShadows,
-            final Color shadowColor,
-            final float shadowOffsetPct,
-            final Paint modulePaint) {
+    private void drawSingleModule(final Graphics2D g2d, final int x, final int y,
+                                  final float moduleSizeX, final float moduleSizeY, final float moduleSize,
+                                  final QrCodeConfig.ModuleShape shape, final boolean drawShadows,
+                                  final Color shadowColor, final float shadowOffsetPct, final Paint modulePaint) {
 
         final float px = x * moduleSizeX;
         final float py = y * moduleSizeY;
@@ -384,48 +290,29 @@ public class QrCodeGenerator {
     /**
      * Draws the 7x7 finder pattern block by iterating each module in that region.
      */
-    private void drawFinderPattern(
-            final Graphics2D g2d,
-            final BitMatrix matrix,
-            final int startX,
-            final int startY,
-            final int size,
-            final float moduleSizeX,
-            final float moduleSizeY,
-            final float moduleSize,
-            final QrCodeConfig.ModuleShape shape,
-            final boolean drawShadows,
-            final Color shadowColor,
-            final float shadowOffsetPct,
-            final Paint finderPaint) {
+    private void drawFinderPattern(final Graphics2D g2d, final BitMatrix matrix,
+                                   final int startX, final int startY,
+                                   final float moduleSize, final QrCodeConfig config,
+                                   final Paint finderPaint) {
         // Iterate through each row of the finder pattern.
-        for (int row = 0; row < size; row++) {
+        for (int row = 0; row < 7; row++) {
             // Iterate through each column of the finder pattern.
-            for (int col = 0; col < size; col++) {
+            for (int col = 0; col < 7; col++) {
                 // Check if the module at the current position is set in the BitMatrix.
                 if (matrix.get(startX + col, startY + row)) {
-                    final float px =
-                            (startX + col) * moduleSizeX; // Calculate the pixel x-coordinate of the module.
-                    final float py =
-                            (startY + row) * moduleSizeY; // Calculate the pixel y-coordinate of the module.
+                    float px = (startX + col) * ((float) config.getQrWidth() / matrix.getWidth()); // Calculate the pixel x-coordinate of the module.
+                    float py = (startY + row) * ((float) config.getQrHeight() / matrix.getHeight()); // Calculate the pixel y-coordinate of the module.
 
                     // Check if shadows should be drawn.
-                    if (drawShadows && shadowColor != null) {
-                        g2d.setColor(shadowColor); // Set the color for the shadow.
-
-                        final float offset =
-                                moduleSize * shadowOffsetPct; // Calculate the offset for the shadow.
-                        createShape(
-                                g2d,
-                                px + offset,
-                                py + offset,
-                                moduleSize,
-                                shape); // Create & fill the shape for the shadow.
+                    if (config.isDrawFinderGradient() && config.getShadowColor() != null) {
+                        g2d.setColor(config.getShadowColor()); // Set the color for the shadow.
+                        float offset = moduleSize * config.getShadowOffsetPct(); // Calculate the offset for the shadow.
+                        createShape(g2d, px + offset, py + offset, moduleSize, config.getModuleShape()); // Create & fill the shape for the shadow.
                     }
 
                     // Main fill
                     g2d.setPaint(finderPaint); // Set the paint for the module.
-                    createShape(g2d, px, py, moduleSize, shape); // Create & fill the shape for the module.
+                    createShape(g2d, px, py, moduleSize, config.getModuleShape()); // Create & fill the shape for the module.
                 }
             }
         }
@@ -434,12 +321,8 @@ public class QrCodeGenerator {
     /**
      * Creates a shape for the module based on the chosen CustomShape (SQUARE, ROUNDED_RECT, CIRCLE, etc.).
      */
-    private void createShape(
-            final Graphics2D g2d,
-            final float x,
-            final float y,
-            final float moduleSize,
-            final QrCodeConfig.ModuleShape shape) {
+    private void createShape(final Graphics2D g2d, final float x, final float y,
+                             final float moduleSize, final QrCodeConfig.ModuleShape shape) {
 
         switch (shape) {
             // If the shape is SQUARE, create a Rectangle2D.Float.
@@ -539,5 +422,143 @@ public class QrCodeGenerator {
                 g2d.fill(ellipse2d);
             }
         }
+    }
+
+    /**
+     * Draw logo image (keeps proportions and center).
+     */
+    private void drawLogo(final Graphics2D g2d, final String logoResourceUrl,
+                          final int x, final int y,
+                          final int w, final int h) {
+        try {
+            BufferedImage logo;
+            final URI logoUri = new URI(logoResourceUrl);
+
+            if (!logoUri.isAbsolute()) {
+                // Treat as a relative file path. Adjust the base directory as needed.
+                final File logoFile = new File(logoResourceUrl);
+                if (!logoFile.exists()) {
+                    log.error("Relative logo file not found: " + logoFile.getAbsolutePath());
+                    throw new QrCodeGeneratorException("Relative logo file not found: " + logoFile.getAbsolutePath());
+                }
+                logo = ImageIO.read(logoFile);
+            } else {
+                // Absolute URI; convert to URL
+                final URL logoUrl = logoUri.toURL();
+                if ("file".equalsIgnoreCase(logoUrl.getProtocol())) {
+                    // For local file URLs, read from file.
+                    final File logoFile = new File(logoUrl.toURI());
+                    if (!logoFile.exists()) {
+                        log.error("Logo file not found: " + logoFile.getAbsolutePath());
+                        throw new QrCodeGeneratorException("Logo file not found: " + logoFile.getAbsolutePath());
+                    }
+                    logo = ImageIO.read(logoFile);
+                } else {
+                    // For remote URLs, read directly.
+                    logo = ImageIO.read(logoUrl);
+                }
+            }
+
+            if (logo != null) {
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                g2d.drawImage(logo, x, y, w, h, null); // Draw the logo onto the blank region
+            } else {
+                log.warn("Logo image could not be loaded from URL: {}", logoResourceUrl);
+            }
+        } catch (Exception ex) {
+            log.error("Could not draw logo: " + ex.getMessage(), ex);
+            throw new QrCodeGeneratorException("Error generating the QR code: " + ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Writes HRI (Human Readable Interpretation) data below the QR code image if enabled in QRCodeConfig.
+     */
+    private byte[] writeHRIData(final QrCodeConfig config, final BufferedImage qrImage) {
+        // All HRI paddings and font-size proportional to QR height/width
+        final float hriFontSize = 12; // Font size for HRI text
+        final int hriPaddingX = Math.round(config.getQrWidth() * 0.05f); // Padding on left/right of HRI text
+        final int hriAvailableWidth = config.getQrWidth() - 2 * hriPaddingX; // Available width for HRI text
+        final int hriPaddingTop = Math.round(config.getQrHeight() * 0.045f); // Padding above HRI text
+
+        // Get HRI font metrics
+        final BufferedImage tempImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        final Graphics2D tempG = tempImg.createGraphics();
+        tempG.setFont(OCR_B_FONT.deriveFont(hriFontSize));
+        final FontMetrics hriFM = tempG.getFontMetrics();
+        tempG.dispose();
+
+        // Parse and Format HRI lines to fit in available width
+        final LinkedHashMap<String, String> hriData = GS1DigitalLinkParser.digitalLinkToHRI(config.getData());
+        final List<String> hriLines = formatHRIForQr(hriData, config.getQrWidth(), qrImage.createGraphics().getFontMetrics(OCR_B_FONT));
+        final int hriLineHeight = hriFM.getHeight();
+        final int hriBlockHeight = hriPaddingTop + hriLines.size() * hriLineHeight;
+
+        // Create HRI image
+        final BufferedImage hriImage = new BufferedImage(config.getQrWidth(), hriBlockHeight, BufferedImage.TYPE_INT_RGB);
+        final Graphics2D hriG = hriImage.createGraphics();
+        hriG.setColor(Color.WHITE);
+        hriG.fillRect(0, 0, config.getQrWidth(), hriBlockHeight);
+        hriG.setFont(OCR_B_FONT.deriveFont(hriFontSize));
+        hriG.setColor(Color.BLACK);
+
+        // Draw each line of HRI text centered within the available width
+        int hriY = hriPaddingTop + hriFM.getAscent();
+        for (String line : hriLines) {
+            int lineWidth = hriFM.stringWidth(line);
+            int hriX = hriPaddingX + Math.max(0, (hriAvailableWidth - lineWidth) / 2);
+            // Clamp within padded area
+            if (hriX + lineWidth > config.getQrWidth() - hriPaddingX) {
+                hriX = config.getQrWidth() - hriPaddingX - lineWidth;
+                if (hriX < hriPaddingX) hriX = hriPaddingX;
+            }
+            hriG.drawString(line, hriX, hriY);
+            hriY += hriLineHeight;
+        }
+        hriG.dispose();
+
+        // Combine QR and HRI images vertically
+        int combinedHeight = config.getQrHeight() + hriBlockHeight;
+        BufferedImage combinedImage = new BufferedImage(config.getQrWidth(), combinedHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D cg = combinedImage.createGraphics();
+        cg.drawImage(qrImage, 0, 0, null);
+        cg.drawImage(hriImage, 0, config.getQrHeight(), null);
+        cg.dispose();
+
+        // Write the combined image to bytes and return
+        return writeImageToBytes(combinedImage, config.getMimeType());
+    }
+
+    /**
+     * Format GS1 HRI lines so each fits within maxLineWidth.
+     */
+    private List<String> formatHRIForQr(final Map<String, String> gs1Data,
+                                        final int availableLineWidth,
+                                        final FontMetrics fm) {
+        final List<String> formattedHRI = new ArrayList<>();
+        final StringBuilder currentLine = new StringBuilder();
+        final int spaceWidth = fm.stringWidth(" "); // Width of a space character
+
+        for (Map.Entry<String, String> entry : gs1Data.entrySet()) {
+            final String formattedPair = "(" + entry.getKey() + ")" + entry.getValue();
+            final int pairWidth = fm.stringWidth(formattedPair);
+
+            // If the current line is empty or adding the new pair doesn't exceed max width, append it
+            if (currentLine.length() == 0 ||
+                    fm.stringWidth(currentLine.toString()) + spaceWidth + pairWidth <= availableLineWidth) {
+                // If text fits, add it to the current line and Add a space before appending
+                if (currentLine.length() > 0) currentLine.append(" ");
+                currentLine.append(formattedPair);
+            } else {
+                // If text exceeds width, move to next line
+                formattedHRI.add(currentLine.toString());
+                currentLine.setLength(0); // Clear the current line
+                currentLine.append(formattedPair); // Start a new line with the current pair
+            }
+        }
+
+        // add the remaining line
+        if (currentLine.length() > 0) formattedHRI.add(currentLine.toString());
+        return formattedHRI;
     }
 }

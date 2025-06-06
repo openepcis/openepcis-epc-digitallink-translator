@@ -2,7 +2,6 @@ package io.openepcis.qrcode.generator.spi.impl;
 
 import io.openepcis.qrcode.generator.QrCodeConfig;
 import io.openepcis.qrcode.generator.spi.QrCodeConfigProvider;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Default SPI provider for {@link QrCodeConfig}.

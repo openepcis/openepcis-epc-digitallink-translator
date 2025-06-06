@@ -37,9 +37,12 @@ public class QrCodeGeneratorTest {
     public void simpleQrCodePlainTest() throws IOException {
         // Qr code with only data and outputFilename (required properties only)
         final QrCodeConfig minimalConfig = QrCodeConfig.builder()
-                .data("https://www.example2.com")
+                .data("https://id.gs1.org/01/095201234567898989899889?17=201225&3103=00()0195&3922=0299&19=201225&21=000195&3922=0299&55=777474&05=201225")
                 .mimeType("image/png")
-                .moduleShape(QrCodeConfig.ModuleShape.DIAMOND)
+                .qrHeight(500)
+                .qrWidth(500)
+                .moduleShape(QrCodeConfig.ModuleShape.ROUNDED_RECT)
+                .addHri(true)
                 .build();
 
         // assert that no exception is thrown during QR code generation
@@ -60,6 +63,7 @@ public class QrCodeGeneratorTest {
                         .useRadialGradient(false)
                         .drawFinderGradient(true)
                         .moduleShape(QrCodeConfig.ModuleShape.HEART)
+                        .addHri(true)
                         .build();
 
         // assert that no exception is thrown during QR code generation
@@ -278,6 +282,7 @@ public class QrCodeGeneratorTest {
                         .logoScale(0.2f)
                         .displayLabel("GS1 Germany")
                         .displayLabelFontColor(new Color(0x002C6C))
+                        .addHri(true)
                         .build();
 
         // assert that no exception is thrown during QR code generation

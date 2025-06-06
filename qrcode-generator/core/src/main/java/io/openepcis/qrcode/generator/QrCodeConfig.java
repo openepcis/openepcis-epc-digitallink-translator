@@ -193,6 +193,13 @@ public final class QrCodeConfig {
     private Color displayLabelFontColor = Color.BLACK;
 
     /**
+     * Add the HRI (Human Readable Interpretation) text below the QR code. Default is false.
+     */
+    @Builder.Default
+    @Schema(description = "Add the HRI (Human Readable Interpretation) text below the QR code.", type = SchemaType.BOOLEAN, examples = "false", defaultValue = "false")
+    private boolean addHri = false;
+
+    /**
      * An enum to define module shapes to generate QR code with different shapes.
      */
     public enum ModuleShape {
