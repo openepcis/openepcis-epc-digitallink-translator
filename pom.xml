@@ -60,10 +60,18 @@
         <module>validator</module>
         <module>converter</module>
         <module>qrcode-generator</module>
+        <module>utils</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Generic Utils for common utility functionality -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-digital-link-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- GS1 AI constants for pre-defined EPCIS Constants  -->
             <dependency>
                 <groupId>io.openepcis</groupId>

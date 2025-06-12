@@ -30,6 +30,12 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!-- DigitalLink Utils -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-digital-link-utils</artifactId>
+        </dependency>
+
         <!-- For Getter/Setter and other methods -->
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -15,9 +15,9 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import io.openepcis.digitallink.utils.GS1DigitalLinkParser;
 import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import io.openepcis.qrcode.generator.spi.service.QrCodeConfigService;
-import io.openepcis.qrcode.generator.util.GS1DigitalLinkParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -479,7 +479,7 @@ public class QrCodeGenerator {
         final float hriFontSize = 12; // Font size for HRI text
         final int hriPaddingX = Math.round(config.getQrWidth() * 0.05f); // Padding on left/right of HRI text
         final int hriAvailableWidth = config.getQrWidth() - 2 * hriPaddingX; // Available width for HRI text
-        final int hriPaddingTop = Math.round(config.getQrHeight() * 0.045f); // Padding above HRI text
+        final int hriPaddingTop = Math.round(config.getMargin() * 0.045f); // Padding above HRI text
 
         // Get HRI font metrics
         final BufferedImage tempImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
@@ -492,7 +492,7 @@ public class QrCodeGenerator {
         final LinkedHashMap<String, String> hriData = GS1DigitalLinkParser.digitalLinkToHRI(config.getData());
         final List<String> hriLines = formatHRIForQr(hriData, config.getQrWidth(), qrImage.createGraphics().getFontMetrics(OCR_B_FONT));
         final int hriLineHeight = hriFM.getHeight();
-        final int hriBlockHeight = hriPaddingTop + hriLines.size() * hriLineHeight;
+        final int hriBlockHeight = Math.max(1, hriPaddingTop + hriLines.size() * hriLineHeight);
 
         // Create HRI image
         final BufferedImage hriImage = new BufferedImage(config.getQrWidth(), hriBlockHeight, BufferedImage.TYPE_INT_RGB);

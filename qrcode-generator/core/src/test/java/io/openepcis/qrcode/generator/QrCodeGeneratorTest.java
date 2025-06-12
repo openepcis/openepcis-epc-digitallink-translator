@@ -37,7 +37,7 @@ public class QrCodeGeneratorTest {
     public void simpleQrCodePlainTest() throws IOException {
         // Qr code with only data and outputFilename (required properties only)
         final QrCodeConfig minimalConfig = QrCodeConfig.builder()
-                .data("https://id.gs1.org/01/095201234567898989899889?17=201225&3103=00()0195&3922=0299&19=201225&21=000195&3922=0299&55=777474&05=201225")
+                .data("https://id.gs1.org/01/095201234567898989899889?17=201225&3103=000195&3922=0299&19=201225&21=000195")
                 .mimeType("image/png")
                 .qrHeight(500)
                 .qrWidth(500)

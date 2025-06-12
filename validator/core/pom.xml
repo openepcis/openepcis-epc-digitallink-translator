@@ -17,6 +17,12 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!-- DigitalLink Utils -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-digital-link-utils</artifactId>
+        </dependency>
+
         <!-- GS1 AI constants  -->
         <dependency>
             <groupId>io.openepcis</groupId>
