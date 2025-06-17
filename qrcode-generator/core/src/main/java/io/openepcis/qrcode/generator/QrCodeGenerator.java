@@ -152,6 +152,7 @@ public class QrCodeGenerator {
 
             // Draw display label, right-aligned, proportional font size
             if (StringUtils.isNotBlank(config.getDisplayLabel())) {
+                log.debug("Adding label on the right based on provided in config.");
                 final float fontSize = config.getQrHeight() * 0.03f;
                 qrGraphics.setColor(config.getDisplayLabelFontColor());
                 qrGraphics.setFont(new Font("Arial", Font.PLAIN, Math.round(fontSize)));
@@ -165,10 +166,22 @@ public class QrCodeGenerator {
             // Dispose Graphics
             qrGraphics.dispose();
 
+            // Try to parse the URL, silently skip HRI if it fails
+            boolean isValidUrl = false;
+            URL digitalLinkURL = null;
+
+            try {
+                digitalLinkURL = new URI(config.getData()).toURL();
+                isValidUrl = true;
+            } catch (Exception e) {
+                // Not a valid URL, skip HRI
+                log.warn("Failed to parse URL for HRI data, hence skipping them : " + e.getMessage());
+            }
+
             // If HRI enabled return generated QR Code image with HRI image
-            if (qrCodeConfig.isAddHri()) {
+            if (qrCodeConfig.isAddHri() && isValidUrl) {
                 log.debug("Adding HRI data to the QR code image");
-                return writeHRIData(config, qrImage);
+                return writeHRIData(digitalLinkURL, config, qrImage);
             }
 
             // If HRI is not enabled, return only the QR code image
@@ -190,7 +203,7 @@ public class QrCodeGenerator {
             final String formatName = StringUtils.substringAfter(mimeType, "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image, formatName, byteArrayOutputStream);
-            //ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
+            ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             log.error("Error writing image to bytes: " + e.getMessage(), e);
@@ -474,7 +487,7 @@ public class QrCodeGenerator {
     /**
      * Writes HRI (Human Readable Interpretation) data below the QR code image if enabled in QRCodeConfig.
      */
-    private byte[] writeHRIData(final QrCodeConfig config, final BufferedImage qrImage) {
+    private byte[] writeHRIData(final URL digitalLinkURL, final QrCodeConfig config, final BufferedImage qrImage) {
         // All HRI paddings and font-size proportional to QR height/width
         final float hriFontSize = 12; // Font size for HRI text
         final int hriPaddingX = Math.round(config.getQrWidth() * 0.05f); // Padding on left/right of HRI text
@@ -489,7 +502,7 @@ public class QrCodeGenerator {
         tempG.dispose();
 
         // Parse and Format HRI lines to fit in available width
-        final LinkedHashMap<String, String> hriData = GS1DigitalLinkParser.digitalLinkToHRI(config.getData());
+        final Map<String, String> hriData = GS1DigitalLinkParser.parseIdentifiersDataFromDigitalLink(digitalLinkURL);
         final List<String> hriLines = formatHRIForQr(hriData, config.getQrWidth(), qrImage.createGraphics().getFontMetrics(OCR_B_FONT));
         final int hriLineHeight = hriFM.getHeight();
         final int hriBlockHeight = Math.max(1, hriPaddingTop + hriLines.size() * hriLineHeight);
