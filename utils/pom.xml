@@ -43,6 +43,15 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <groupId>jakarta.enterprise</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>lombok</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>
