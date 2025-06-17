@@ -10,10 +10,10 @@
  */
 package io.openepcis.identifiers.validator.core.epcis.compliant;
 
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
 import io.openepcis.identifiers.validator.core.Matcher;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

@@ -8,10 +8,6 @@
  * benelog GmbH & Co. KG reserves all rights not expressly granted herein,
  * including the right to sell licenses for using this work.
  */
-package io.openepcis.identifiers.converter.exception;
+package io.openepcis.digitallink.utils;
 
-public class UrnDLTransformationException extends RuntimeException {
-  public UrnDLTransformationException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
-}
+public interface GCPLengthProvider {}

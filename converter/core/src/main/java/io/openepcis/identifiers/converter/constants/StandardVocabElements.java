@@ -11,7 +11,7 @@
 package io.openepcis.identifiers.converter.constants;
 
 import io.openepcis.constants.EPCIS;
-import io.openepcis.identifiers.validator.exception.ValidationException;
+import io.openepcis.core.exception.ValidationException;
 
 import static io.openepcis.constants.EPCIS.GS1_CBV_DOMAIN;
 import static io.openepcis.constants.EPCIS.GS1_VOC_DOMAIN;

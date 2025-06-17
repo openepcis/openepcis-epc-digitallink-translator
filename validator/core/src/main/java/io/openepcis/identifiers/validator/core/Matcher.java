@@ -10,8 +10,8 @@
  */
 package io.openepcis.identifiers.validator.core;
 
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.validator.ValidationContext;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 
 public class Matcher {
     private final String pattern;

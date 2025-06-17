@@ -10,12 +10,14 @@
  */
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
+import io.openepcis.core.exception.ValidationException;
+import io.openepcis.digitallink.toolkit.GS1DigitalLinkNormalizer;
+import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 
 public class IdentifierValidator {
-  private static final ValidatorFactory validatorFactory = new ValidatorFactory();
+  private static final ValidatorFactory validatorFactory = new ValidatorFactory(new GS1DigitalLinkNormalizer(), new DefaultGCPLengthProvider());
 
   // Same for the variant that requires a GCP length.
   public static void validate(final String identifier, final ValidationContext validationContext) throws ValidationException {

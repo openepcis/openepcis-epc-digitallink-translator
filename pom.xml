@@ -81,6 +81,13 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <!-- GS1 AI constants for pre-defined EPCIS Constants  -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-model-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- Core Validator (validator/core)  -->
             <dependency>
                 <groupId>io.openepcis</groupId>

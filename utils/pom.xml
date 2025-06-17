@@ -40,40 +40,69 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
-        <!-- For unit testing -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
         <dependency>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <groupId>jakarta.enterprise</groupId>
         </dependency>
-
         <dependency>
             <artifactId>lombok</artifactId>
             <groupId>org.projectlombok</groupId>
         </dependency>
-
-        <!-- For unit testing -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <groupId>org.junit.jupiter</groupId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+        </dependency>
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-model-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+        </dependency>
+        <dependency>
             <artifactId>junit-jupiter-params</artifactId>
+            <groupId>org.junit.jupiter</groupId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
-</project>
+    <!-- Download the GS1 specified GCP Length from URL only during the build to avoid downloading everytime -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <uri>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</uri>
+                            <outputFileName>gcpprefixformatlist.json</outputFileName>
+                            <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
+                            <overwrite>false</overwrite>
+                            <skipCache>true</skipCache>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
+
+</project>

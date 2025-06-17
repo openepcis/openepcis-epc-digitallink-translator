@@ -8,12 +8,12 @@
  * benelog GmbH & Co. KG reserves all rights not expressly granted herein,
  * including the right to sell licenses for using this work.
  */
-package io.openepcis.identifiers.converter;
+package io.openepcis.digitallink.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.openepcis.identifiers.converter.exception.UrnDLTransformationException;
-import io.openepcis.identifiers.validator.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.core.exception.UrnDLTransformationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,7 +57,6 @@ public class DefaultGCPLengthProvider implements GCPLengthProvider {
         sortedGcpLengthList.put(m.get("prefix").toString(), Integer.valueOf(m.get("gcpLength").toString()));
       }
     } catch (IOException e) {
-      log.error("GCPPrefixFormatList cannot be retrieved", e);
       throw new UrnDLTransformationException(e.getLocalizedMessage(), e);
     }
   }

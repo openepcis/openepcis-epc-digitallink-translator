@@ -10,9 +10,11 @@
  */
 package io.openepcis.identifiers.tests.core.epcis;
 
+import io.openepcis.core.exception.ValidationException;
+import io.openepcis.digitallink.toolkit.GS1DigitalLinkNormalizer;
+import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +26,7 @@ import org.junit.jupiter.api.Assertions;
 public class ApplicationIdentifierValidationTestUtil {
 
     // Create a shared ValidatorFactory instance for all tests.
-    private static final ValidatorFactory VALIDATOR_FACTORY = new ValidatorFactory();
+    private static final ValidatorFactory VALIDATOR_FACTORY = new ValidatorFactory(new GS1DigitalLinkNormalizer(), new DefaultGCPLengthProvider());
 
 
     /**
