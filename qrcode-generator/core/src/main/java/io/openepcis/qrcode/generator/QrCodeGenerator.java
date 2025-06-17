@@ -208,7 +208,7 @@ public class QrCodeGenerator {
             final String formatName = StringUtils.substringAfter(mimeType, "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image, formatName, byteArrayOutputStream);
-            //ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
+            ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             log.error("Error writing image to bytes: " + e.getMessage(), e);
@@ -507,7 +507,7 @@ public class QrCodeGenerator {
         tempG.dispose();
 
         // Parse and Format HRI lines to fit in available width
-        final Map<String, String> hriData = GS1DigitalLinkParser.parse(digitalLinkURL);
+        final LinkedHashMap<String, String> hriData = GS1DigitalLinkParser.digitalLinkToHRI(config.getData());
         final List<String> hriLines = formatHRIForQr(hriData, config.getQrWidth(), qrImage.createGraphics().getFontMetrics(OCR_B_FONT));
         final int hriLineHeight = hriFM.getHeight();
         final int hriBlockHeight = Math.max(1, hriPaddingTop + hriLines.size() * hriLineHeight);
