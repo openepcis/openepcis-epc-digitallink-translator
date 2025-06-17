@@ -55,6 +55,7 @@
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <groupId>jakarta.enterprise</groupId>
         </dependency>
+
         <dependency>
             <artifactId>lombok</artifactId>
             <groupId>org.projectlombok</groupId>

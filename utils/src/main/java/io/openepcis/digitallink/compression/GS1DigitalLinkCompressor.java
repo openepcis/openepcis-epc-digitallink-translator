@@ -451,7 +451,7 @@ public class GS1DigitalLinkCompressor {
         List<String> sortedAttributes = attributes.stream()
                 .filter(attr -> !(aiQualifiers.containsKey(primaryIdentifier) && aiQualifiers.get(primaryIdentifier).contains(attr)))
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
 
         for (String attr : sortedAttributes) {
             if (gs1AIarray.containsKey(attr)) {
@@ -1317,18 +1317,20 @@ public class GS1DigitalLinkCompressor {
                     qualifiers = (List<String>) aiMap.get("qualifiers");
                 }
 
-                aitable.add(new ApplicationIdentifier(
-                        title,
-                        label,
-                        shortcode,
-                        ai,
-                        format,
-                        type,
-                        fixedLength,
-                        checkDigit,
-                        regex,
-                        qualifiers
-                ));
+                aitable.add(
+                        ApplicationIdentifier.builder()
+                                .title(title)
+                                .label(label)
+                                .shortcode(shortcode)
+                                .ai(ai)
+                                .format(format)
+                                .type(type)
+                                .fixedLength(fixedLength)
+                                .checkDigit(checkDigit)
+                                .regex(regex)
+                                .qualifiers(qualifiers)
+                                .build()
+                );
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load AI table from JSON file", e);
