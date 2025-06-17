@@ -60,11 +60,6 @@
             <groupId>org.projectlombok</groupId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <!-- For unit testing -->
         <dependency>
@@ -72,6 +67,7 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
@@ -80,3 +76,4 @@
     </dependencies>
 
 </project>
+
