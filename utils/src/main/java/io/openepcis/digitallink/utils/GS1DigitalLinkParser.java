@@ -25,8 +25,8 @@ public class GS1DigitalLinkParser {
      * @param includeUrlMeta if true, adds "protocol" and "domain" entries
      * @return a Map (insertion-ordered) of extracted elements
      */
-    public static Map<String, String> parseIdentifiersDataFromDigitalLink(final URL digitalLink,
-                                                                          final boolean includeUrlMeta) {
+    public static Map<String, String> parse(final URL digitalLink,
+                                            final boolean includeUrlMeta) {
         final LinkedHashMap<String, String> extractedData = new LinkedHashMap<>();
 
         // Optionally include protocol and domain
@@ -62,7 +62,7 @@ public class GS1DigitalLinkParser {
     /**
      * Method overload: always excludes protocol and domain.
      */
-    public static Map<String, String> parseIdentifiersDataFromDigitalLink(final URL digitalLink) {
-        return parseIdentifiersDataFromDigitalLink(digitalLink, false);
+    public static Map<String, String> parse(final URL digitalLink) {
+        return parse(digitalLink, false);
     }
 }

@@ -11,10 +11,12 @@
 package io.openepcis.identifiers.validator;
 
 
+import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.digitallink.toolkit.GS1DigitalLinkNormalizer;
+import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
 import io.openepcis.identifiers.validator.core.epcis.compliant.*;
 import io.openepcis.identifiers.validator.core.epcis.noncompliant.*;
-import io.openepcis.identifiers.validator.exception.UnsupportedGS1IdentifierException;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -29,9 +31,13 @@ import java.util.Set;
 public class ValidatorFactory {
     // Collection of all available validators.
     private final Set<ApplicationIdentifierValidator> validators;
+    private final GS1DigitalLinkNormalizer gs1DigitalLinkNormalizer;
+    private final DefaultGCPLengthProvider gcpLengthProvider;
 
-    public ValidatorFactory() {
+    public ValidatorFactory(GS1DigitalLinkNormalizer gs1DigitalLinkNormalizer, DefaultGCPLengthProvider gcpLengthProvider) {
         this.validators = new LinkedHashSet<>();
+        this.gs1DigitalLinkNormalizer = gs1DigitalLinkNormalizer;
+        this.gcpLengthProvider = gcpLengthProvider;
         initializeValidators();
     }
 
@@ -86,6 +92,25 @@ public class ValidatorFactory {
 
         // If no validator supports the identifier, throw an exception.
         throw new UnsupportedGS1IdentifierException(String.format("Identifier did not match any GS1 identifiers format: %s", identifier));
+    }
+
+    public String validateIdentifier(final String identifier) {
+
+        final String normalizedIdentifier =  gs1DigitalLinkNormalizer.normalize(identifier);
+
+        final ValidationContext contextWithGcp = ValidationContext.builder()
+                .gcpLength(gcpLengthProvider.getGcpLength(normalizedIdentifier))
+                .build();
+
+        for (final ApplicationIdentifierValidator validator : validators) {
+            if (validator.supportsValidation(normalizedIdentifier, contextWithGcp.isEpcisCompliant())) {
+                if (validator.validate(normalizedIdentifier, contextWithGcp)) {
+                    return normalizedIdentifier;
+                }
+            }
+        }
+        throw new UnsupportedGS1IdentifierException(String.format("Identifier did not match any GS1 identifier format: %s", identifier)
+        );
     }
 
     /**

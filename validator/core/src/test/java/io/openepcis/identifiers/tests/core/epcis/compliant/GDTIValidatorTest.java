@@ -10,10 +10,12 @@
  */
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
+import io.openepcis.core.exception.ValidationException;
+import io.openepcis.digitallink.toolkit.GS1DigitalLinkNormalizer;
+import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class GDTIValidatorTest {
 
-  final ValidatorFactory validatorFactory = new ValidatorFactory();
+  final ValidatorFactory validatorFactory = new ValidatorFactory(new GS1DigitalLinkNormalizer(), new DefaultGCPLengthProvider());
 
   // Test for invalid EPC URN identifiers.
   @Test

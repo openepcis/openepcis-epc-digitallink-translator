@@ -1,7 +1,7 @@
 package io.openepcis.identifiers.converter.runtime;
 
+import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.converter.Converter;
-import io.openepcis.identifiers.converter.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.converter.EventVocabularyFormatter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;

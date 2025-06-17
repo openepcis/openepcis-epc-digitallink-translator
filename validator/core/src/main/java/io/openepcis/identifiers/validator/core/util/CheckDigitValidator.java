@@ -1,6 +1,6 @@
 package io.openepcis.identifiers.validator.core.util;
 
-import io.openepcis.identifiers.validator.exception.ValidationException;
+import io.openepcis.core.exception.ValidationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;

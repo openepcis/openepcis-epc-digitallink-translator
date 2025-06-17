@@ -11,7 +11,6 @@
 package io.openepcis.identifiers.validator.core;
 
 import io.openepcis.identifiers.validator.ValidationContext;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 
 /**
  * Interface for validating GS1 Application Identifiers (AI).

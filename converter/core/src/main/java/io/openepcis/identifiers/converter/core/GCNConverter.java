@@ -10,11 +10,11 @@
  */
 package io.openepcis.identifiers.converter.core;
 
-import io.openepcis.identifiers.converter.DefaultGCPLengthProvider;
+import io.openepcis.core.exception.ValidationException;
+import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.converter.constants.ConstantDigitalLinkTranslatorInfo;
 import io.openepcis.identifiers.converter.util.ConverterUtil;
 import io.openepcis.identifiers.validator.core.epcis.compliant.GCNValidator;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;

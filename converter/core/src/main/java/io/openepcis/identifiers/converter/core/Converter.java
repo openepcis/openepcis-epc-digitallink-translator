@@ -10,7 +10,8 @@
  */
 package io.openepcis.identifiers.converter.core;
 
-import io.openepcis.identifiers.validator.exception.ValidationException;
+
+import io.openepcis.core.exception.ValidationException;
 
 import java.util.Map;
 

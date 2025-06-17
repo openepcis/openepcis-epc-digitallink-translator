@@ -10,9 +10,9 @@
  */
 package io.openepcis.identifiers.converter;
 
+import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.converter.core.*;
-import io.openepcis.identifiers.validator.exception.UnsupportedGS1IdentifierException;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;

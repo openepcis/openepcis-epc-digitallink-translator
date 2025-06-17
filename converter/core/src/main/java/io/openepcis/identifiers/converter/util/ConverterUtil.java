@@ -10,8 +10,8 @@
  */
 package io.openepcis.identifiers.converter.util;
 
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.converter.Converter;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

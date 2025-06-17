@@ -10,9 +10,10 @@
  */
 package io.openepcis.identifiers.tests.core.epcis.compliant;
 
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.tests.core.epcis.ApplicationIdentifierValidationTestUtil;
 import io.openepcis.identifiers.validator.ValidationContext;
-import io.openepcis.identifiers.validator.exception.ValidationException;
+
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

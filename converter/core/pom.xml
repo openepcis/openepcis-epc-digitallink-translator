@@ -65,33 +65,6 @@
         </dependency>
     </dependencies>
 
-    <!-- Download the GS1 specified GCP Length from URL only during the build to avoid downloading everytime -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <uri>https://www.gs1.org/sites/default/files/docs/gcp_length/gcpprefixformatlist.json</uri>
-                            <outputFileName>gcpprefixformatlist.json</outputFileName>
-                            <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
-                            <overwrite>false</overwrite>
-                            <skipCache>true</skipCache>
-                            <failOnError>false</failOnError>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>coverage</id>
