@@ -152,11 +152,11 @@ public class GS1DigitalLinkCompressor {
             }
         }
 
-        aiMaps.put("identifiers", aitable.stream().filter(ai -> "I".equals(ai.getType())).map(ai -> ai.getAi()).collect(Collectors.toList()));
-        aiMaps.put("qualifiers", aitable.stream().filter(ai -> "Q".equals(ai.getType())).map(ai -> ai.getAi()).collect(Collectors.toList()));
-        aiMaps.put("dataAttributes", aitable.stream().filter(ai -> "D".equals(ai.getType())).map(ai -> ai.getAi()).collect(Collectors.toList()));
-        aiMaps.put("fixedLength", aitable.stream().filter(ai -> ai.isFixedLength()).map(ai -> ai.getAi()).collect(Collectors.toList()));
-        aiMaps.put("variableLength", aitable.stream().filter(ai -> !ai.isFixedLength()).map(ai -> ai.getAi()).collect(Collectors.toList()));
+        aiMaps.put("identifiers", aitable.stream().filter(ai -> "I".equals(ai.getType())).map(ApplicationIdentifier::getAi).collect(Collectors.toList()));
+        aiMaps.put("qualifiers", aitable.stream().filter(ai -> "Q".equals(ai.getType())).map(ApplicationIdentifier::getAi).collect(Collectors.toList()));
+        aiMaps.put("dataAttributes", aitable.stream().filter(ai -> "D".equals(ai.getType())).map(ApplicationIdentifier::getAi).collect(Collectors.toList()));
+        aiMaps.put("fixedLength", aitable.stream().filter(ApplicationIdentifier::getFixedLength).map(ApplicationIdentifier::getAi).collect(Collectors.toList()));
+        aiMaps.put("variableLength", aitable.stream().filter(ai -> !ai.getFixedLength()).map(ApplicationIdentifier::getAi).collect(Collectors.toList()));
 
         for (Map.Entry<String, String> entry : aiShortCode.entrySet()) {
             shortCodeToNumeric.put(entry.getValue(), entry.getKey());
@@ -165,7 +165,7 @@ public class GS1DigitalLinkCompressor {
         AIsByLength = new ArrayList[5];
         for (int i = 2; i <= 4; i++) {
             final int len = i;
-            AIsByLength[i] = aitable.stream().filter(ai -> ai.getAi().length() == len).map(ai -> ai.getAi()).collect(Collectors.toList());
+            AIsByLength[i] = aitable.stream().filter(ai -> ai.getAi().length() == len).map(ApplicationIdentifier::getAi).collect(Collectors.toList());
         }
     }
 
@@ -1317,20 +1317,17 @@ public class GS1DigitalLinkCompressor {
                     qualifiers = (List<String>) aiMap.get("qualifiers");
                 }
 
-                aitable.add(
-                        ApplicationIdentifier.builder()
-                                .title(title)
-                                .label(label)
-                                .shortcode(shortcode)
-                                .ai(ai)
-                                .format(format)
-                                .type(type)
-                                .fixedLength(fixedLength)
-                                .checkDigit(checkDigit)
-                                .regex(regex)
-                                .qualifiers(qualifiers)
-                                .build()
-                );
+                aitable.add(new ApplicationIdentifier(
+                        title,
+                        label,
+                        shortcode,
+                        ai,
+                        format,
+                        type,
+                        fixedLength,
+                        checkDigit,
+                        regex,
+                        qualifiers));
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load AI table from JSON file", e);

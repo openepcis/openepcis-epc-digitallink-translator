@@ -32,10 +32,9 @@ public class AiEntries {
                     inputStream,
                     objectMapper.getTypeFactory().constructCollectionType(List.class, ApplicationIdentifier.class));
 
-            final Map<String, ApplicationIdentifier> entriesMap = new HashMap<>(entries.size() * 3);
+            final Map<String, ApplicationIdentifier> entriesMap = new HashMap<>(entries.size() * 2);
 
             entries.forEach(entry -> {
-                Optional.ofNullable(entry.getLabel()).ifPresent(k -> entriesMap.put(k, entry));
                 Optional.ofNullable(entry.getAi()).ifPresent(k -> entriesMap.put(k, entry));
                 Optional.ofNullable(entry.getShortcode()).ifPresent(k -> entriesMap.put(k, entry));
             });
