@@ -1,17 +1,24 @@
 package io.openepcis.digitallink.model;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-/**
- * Represents the properties of a GS1 Application Identifier.
- */
 @Data
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApplicationIdentifier {
-    final String title, label, shortcode, ai, format, type, checkDigit, regex;
-    final boolean fixedLength;
-    final List<String> qualifiers;
+    private String title;
+    private String label;
+    private String shortcode;
+    private String ai;
+    private String format;
+    private String type;
+    private Boolean fixedLength;
+    private String checkDigit;
+    private String regex;
+    private List<String> qualifiers;
 }
+
