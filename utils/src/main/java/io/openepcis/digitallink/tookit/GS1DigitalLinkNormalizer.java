@@ -1,4 +1,4 @@
-package io.openepcis.digitallink.normalizer;
+package io.openepcis.digitallink.tookit;
 
 
 import io.openepcis.digitallink.model.ApplicationIdentifier;
@@ -8,7 +8,7 @@ import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 @ApplicationScoped
-public class DLPathNormalizer {
+public class GS1DigitalLinkNormalizer {
 
     @Inject
      private AiEntries aiEntries;
