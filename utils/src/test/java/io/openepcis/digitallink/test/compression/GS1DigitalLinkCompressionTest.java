@@ -1,12 +1,12 @@
 package io.openepcis.digitallink.test.compression;
 
-import io.openepcis.digitallink.compression.GS1DigitalLinkCompressor;
+import io.openepcis.digitallink.tookit.GS1DigitalLinkCompression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class GS1DigitalLinkCompressorTest {
+public class GS1DigitalLinkCompressionTest {
 
     @Test
     public void verifyVariousDigitalLinks() {
@@ -23,7 +23,7 @@ public class GS1DigitalLinkCompressorTest {
               https://example.org/01/00054123450013/10/ABC123?3103=000189&3923=2172
          */
 
-        final var compressor = new GS1DigitalLinkCompressor();
+        final var compressor = new GS1DigitalLinkCompression();
 
         digitalLinks.forEach(uri -> {
             var compressed = compressor.compressGS1DigitalLink(uri, false, false);

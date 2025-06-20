@@ -1,10 +1,11 @@
-package io.openepcis.digitallink.compression;
+package io.openepcis.digitallink.tookit;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.openepcis.digitallink.model.ApplicationIdentifier;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +31,8 @@ import java.util.stream.Collectors;
  * @version 1.2
  * @see <a href="https://github.com/gs1/GS1DigitalLink-Toolkit">Original JS Toolkit</a>
  */
-public class GS1DigitalLinkCompressor {
+@ApplicationScoped
+public class GS1DigitalLinkCompression {
 
     //region Helper Classes for Data Structures
 
@@ -128,7 +130,7 @@ public class GS1DigitalLinkCompressor {
      * Constructor for the GS1DigitalLinkToolkit.
      * Initializes all the necessary data tables and regular expressions.
      */
-    public GS1DigitalLinkCompressor() {
+    public GS1DigitalLinkCompression() {
         initializeData(); // Populate all data tables
 
         for (Map.Entry<String, String[]> entry : tableOpt.entrySet()) {
