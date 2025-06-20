@@ -1,6 +1,6 @@
 package io.openepcis.digitallink.test.compression;
 
-import io.openepcis.digitallink.tookit.GS1DigitalLinkCompression;
+import io.openepcis.digitallink.toolkit.GS1DigitalLinkCompression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

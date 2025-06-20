@@ -1,4 +1,4 @@
-package io.openepcis.digitallink.tookit;
+package io.openepcis.digitallink.toolkit;
 
 
 import io.openepcis.digitallink.model.ApplicationIdentifier;

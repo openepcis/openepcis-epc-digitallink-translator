@@ -1,4 +1,4 @@
-package io.openepcis.digitallink.tookit;
+package io.openepcis.digitallink.toolkit;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
