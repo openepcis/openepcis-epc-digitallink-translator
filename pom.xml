@@ -25,7 +25,9 @@
     <artifactId>openepcis-digital-link-toolkit-build</artifactId>
     <name>openepcis-digital-link-toolkit-build</name>
     <packaging>pom</packaging>
-    <description>OpenEPCIS EPC GS1 Digital Link Tools to validate, convert and generate scannable QR code for GS1 Application Identifiers.</description>
+    <description>OpenEPCIS EPC GS1 Digital Link Tools to validate, convert and generate scannable QR code for GS1
+        Application Identifiers.
+    </description>
     <url>https://github.com/openepcis/openepcis-epc-digital-link-translator</url>
 
     <licenses>
@@ -166,19 +168,28 @@
     </dependencyManagement>
 
     <repositories>
-        <!-- sonatype releases -->
+        <!-- Maven Central (for releases) -->
         <repository>
-            <id>sonatype-releases</id>
-            <url>https://ossrh-staging-api.central.sonatype.com/content/repositories/releases</url>
+            <id>central-releases</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
-        <!-- sonatype snapshots -->
+        <!-- Sonatype Central snapshots -->
         <repository>
-            <id>sonatype-staging</id>
-            <url>https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots</url>
+            <id>central-snapshots</id>
+            <url>https://central.sonatype.com</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 
