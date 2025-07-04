@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -13,7 +15,12 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GS1DigitalLinkParser {
 
-    private static final Pattern GS1_DIGITAL_LINK_PATTERN_STRING = Pattern.compile("(?<=/)(\\d{2,4})/(\\d+)");
+    // match /<AI>/<value> in the path
+    private static final Pattern PATH_PATTERN = Pattern.compile("/(\\d{2,4})/([^/]*)");
+
+    // match <AI>=<value> in query string
+    private static final Pattern QUERY_PATTERN = Pattern.compile("(\\d{2,4})=([^&]*)");
+
 
     /**
      * Parses GS1 identifiers and metadata from a Digital Link URL.
@@ -25,8 +32,8 @@ public class GS1DigitalLinkParser {
      * @param includeUrlMeta if true, adds "protocol" and "domain" entries
      * @return a Map (insertion-ordered) of extracted elements
      */
-    public static Map<String, String> parseIdentifiersDataFromDigitalLink(final URL digitalLink,
-                                                                          final boolean includeUrlMeta) {
+    public static Map<String, String> parse(final URL digitalLink,
+                                            final boolean includeUrlMeta) {
         final LinkedHashMap<String, String> extractedData = new LinkedHashMap<>();
 
         // Optionally include protocol and domain
@@ -36,23 +43,25 @@ public class GS1DigitalLinkParser {
             extractedData.put("port", String.valueOf(digitalLink.getPort() == -1 ? digitalLink.getDefaultPort() : digitalLink.getPort()));
         }
 
-        // Extract GS1 AIs from path
+        // Extract path segments using the defined pattern
         final String path = digitalLink.getPath();
-        final Matcher matcher = GS1_DIGITAL_LINK_PATTERN_STRING.matcher(path);
+        final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 
-        while (matcher.find()) {
-            extractedData.put(matcher.group(1), matcher.group(2));
+        while (pathMatcher.find()) {
+            final String ai = pathMatcher.group(1);
+            final String value = URLDecoder.decode(pathMatcher.group(2), StandardCharsets.UTF_8);
+            extractedData.put(ai, value);
         }
 
 
-        // Extract GS1 AIs from query parameters
+        // Extract Query Parameters
         final String query = digitalLink.getQuery();
         if (StringUtils.isNotBlank(query)) {
-            for (String pair : query.split("&")) {
-                final String[] parts = pair.split("=");
-                if (parts.length == 2 && parts[0].matches("\\d{2,4}")) {
-                    extractedData.put(parts[0], parts[1]);
-                }
+            final Matcher queryMatcher = QUERY_PATTERN.matcher(query);
+            while (queryMatcher.find()) {
+                final String ai = queryMatcher.group(1);
+                final String value = URLDecoder.decode(queryMatcher.group(2), StandardCharsets.UTF_8);
+                extractedData.put(ai, value);
             }
         }
 
@@ -62,7 +71,7 @@ public class GS1DigitalLinkParser {
     /**
      * Method overload: always excludes protocol and domain.
      */
-    public static Map<String, String> parseIdentifiersDataFromDigitalLink(final URL digitalLink) {
-        return parseIdentifiersDataFromDigitalLink(digitalLink, false);
+    public static Map<String, String> parse(final URL digitalLink) {
+        return parse(digitalLink, false);
     }
 }

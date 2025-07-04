@@ -502,7 +502,7 @@ public class QrCodeGenerator {
         tempG.dispose();
 
         // Parse and Format HRI lines to fit in available width
-        final Map<String, String> hriData = GS1DigitalLinkParser.parseIdentifiersDataFromDigitalLink(digitalLinkURL);
+        final Map<String, String> hriData = GS1DigitalLinkParser.parse(digitalLinkURL);
         final List<String> hriLines = formatHRIForQr(hriData, config.getQrWidth(), qrImage.createGraphics().getFontMetrics(OCR_B_FONT));
         final int hriLineHeight = hriFM.getHeight();
         final int hriBlockHeight = Math.max(1, hriPaddingTop + hriLines.size() * hriLineHeight);
