@@ -208,7 +208,7 @@ public class QrCodeGenerator {
             final String formatName = StringUtils.substringAfter(mimeType, "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image, formatName, byteArrayOutputStream);
-            ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
+            //ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             log.error("Error writing image to bytes: " + e.getMessage(), e);
