@@ -39,8 +39,6 @@ public class QrCodeGeneratorTest {
         final QrCodeConfig minimalConfig = QrCodeConfig.builder()
                 .data("https://id.gs1.org/01/095201234567898989899889?17=201225&3103=000195&3922=0299&19=201225&21=000195")
                 .mimeType("image/png")
-                .qrHeight(500)
-                .qrWidth(500)
                 .moduleShape(QrCodeConfig.ModuleShape.ROUNDED_RECT)
                 .addHri(true)
                 .build();

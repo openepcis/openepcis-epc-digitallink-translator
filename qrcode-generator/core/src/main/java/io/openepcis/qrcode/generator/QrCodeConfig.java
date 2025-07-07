@@ -200,6 +200,13 @@ public final class QrCodeConfig {
     private boolean addHri = false;
 
     /**
+     * Whether to compress the GS1 Digital Link URL before generating the QR code. Default is false.
+     */
+    @Builder.Default
+    @Schema(description = "Whether to compress the GS1 Digital Link URI before encoding it into the QR code.", type = SchemaType.BOOLEAN, examples = "false", defaultValue = "false")
+    private boolean compressDigitalLink = false;
+
+    /**
      * An enum to define module shapes to generate QR code with different shapes.
      */
     public enum ModuleShape {
