@@ -1,12 +1,14 @@
 package io.openepcis.digitallink.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplicationIdentifier {
@@ -20,5 +22,9 @@ public class ApplicationIdentifier {
     private String checkDigit;
     private String regex;
     private List<String> qualifiers;
+
+    public boolean isFixedLength() {
+        return fixedLength;
+    }
 }
 
