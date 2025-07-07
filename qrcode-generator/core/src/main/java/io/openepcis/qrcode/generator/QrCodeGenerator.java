@@ -178,8 +178,13 @@ public class QrCodeGenerator {
                 log.warn("Failed to parse URL for HRI data, hence skipping them : " + e.getMessage());
             }
 
-            // If HRI enabled return generated QR Code image with HRI image
-            if (qrCodeConfig.isAddHri() && isValidUrl) {
+            // If compressDigitalLink is enabled, compress the URL before generating the QR Code
+            if (qrCodeConfig.isCompressDigitalLink()) {
+                // TODO: Implement URL compression logic here based on logic introduced  within Utils module
+            }
+
+            // If HRI enabled (& compressDigitalLink is disabled) return generated QR Code image with HRI image
+            if (!qrCodeConfig.isCompressDigitalLink() && qrCodeConfig.isAddHri() && isValidUrl) {
                 log.debug("Adding HRI data to the QR code image");
                 return writeHRIData(digitalLinkURL, config, qrImage);
             }
@@ -203,7 +208,7 @@ public class QrCodeGenerator {
             final String formatName = StringUtils.substringAfter(mimeType, "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image, formatName, byteArrayOutputStream);
-            ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
+            //ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             log.error("Error writing image to bytes: " + e.getMessage(), e);
