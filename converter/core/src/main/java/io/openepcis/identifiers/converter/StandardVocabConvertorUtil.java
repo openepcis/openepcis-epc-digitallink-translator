@@ -10,9 +10,9 @@
  */
 package io.openepcis.identifiers.converter;
 
+import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.converter.constants.StandardVocabElements;
-import io.openepcis.identifiers.validator.exception.UnsupportedGS1IdentifierException;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

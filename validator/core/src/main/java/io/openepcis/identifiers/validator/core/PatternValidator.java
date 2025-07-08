@@ -10,7 +10,7 @@
  */
 package io.openepcis.identifiers.validator.core;
 
-import io.openepcis.identifiers.validator.exception.ValidationException;
+import io.openepcis.core.exception.ValidationException;
 
 public interface PatternValidator {
 

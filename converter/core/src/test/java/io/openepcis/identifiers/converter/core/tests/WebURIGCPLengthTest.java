@@ -10,8 +10,8 @@
  */
 package io.openepcis.identifiers.converter.core.tests;
 
-import io.openepcis.identifiers.converter.DefaultGCPLengthProvider;
-import io.openepcis.identifiers.validator.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

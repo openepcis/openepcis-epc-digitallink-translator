@@ -1,10 +1,10 @@
 package io.openepcis.identifiers.validator.core.epcis.noncompliant;
 
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
 import io.openepcis.identifiers.validator.core.Matcher;
 import io.openepcis.identifiers.validator.core.util.CheckDigitValidator;
-import io.openepcis.identifiers.validator.exception.ValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
