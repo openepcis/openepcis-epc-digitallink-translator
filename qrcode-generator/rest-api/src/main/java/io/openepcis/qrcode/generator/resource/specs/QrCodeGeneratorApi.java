@@ -25,15 +25,13 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
 
 import static io.openepcis.qrcode.generator.util.QrCodeConstants.*;
-
-@Tag(name = API_TAG_NAME, description = API_TAG_DESCRIPTION)
 @Path("/qr")
+@Tag(name = API_TAG_NAME, description = API_TAG_DESCRIPTION)
 public interface QrCodeGeneratorApi {
 
     // Method to generate the QR Code based on user provided specifications as QrCodeConfig and return
@@ -56,56 +54,42 @@ public interface QrCodeGeneratorApi {
                             }),
             }
     )
-    @APIResponses(
-            {
-                    @APIResponse(responseCode = "200", description = API_SUCCESS_RESPONSE, content = @Content(mediaType = "image/*")),
-                    @APIResponse(responseCode = "400", description = API_INVALID_REQUEST_RESPONSE),
-                    @APIResponse(responseCode = "406", description = API_UNSUPPORTED_ACCEPT_RESPONSE),
-                    @APIResponse(responseCode = "500", description = API__SERVER_ERROR_RESPONSE)
-            }
-    )
-    @Tag(name = API_TAG_NAME, description = POST_API_TAG_DESCRIPTION)
-    Uni<Response> generateQrCode(
+    @APIResponse(responseCode = "200", description = API_SUCCESS_RESPONSE, content = @Content(mediaType = "image/*"))
+    @APIResponse(responseCode = "400", description = API_INVALID_REQUEST_RESPONSE)
+    @APIResponse(responseCode = "406", description = API_UNSUPPORTED_ACCEPT_RESPONSE)
+    @APIResponse(responseCode = "500", description = API__SERVER_ERROR_RESPONSE)
+    Uni<Response> generate(
             @BeanParam final QrCodeGenerationParams params,
             final QrCodeConfig qrCodeConfig);
 
     @GET
-    @Path("/{linkPath: .*}")
+    @Path("/{linkPath:.*}")
     @Produces("*/*")
     @Operation(summary = GET_API_OPERATION_SUMMARY, description = GET_API_OPERATION_DESCRIPTION)
-    @APIResponses(
-            {
-                    @APIResponse(responseCode = "200", description = API_SUCCESS_RESPONSE, content = @Content(mediaType = "image/*")),
-                    @APIResponse(responseCode = "400", description = API_INVALID_REQUEST_RESPONSE),
-                    @APIResponse(responseCode = "406", description = API_UNSUPPORTED_ACCEPT_RESPONSE),
-                    @APIResponse(responseCode = "500", description = API__SERVER_ERROR_RESPONSE)
-            }
-    )
-    @Tag(name = API_TAG_NAME, description = GET_API_TAG_DESCRIPTION)
-    Uni<Response> getQrCode(@BeanParam final QrCodeGenerationParams params,
+    @APIResponse(responseCode = "200", description = API_SUCCESS_RESPONSE, content = @Content(mediaType = "image/*"))
+    @APIResponse(responseCode = "400", description = API_INVALID_REQUEST_RESPONSE)
+    @APIResponse(responseCode = "406", description = API_UNSUPPORTED_ACCEPT_RESPONSE)
+    @APIResponse(responseCode = "500", description = API__SERVER_ERROR_RESPONSE)
+    Uni<Response> fetch(@BeanParam final QrCodeGenerationParams params,
                             @PathParam("linkPath")
                             @Parameter(description = GET_API_PATH_PARAMETER_DESCRIPTION) final String linkPath);
 
     @OPTIONS
     @Operation(summary = OPTIONS_API_OPERATION_SUMMARY, description = OPTIONS_API_OPERATION_DESCRIPTION)
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = OPTIONS_API_RESPONSE_SUCCESS_DESCRIPTION,
-                    headers = {
-                            @Header(name = "Accept-Get", description = OPTIONS_API_RESPONSE_SUCCESS_HEADER_GET, required = true, schema = @Schema(type = SchemaType.STRING)),
-                            @Header(name = "Accept-Post", description = OPTIONS_API_RESPONSE_SUCCESS_HEADER_POST, required = true, schema = @Schema(type = SchemaType.STRING))
-                    }),
-            @APIResponse(responseCode = "500", description = OPTIONS_API_RESPONSE_ERROR_DESCRIPTION)
-    })
-    @Tag(name = API_TAG_NAME, description = GET_API_TAG_DESCRIPTION)
-    Uni<Response> getOptions();
+    @APIResponse(
+            responseCode = "200",
+            description = OPTIONS_API_RESPONSE_SUCCESS_DESCRIPTION,
+            headers = {
+                    @Header(name = "Accept-Get", description = OPTIONS_API_RESPONSE_SUCCESS_HEADER_GET, required = true, schema = @Schema(type = SchemaType.STRING)),
+                    @Header(name = "Accept-Post", description = OPTIONS_API_RESPONSE_SUCCESS_HEADER_POST, required = true, schema = @Schema(type = SchemaType.STRING))
+            })
+    @APIResponse(responseCode = "500", description = OPTIONS_API_RESPONSE_ERROR_DESCRIPTION)
+    Uni<Response> options();
 
     @GET
-    @Path("/designPresets")
-    @Operation(summary = GET_DESIGN_PRESET_API_OPERATION_SUMMARY, description = GET_DESIGN_PRESET_API_OPERATION_DESCRIPTION)
+    @Path("/design-presets")
     @Produces(MediaType.APPLICATION_JSON)
-    @Tag(name = API_TAG_NAME, description = GET_API_TAG_DESCRIPTION)
-    Uni<List<QrCodeConfig>> listAllDesignPresets();
+    @Operation(summary = GET_DESIGN_PRESET_API_OPERATION_SUMMARY, description = GET_DESIGN_PRESET_API_OPERATION_DESCRIPTION)
+    Uni<List<QrCodeConfig>> listDesignPresets();
 
 }

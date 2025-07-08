@@ -36,7 +36,7 @@ public class QrCodeGeneratorResource implements QrCodeGeneratorApi {
 
     // Method to generate the QR Code based on user provided specifications as QrCodeConfig and return
     @Override
-    public Uni<Response> generateQrCode(@BeanParam QrCodeGenerationParams params,
+    public Uni<Response> generate(@BeanParam QrCodeGenerationParams params,
                                         QrCodeConfig qrConfig) {
 
         // delegate to service which applies params (Accept, designPreset, hri, compressed)
@@ -45,7 +45,7 @@ public class QrCodeGeneratorResource implements QrCodeGeneratorApi {
 
     // Method to generate the QR Code based on a Digital Link path by adding domain and return
     @Override
-    public Uni<Response> getQrCode(@BeanParam QrCodeGenerationParams params,
+    public Uni<Response> fetch(@BeanParam QrCodeGenerationParams params,
                                    @PathParam("linkPath") String linkPath) {
         final String dlUrl = baseUrl + Optional.ofNullable(linkPath).orElse("");
         final QrCodeConfig qrCodeConfig = QrCodeConfig.builder().data(dlUrl).build();
@@ -54,7 +54,7 @@ public class QrCodeGeneratorResource implements QrCodeGeneratorApi {
 
     // Method to provide various QR code generation options like img/png, img/svg, etc.
     @Override
-    public Uni<Response> getOptions() {
+    public Uni<Response> options() {
         return Uni.createFrom().item(
                 Response.ok()
                         .header("Accept-Get", String.join(",", QrCodeConstants.ACCEPT_HEADER))
@@ -64,7 +64,7 @@ public class QrCodeGeneratorResource implements QrCodeGeneratorApi {
 
     // Method to list all available design presets for QR Code generation
     @Override
-    public Uni<List<QrCodeConfig>> listAllDesignPresets() {
+    public Uni<List<QrCodeConfig>> listDesignPresets() {
         return qrCodeService.listPresets();
     }
 }

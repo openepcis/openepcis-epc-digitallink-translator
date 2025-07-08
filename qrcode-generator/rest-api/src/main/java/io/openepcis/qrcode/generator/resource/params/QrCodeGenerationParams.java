@@ -27,9 +27,9 @@ import static io.openepcis.qrcode.generator.util.QrCodeConstants.*;
 public class QrCodeGenerationParams {
     @HeaderParam("Accept")
     @Parameter(description = API_ACCEPT_PARAMETER_DESCRIPTION, schema = @Schema(type = SchemaType.STRING, defaultValue = "image/png"))
-    public String accept;
+    public String accept = "image/png";
 
-    @HeaderParam("designPreset")
+    @HeaderParam("Design-Preset")
     @Parameter(description = API_DESIGN_PRESET_PARAMETER_DESCRIPTION, schema = @Schema(type = SchemaType.STRING))
     public String designPresetHeader;
 
@@ -37,7 +37,7 @@ public class QrCodeGenerationParams {
     @Parameter(hidden = true, description = API_DESIGN_PRESET_PARAMETER_DESCRIPTION, schema = @Schema(type = SchemaType.STRING))
     public String designPresetQuery;
 
-    @HeaderParam("hri")
+    @HeaderParam("HRI")
     @Parameter(description = API_HRI_PARAMETER_DESCRIPTION, schema = @Schema(type = SchemaType.BOOLEAN, defaultValue = "false"))
     public boolean hriHeader;
 
@@ -45,7 +45,7 @@ public class QrCodeGenerationParams {
     @Parameter(hidden = true, description = API_HRI_PARAMETER_DESCRIPTION, schema = @Schema(type = SchemaType.BOOLEAN, defaultValue = "false"))
     public boolean hriQuery;
 
-    @HeaderParam("compressed")
+    @HeaderParam("Compressed")
     @Parameter(description = API_COMPRESSED_PARAMETER_DESCRIPTION, schema = @Schema(type = SchemaType.BOOLEAN, defaultValue = "false"))
     public boolean compressedHeader;
 
