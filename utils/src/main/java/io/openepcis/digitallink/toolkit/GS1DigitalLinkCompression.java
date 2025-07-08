@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.openepcis.digitallink.model.ApplicationIdentifier;
+import io.openepcis.digitallink.utils.AiEntries;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -130,8 +132,13 @@ public class GS1DigitalLinkCompression {
      * Constructor for the GS1DigitalLinkToolkit.
      * Initializes all the necessary data tables and regular expressions.
      */
-    public GS1DigitalLinkCompression() {
-        initializeData(); // Populate all data tables
+    @Inject
+    public GS1DigitalLinkCompression(AiEntries aiEntries) {
+        // Populate aitable from AiEntries
+        populateAiTableFromAiEntries(aiEntries);
+
+        // Initialize other tables
+        initializeHardcodedTables();
 
         for (Map.Entry<String, String[]> entry : tableOpt.entrySet()) {
             List<String> sortedValues = new ArrayList<>(Arrays.asList(entry.getValue()));
@@ -334,78 +341,6 @@ public class GS1DigitalLinkCompression {
             }
         }
         return elementStrings.toString();
-    }
-
-    /**
-     * Parses a GS1 element string (bracketed or unbracketed) into a map of AIs and values.
-     *
-     * @param elementStrings The concatenated element string.
-     * @return A map of AI keys to values.
-     */
-    public Map<String, String> extractFromGS1elementStrings(String elementStrings) {
-        String processedStrings = elementStrings.replaceFirst("^(]C1|]e0|]d2|]Q3)", "");
-
-        Pattern re = Pattern.compile("^\\((\\d{2,4}?)\\)");
-        if (re.matcher(processedStrings).find()) {
-            // Bracketed element string
-            Map<String, String> obj = new LinkedHashMap<>();
-            Pattern r1 = Pattern.compile("\\((\\d{2,4}?)\\)|([^(]+)");
-            Matcher m = r1.matcher(processedStrings);
-            String k = null;
-            while (m.find()) {
-                if (m.group(1) != null) {
-                    k = m.group(1);
-                } else if (m.group(2) != null && k != null) {
-                    String value = m.group(2);
-                    if (aiRegex.containsKey(k)) {
-                        if (aiRegex.get(k).matcher(value).matches()) {
-                            obj.put(k, value);
-                        } else {
-                            throw new IllegalArgumentException("SYNTAX ERROR: invalid syntax for value of (" + k + ") : " + value);
-                        }
-                    }
-                    k = null;
-                }
-            }
-            return obj;
-        } else {
-            // Unbracketed element string
-            Map<String, String> obj = new LinkedHashMap<>();
-            String remaining = processedStrings;
-            while (!remaining.isEmpty()) {
-                String ai = findAI(remaining);
-                if (ai == null) {
-                    throw new IllegalArgumentException("Could not determine AI for string: " + remaining);
-                }
-                int aiLen = ai.length();
-                List<Map<String, String>> format = tableF.get(ai);
-                if (format == null) {
-                    throw new IllegalArgumentException("No format definition for AI: " + ai);
-                }
-
-                int valLen;
-                if (!aiMaps.get("variableLength").contains(ai)) {
-                    // Fixed length
-                    valLen = format.stream().mapToInt(f -> Integer.parseInt(f.get("L"))).sum();
-                } else {
-                    // Variable length
-                    int sepIndex = remaining.indexOf(groupSeparator);
-                    if (sepIndex != -1) {
-                        valLen = sepIndex - aiLen;
-                    } else {
-                        valLen = remaining.length() - aiLen;
-                    }
-                }
-
-                String value = remaining.substring(aiLen, aiLen + valLen);
-                obj.put(ai, value);
-                remaining = remaining.substring(aiLen + valLen);
-                if (remaining.startsWith(String.valueOf(groupSeparator))) {
-                    remaining = remaining.substring(1);
-                }
-            }
-            return obj;
-        }
     }
 
     /**
@@ -1288,53 +1223,33 @@ public class GS1DigitalLinkCompression {
     }
 
     /**
-     * Populates all the data tables from the GS1 specification.
-     * This method loads AI data from JSON file and initializes other tables.
+     * Populates the aitable from the AiEntries class.
+     * This method extracts all unique ApplicationIdentifier objects from AiEntries.
+     * 
+     * @param aiEntries The AiEntries instance to extract data from
      */
-    private void initializeData() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            // Load from classpath resource
-            InputStream jsonStream = getClass().getResourceAsStream("/aitable.json");
-            if (jsonStream == null) {
-                throw new IOException("Could not find aitable.json in classpath");
+    private void populateAiTableFromAiEntries(AiEntries aiEntries) {
+        // Create a set to track AIs we've already added (to avoid duplicates)
+        Set<String> addedAis = new HashSet<>();
+
+        // List of all AI codes to check
+        String[] aiCodes = {"00", "01", "02", "10", "11", "12", "13", "15", "16", "17", "20", "21", "22", "235", "240", "241", "242", "243", "250", "251", "253", "254", "255", "30", "310n", "311n", "312n", "313n", "314n", "315n", "316n", "320n", "321n", "322n", "323n", "324n", "325n", "326n", "327n", "328n", "329n", "330n", "331n", "332n", "333n", "334n", "335n", "336n", "337n", "340n", "341n", "342n", "343n", "344n", "345n", "346n", "347n", "348n", "349n", "350n", "351n", "352n", "353n", "354n", "355n", "356n", "357n", "360n", "361n", "362n", "363n", "364n", "365n", "366n", "367n", "368n", "369n", "37", "390n", "391n", "392n", "393n", "394n", "400", "401", "402", "403", "410", "411", "412", "413", "414", "415", "416", "417", "420", "421", "422", "423", "424", "425", "426", "427", "7001", "7002", "7003", "7004", "7005", "7006", "7007", "7008", "7009", "7010", "7020", "7021", "7022", "7023", "703s", "710", "711", "712", "713", "714", "723s", "7240", "8001", "8002", "8003", "8004", "8005", "8006", "8007", "8008", "8009", "8010", "8011", "8012", "8013", "8017", "8018", "8019", "8020", "8026", "8110", "8111", "8112", "8200", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "gtin", "itip", "gmn", "cpid", "shipTo", "billTo", "purchasedFrom", "shipFor", "gln", "payTo", "glnProd", "gsrnp", "gsrn", "gcn", "sscc", "gdti", "ginc", "gsin", "grai", "giai"};
+
+        // Add all unique ApplicationIdentifier objects to aitable
+        for (String code : aiCodes) {
+            ApplicationIdentifier ai = aiEntries.getEntry(code);
+            if (ai != null && !addedAis.contains(ai.getAi())) {
+                aitable.add(ai);
+                addedAis.add(ai.getAi());
             }
-            List<Map<String, Object>> aiList = mapper.readValue(jsonStream,
-                    new TypeReference<List<Map<String, Object>>>() {
-                    });
-
-            for (Map<String, Object> aiMap : aiList) {
-                String title = (String) aiMap.get("title");
-                String label = (String) aiMap.get("label");
-                String shortcode = (String) aiMap.get("shortcode");
-                String ai = (String) aiMap.get("ai");
-                String format = (String) aiMap.get("format");
-                String type = (String) aiMap.get("type");
-                boolean fixedLength = (boolean) aiMap.get("fixedLength");
-                String checkDigit = (String) aiMap.get("checkDigit");
-                String regex = (String) aiMap.get("regex");
-
-                List<String> qualifiers = null;
-                if (aiMap.get("qualifiers") != null) {
-                    qualifiers = (List<String>) aiMap.get("qualifiers");
-                }
-
-                aitable.add(new ApplicationIdentifier(
-                        title,
-                        label,
-                        shortcode,
-                        ai,
-                        format,
-                        type,
-                        fixedLength,
-                        checkDigit,
-                        regex,
-                        qualifiers));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load AI table from JSON file", e);
         }
+    }
 
+    /**
+     * Initializes the hardcoded tables used for GS1 Digital Link compression.
+     * This includes tableF, tableOpt, and tableS1.
+     */
+    private void initializeHardcodedTables() {
         // --- tableF ---
         tableF.put("00", Collections.singletonList(new HashMap<String, String>() {{
             put("E", "N");

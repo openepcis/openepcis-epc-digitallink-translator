@@ -1,6 +1,8 @@
 package io.openepcis.digitallink.test.compression;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openepcis.digitallink.toolkit.GS1DigitalLinkCompression;
+import io.openepcis.digitallink.utils.AiEntries;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +25,8 @@ public class GS1DigitalLinkCompressionTest {
               https://example.org/01/00054123450013/10/ABC123?3103=000189&3923=2172
          */
 
-        final var compressor = new GS1DigitalLinkCompression();
+        final var aiEntries = new AiEntries();
+        final var compressor = new GS1DigitalLinkCompression(aiEntries);
 
         digitalLinks.forEach(uri -> {
             var compressed = compressor.compressGS1DigitalLink(uri, false, false);

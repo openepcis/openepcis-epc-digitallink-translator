@@ -22,8 +22,8 @@ public class GS1DigitalLinkNormalizerTest {
 
     @BeforeEach
     public void setup() {
-        // Create a real AiEntries instance with a new ObjectMapper
-        AiEntries aiEntries = new AiEntries(new ObjectMapper());
+        // Create a real AiEntries instance
+        AiEntries aiEntries = new AiEntries();
 
         // Create the normalizer with the real AiEntries
         normalizer = new GS1DigitalLinkNormalizer();

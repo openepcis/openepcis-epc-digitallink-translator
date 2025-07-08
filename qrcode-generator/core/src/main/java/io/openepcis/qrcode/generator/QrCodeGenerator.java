@@ -30,6 +30,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -507,7 +508,7 @@ public class QrCodeGenerator {
         tempG.dispose();
 
         // Parse and Format HRI lines to fit in available width
-        final LinkedHashMap<String, String> hriData = GS1DigitalLinkParser.digitalLinkToHRI(config.getData());
+        final Map<String, String> hriData = GS1DigitalLinkParser.parse(digitalLinkURL);
         final List<String> hriLines = formatHRIForQr(hriData, config.getQrWidth(), qrImage.createGraphics().getFontMetrics(OCR_B_FONT));
         final int hriLineHeight = hriFM.getHeight();
         final int hriBlockHeight = Math.max(1, hriPaddingTop + hriLines.size() * hriLineHeight);

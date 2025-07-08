@@ -14,17 +14,17 @@ import java.util.*;
 @ApplicationScoped
 public class AiEntries {
 
-    private final Map<String, ApplicationIdentifier> aiEntriesMap;
+    private static final Map<String, ApplicationIdentifier> aiEntriesMap;
 
-    @Inject
-    public AiEntries(ObjectMapper objectMapper) {
-        this.aiEntriesMap = initializeAiEntries(objectMapper);
+    // Static initializer to load the AI entries only once
+    static {
+        aiEntriesMap = initializeAiEntries(new ObjectMapper());
     }
 
-    private Map<String, ApplicationIdentifier> initializeAiEntries(ObjectMapper objectMapper) {
-        try (InputStream inputStream = getClass().getResourceAsStream("/aitable.json")) {
+    private static Map<String, ApplicationIdentifier> initializeAiEntries(ObjectMapper objectMapper) {
+        try (InputStream inputStream = AiEntries.class.getResourceAsStream("/aitable.json")) {
             if (Objects.isNull(inputStream)) {
-               // log.warn("AI entries configuration file not found");
+                // log.warn("AI entries configuration file not found");
                 return Collections.emptyMap();
             }
 
@@ -39,11 +39,11 @@ public class AiEntries {
                 Optional.ofNullable(entry.getShortcode()).ifPresent(k -> entriesMap.put(k, entry));
             });
 
-           // log.info("Loaded {} AI entries into map with {} keys", entries.size(), entriesMap.size());
+            // log.info("Loaded {} AI entries into map with {} keys", entries.size(), entriesMap.size());
             return Collections.unmodifiableMap(entriesMap);
 
         } catch (IOException e) {
-         //   log.error("Failed to load AI entries from JSON", e);
+            //   log.error("Failed to load AI entries from JSON", e);
             return Collections.emptyMap();
         }
     }
@@ -53,4 +53,3 @@ public class AiEntries {
     }
 
 }
-
