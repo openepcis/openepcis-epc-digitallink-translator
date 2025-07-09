@@ -47,4 +47,4 @@ build/
 *.png
 
 ## ignore gcp length resource file downloaded from GS1 portal
-**/resources/gcpprefixformatlist.json
+## **/resources/gcpprefixformatlist.json
