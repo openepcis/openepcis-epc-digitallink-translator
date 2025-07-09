@@ -62,12 +62,12 @@ public final class DefaultGCPLengthProvider implements GCPLengthProvider {
             DefaultGCPLengthProvider.class.getResourceAsStream(RESOURCE),
             RESOURCE + " not found on classpath")) {
 
-      ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-      JsonNode root = mapper.readTree(in)
+      final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+      final JsonNode root = mapper.readTree(in)
               .path("GCPPrefixFormatList")
               .path("entry");
 
-      List<Entry> list = new ArrayList<>(root.size());
+      final List<Entry> list = new ArrayList<>(root.size());
       for (JsonNode n : root) {
         list.add(new Entry(
                 n.get("prefix").asText(),
