@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Assertions;
 public class ApplicationIdentifierValidationTestUtil {
 
     // Create a shared ValidatorFactory instance for all tests.
-    private static final ValidatorFactory VALIDATOR_FACTORY = new ValidatorFactory(new GS1DigitalLinkNormalizer(), new DefaultGCPLengthProvider());
+    private static final ValidatorFactory VALIDATOR_FACTORY = new ValidatorFactory(new GS1DigitalLinkNormalizer(), DefaultGCPLengthProvider.getInstance());
 
 
     /**

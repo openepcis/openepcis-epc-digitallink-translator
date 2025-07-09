@@ -24,7 +24,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class GDTIValidatorTest {
 
-  final ValidatorFactory validatorFactory = new ValidatorFactory(new GS1DigitalLinkNormalizer(), new DefaultGCPLengthProvider());
+  final ValidatorFactory validatorFactory = new ValidatorFactory(new GS1DigitalLinkNormalizer(), DefaultGCPLengthProvider.getInstance());
 
   // Test for invalid EPC URN identifiers.
   @Test

@@ -10,6 +10,7 @@
  */
 package io.openepcis.digitallink.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
@@ -23,130 +24,153 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Thread-safe singleton that resolves GS1 company-prefix lengths
+ * from <code>gcpprefixformatlist.json</code>.
+ */
 @Slf4j
-public class DefaultGCPLengthProvider implements GCPLengthProvider {
-  private final Map<String, Integer> sortedGcpLengthList =
-      new TreeMap<>(
-          Collections.reverseOrder(
-              (a, b) ->
-                  a.length() != b.length()
-                      ? Integer.compare(a.length(), b.length())
-                      : a.compareTo(b)));
+public final class DefaultGCPLengthProvider implements GCPLengthProvider {
 
-  private static DefaultGCPLengthProvider gcpLengthProviderInstance;
-  private final List<String> keyStartsWithGCP = Arrays.asList("/8010/", "/255/", "/253/", "/8004/", "/401/", "/402/", "/8018/", "/8017/", "/417/", "/414/");
-  private static final String NO_GCP_EXCEPTION_MESSAGE = "Visit GEPIR (https://gepir.gs1.org/) or contact GS1 MO.";
+  /* ------------------------------------------------------------------ *
+   *  Static initialisation                                              *
+   * ------------------------------------------------------------------ */
 
-  /** Constructor to load the GCPLengthFormat file from resource folder to the sorted TreeMap */
-  public DefaultGCPLengthProvider() {
-    try {
-      // Read the GCP Length file with JSON content
-      final InputStream gcpPrefixFileContents = getClass().getResourceAsStream("/gcpprefixformatlist.json");
+  private static final String RESOURCE = "/gcpprefixformatlist.json";
+  private static final String NO_GCP_HINT =
+          "Visit GEPIR (https://gepir.gs1.org/) or contact your GS1 MO.";
 
-      // Deserialize the JSON contents to Map using Jackson ObjectMapper
-      final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-      @SuppressWarnings("unchecked")
-      final Map<String, Object> gcpPrefixFormatList = objectMapper.readValue(gcpPrefixFileContents, Map.class);
+  /** Identifiers whose full value is already a GCP. */
+  private static final Set<String> PREFIXES_WITH_GCP = Set.of(
+          "/8010/", "/255/", "/253/", "/8004/", "/401/", "/402/",
+          "/8018/", "/8017/", "/417/", "/414/"
+  );
 
-      // Read the ArrayList "entry" contents with GCPLength values
-      @SuppressWarnings("unchecked")
-      final List<Map<String, Object>> list = (List<Map<String, Object>>) ((Map<String, Object>) gcpPrefixFormatList.get("GCPPrefixFormatList")).get("entry");
+  /**
+   * Immutable list sorted by <em>longest prefix first</em> for fast
+   * longest-match scanning.
+   */
+  private static final List<Entry> PREFIX_ENTRIES;
 
-      // Loop over the list and convert the values to string and integer and add to sorted list
-      for (Map<String, Object> m : list) {
-        sortedGcpLengthList.put(m.get("prefix").toString(), Integer.valueOf(m.get("gcpLength").toString()));
+  static {
+    log.info("Loading {}", RESOURCE);
+    PREFIX_ENTRIES = loadPrefixEntries();
+    log.info("Loaded {} GCP prefixes", PREFIX_ENTRIES.size());
+  }
+
+  private static List<Entry> loadPrefixEntries() {
+    try (InputStream in = Objects.requireNonNull(
+            DefaultGCPLengthProvider.class.getResourceAsStream(RESOURCE),
+            RESOURCE + " not found on classpath")) {
+
+      ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+      JsonNode root = mapper.readTree(in)
+              .path("GCPPrefixFormatList")
+              .path("entry");
+
+      List<Entry> list = new ArrayList<>(root.size());
+      for (JsonNode n : root) {
+        list.add(new Entry(
+                n.get("prefix").asText(),
+                n.get("gcpLength").asInt()
+        ));
       }
+
+      list.sort(Comparator
+              .comparingInt((Entry e) -> e.prefix().length())
+              .reversed()
+              .thenComparing(Entry::prefix));
+
+      return List.copyOf(list);            // make immutable
     } catch (IOException e) {
-      throw new UrnDLTransformationException(e.getLocalizedMessage(), e);
+      log.error("Failed to read {}", RESOURCE, e);
+      throw new UrnDLTransformationException("Cannot initialise GCP length map", e);
     }
   }
 
-  /**
-   * Method to loop over the Map to find the matching id and its associated GCP Length
-   *
-   * @param gs1DigitalLinkURI The digital link WebURI for which the GCP length needed
-   *     ex:https://id.gs1.org/01/12345678901231/21/9999
-   * @param gs1DigitalLinkURIIdentifier The identifier after stripping all GS1 standard prefixes'
-   *     ex: 12345678901231
-   * @return returns the GCP length if found matching value in Map else returns 7 as GCP Length
-   */
-  public int getGcpLength(final String gs1DigitalLinkURI, String gs1DigitalLinkURIIdentifier, final String gs1IdentifierPrefix) {
-    // Check if identifier is not matching with keyStarts-map elements
-    if (!keyStartsWithGCP.contains(gs1IdentifierPrefix) && gs1DigitalLinkURIIdentifier.length() > 13) {
-      // For GTIN related identifiers consider from 2nd digit for finding gcp length
-      gs1DigitalLinkURIIdentifier = gs1DigitalLinkURIIdentifier.substring(1);
-    }
+  /* ------------------------------------------------------------------ *
+   *  Singleton boiler-plate                                             *
+   * ------------------------------------------------------------------ */
 
-    // Make gs1DigitalLinkURIIdentifier effectively final by re-assigning to a new final variable
-    final String finalGs1DigitalLinkURIIdentifier = gs1DigitalLinkURIIdentifier;
+  private static final DefaultGCPLengthProvider INSTANCE =
+          new DefaultGCPLengthProvider();
 
-    // Loop over the sorted values to find the matching GCP and its GCP Length else default to 0
-    int gcpLength =
-        sortedGcpLengthList.entrySet().stream()
-            .filter(entry -> finalGs1DigitalLinkURIIdentifier.startsWith(entry.getKey()))
-            .map(Map.Entry::getValue)
-            .findFirst()
-            .orElse(0);
+  private DefaultGCPLengthProvider() {}     // prevent external instantiation
 
-    // Return the found GCP length if not 0 else fallback to default if set or throw exception
-    if (gcpLength != 0) {
-      return gcpLength;
-    } else {
-      // Retrieve default GCP Length from system property
-      final String gcpLengthStr = System.getProperty(getClass().getName() + ".defaultGcpLength", null);
-      if (gcpLengthStr != null) {
-        try {
-          return Integer.parseInt(gcpLengthStr);
-        } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("Invalid default GCP length value: " + gcpLengthStr, e);
-        }
-      }
-      throw new UnsupportedGS1IdentifierException("GCP Length not found for Digital link URI : " + gs1DigitalLinkURI + NO_GCP_EXCEPTION_MESSAGE);
-    }
-  }
-
-  // Method to get the GCP Length from provided GS1 Digital Link URI by auto-detecting the prefix
-  // and identifier
-  public int getGcpLength(final String gs1DigitalLinkURI) {
-    // If identifier is empty/null or provided identifier is URN then throw exception
-    if (StringUtils.isBlank(gs1DigitalLinkURI) || gs1DigitalLinkURI.contains("urn:")) {
-      throw new UnsupportedGS1IdentifierException("GCP Length not found for : " + gs1DigitalLinkURI + NO_GCP_EXCEPTION_MESSAGE);
-    }
-
-    // Regular expression to find digits followed by / or / followed by digits followed by /,
-    // ignoring port numbers
-    final Pattern pattern = Pattern.compile("(/|^)(\\d+/|/\\d+/)([^/]+)");
-    final Matcher matcher = pattern.matcher(gs1DigitalLinkURI);
-
-    // Check if the prefix associated with identifier is present
-    if (matcher.find()) {
-      final String gs1IdentifierPrefix = matcher.group(2).startsWith("/") ? matcher.group(2) : "/" + matcher.group(2);
-      final String gs1DigitalLinkURIIdentifier = matcher.group(3);
-      return getGcpLength(gs1DigitalLinkURI, gs1DigitalLinkURIIdentifier, gs1IdentifierPrefix);
-    } else {
-      // if no prefix is found then throw exception
-      throw new UnsupportedGS1IdentifierException("GCP Length not found for : " + gs1DigitalLinkURI + NO_GCP_EXCEPTION_MESSAGE);
-    }
-  }
-
-  /**
-   * Static method to create instance of Singleton class
-   *
-   * @return returns the instance of DefaultGCPLengthProvider class if its null
-   */
   public static DefaultGCPLengthProvider getInstance() {
-    if (gcpLengthProviderInstance == null) {
-      gcpLengthProviderInstance = new DefaultGCPLengthProvider();
+    return INSTANCE;
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Public API                                                         *
+   * ------------------------------------------------------------------ */
+
+  /**
+   * Resolve the GCP length for a full Digital Link URI.
+   *
+   * @throws UnsupportedGS1IdentifierException if the URI is blank, a URN,
+   *         or no matching GCP can be found and no default is configured
+   */
+  public int getGcpLength(final String gs1DigitalLinkURI) {
+    if (StringUtils.isBlank(gs1DigitalLinkURI) ||
+            gs1DigitalLinkURI.contains("urn:")) {
+      throw new UnsupportedGS1IdentifierException(
+              "GCP length not found for: " + gs1DigitalLinkURI + ". " + NO_GCP_HINT);
     }
-    return gcpLengthProviderInstance;
+
+    // pattern: /<digits>/…  or  …/<digits>/…
+    final Pattern p = Pattern.compile("(/|^)(\\d+/|/\\d+/)([^/]+)");
+    final Matcher m = p.matcher(gs1DigitalLinkURI);
+
+    if (m.find()) {
+      final String prefix = m.group(2).startsWith("/")
+              ? m.group(2)
+              : "/" + m.group(2);
+      final String identifier = m.group(3);
+      return getGcpLength(gs1DigitalLinkURI, identifier, prefix);
+    }
+    throw new UnsupportedGS1IdentifierException(
+            "GCP length not found for: " + gs1DigitalLinkURI + ". " + NO_GCP_HINT);
   }
 
   /**
-   * Method to provide the instance of the class
-   *
-   * @return returns the instance of the DefaultGCPLengthProvider class
+   * Core lookup that assumes the caller already split out the GS1 prefix.
    */
-  public DefaultGCPLengthProvider getDefaultInstance() {
-    return new DefaultGCPLengthProvider();
+  public int getGcpLength(final String gs1DigitalLinkURI,
+                          String identifier,
+                          final String gs1IdentifierPrefix) {
+
+    // GTINs: ignore first digit unless prefix itself embeds full GCP
+    if (!PREFIXES_WITH_GCP.contains(gs1IdentifierPrefix) &&
+            identifier.length() > 13) {
+      identifier = identifier.substring(1);
+    }
+
+    for (Entry e : PREFIX_ENTRIES) {
+      if (identifier.startsWith(e.prefix())) {
+        return e.len();
+      }
+    }
+
+    // optional JVM override: -Dio.openepcis...defaultGcpLength=7
+    final String prop = System.getProperty(
+            getClass().getName() + ".defaultGcpLength");
+    if (prop != null) {
+      try {
+        return Integer.parseInt(prop);
+      } catch (NumberFormatException nfe) {
+        throw new IllegalArgumentException(
+                "Invalid default GCP length value: " + prop, nfe);
+      }
+    }
+
+    throw new UnsupportedGS1IdentifierException(
+            "GCP length not found for Digital Link URI: " +
+                    gs1DigitalLinkURI + ". " + NO_GCP_HINT);
   }
+
+  /* ------------------------------------------------------------------ *
+   *  Internal value object                                              *
+   * ------------------------------------------------------------------ */
+
+  private record Entry(String prefix, int len) {}
 }

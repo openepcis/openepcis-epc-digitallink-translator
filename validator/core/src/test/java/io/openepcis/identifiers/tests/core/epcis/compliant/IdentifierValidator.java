@@ -17,7 +17,7 @@ import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
 
 public class IdentifierValidator {
-  private static final ValidatorFactory validatorFactory = new ValidatorFactory(new GS1DigitalLinkNormalizer(), new DefaultGCPLengthProvider());
+  private static final ValidatorFactory validatorFactory = new ValidatorFactory(new GS1DigitalLinkNormalizer(), DefaultGCPLengthProvider.getInstance());
 
   // Same for the variant that requires a GCP length.
   public static void validate(final String identifier, final ValidationContext validationContext) throws ValidationException {
