@@ -11,7 +11,7 @@ public class ConverterProducer {
 
     @Produces
     public DefaultGCPLengthProvider createDefaultGCPLengthProvider() {
-        return new DefaultGCPLengthProvider();
+        return DefaultGCPLengthProvider.getInstance();
     }
 
     @Produces
