@@ -2,16 +2,11 @@ package io.openepcis.digitallink.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openepcis.digitallink.model.ApplicationIdentifier;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import lombok.Getter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-@Getter
-@ApplicationScoped
 public class AiEntries {
 
     private static final Map<String, ApplicationIdentifier> aiEntriesMap;
@@ -48,7 +43,7 @@ public class AiEntries {
         }
     }
 
-    public ApplicationIdentifier getEntry(String key) {
+    public static ApplicationIdentifier getEntry(String key) {
         return aiEntriesMap.get(key);
     }
 

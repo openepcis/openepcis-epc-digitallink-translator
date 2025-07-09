@@ -3,7 +3,6 @@ package io.openepcis.digitallink.toolkit;
 import io.openepcis.digitallink.model.ApplicationIdentifier;
 import io.openepcis.digitallink.utils.AiEntries;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.MalformedURLException;
@@ -17,9 +16,6 @@ import java.net.URL;
  */
 @ApplicationScoped
 public class GS1DigitalLinkNormalizer {
-
-    @Inject
-    private AiEntries aiEntries;
 
     /**
      * Normalizes Digital Link URLs by converting human-readable shortcodes to GS1 Application Identifiers (AI).
@@ -145,7 +141,7 @@ public class GS1DigitalLinkNormalizer {
      * @return The normalized identifier, or the original identifier if no mapping exists
      */
     private String normalizeIdentifier(String identifier) {
-        ApplicationIdentifier applicationIdentifier = aiEntries.getEntry(identifier);
+        ApplicationIdentifier applicationIdentifier = AiEntries.getEntry(identifier);
         if (applicationIdentifier != null && applicationIdentifier.getAi() != null) {
             return applicationIdentifier.getAi();
         }

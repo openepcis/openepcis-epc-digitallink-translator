@@ -1,8 +1,5 @@
 package io.openepcis.digitallink.toolkit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.openepcis.digitallink.utils.AiEntries;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,25 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GS1DigitalLinkNormalizerTest {
 
-    private GS1DigitalLinkNormalizer normalizer;
-
-    @BeforeEach
-    public void setup() {
-        // Create a real AiEntries instance
-        AiEntries aiEntries = new AiEntries();
-
-        // Create the normalizer with the real AiEntries
-        normalizer = new GS1DigitalLinkNormalizer();
-
-        // Set the aiEntries field using reflection since it's injected by CDI in production
-        try {
-            java.lang.reflect.Field field = GS1DigitalLinkNormalizer.class.getDeclaredField("aiEntries");
-            field.setAccessible(true);
-            field.set(normalizer, aiEntries);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to set aiEntries field", e);
-        }
-    }
+    private final static GS1DigitalLinkNormalizer normalizer = new GS1DigitalLinkNormalizer();
 
     @ParameterizedTest
     @MethodSource("normalizationTestCases")

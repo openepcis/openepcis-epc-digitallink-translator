@@ -1,6 +1,5 @@
 package io.openepcis.digitallink.toolkit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,8 +8,6 @@ import io.openepcis.digitallink.utils.AiEntries;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -133,9 +130,9 @@ public class GS1DigitalLinkCompression {
      * Initializes all the necessary data tables and regular expressions.
      */
     @Inject
-    public GS1DigitalLinkCompression(AiEntries aiEntries) {
+    public GS1DigitalLinkCompression() {
         // Populate aitable from AiEntries
-        populateAiTableFromAiEntries(aiEntries);
+        populateAiTableFromAiEntries();
 
         // Initialize other tables
         initializeHardcodedTables();
@@ -1225,10 +1222,8 @@ public class GS1DigitalLinkCompression {
     /**
      * Populates the aitable from the AiEntries class.
      * This method extracts all unique ApplicationIdentifier objects from AiEntries.
-     * 
-     * @param aiEntries The AiEntries instance to extract data from
      */
-    private void populateAiTableFromAiEntries(AiEntries aiEntries) {
+    private void populateAiTableFromAiEntries() {
         // Create a set to track AIs we've already added (to avoid duplicates)
         Set<String> addedAis = new HashSet<>();
 
@@ -1237,7 +1232,7 @@ public class GS1DigitalLinkCompression {
 
         // Add all unique ApplicationIdentifier objects to aitable
         for (String code : aiCodes) {
-            ApplicationIdentifier ai = aiEntries.getEntry(code);
+            ApplicationIdentifier ai = AiEntries.getEntry(code);
             if (ai != null && !addedAis.contains(ai.getAi())) {
                 aitable.add(ai);
                 addedAis.add(ai.getAi());
