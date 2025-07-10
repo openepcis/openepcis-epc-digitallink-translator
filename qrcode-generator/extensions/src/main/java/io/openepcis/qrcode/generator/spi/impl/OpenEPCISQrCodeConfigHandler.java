@@ -47,6 +47,9 @@ public class OpenEPCISQrCodeConfigHandler implements QrCodeConfigProvider {
                 .moduleShape(QrCodeConfig.ModuleShape.CIRCLE)
                 .logoResourceUrl(logoResourceUrl)
                 .logoScale(0.2f)
+                .addHri(qrCodeConfig.isAddHri())
+                .compressDigitalLink(qrCodeConfig.isCompressDigitalLink())
+                .compressWithUppercase(qrCodeConfig.isCompressWithUppercase())
                 .build();
     }
 }

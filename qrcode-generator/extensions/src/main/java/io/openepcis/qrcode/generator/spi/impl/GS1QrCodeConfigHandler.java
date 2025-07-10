@@ -47,6 +47,9 @@ public class GS1QrCodeConfigHandler implements QrCodeConfigProvider {
                 .drawFinderGradient(true)
                 .logoResourceUrl(logoResourceUrl)
                 .logoScale(0.16f)
+                .addHri(qrCodeConfig.isAddHri())
+                .compressDigitalLink(qrCodeConfig.isCompressDigitalLink())
+                .compressWithUppercase(qrCodeConfig.isCompressWithUppercase())
                 .build();
     }
 }

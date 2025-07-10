@@ -15,6 +15,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import io.openepcis.digitallink.toolkit.GS1DigitalLinkCompression;
 import io.openepcis.digitallink.utils.GS1DigitalLinkParser;
 import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import io.openepcis.qrcode.generator.spi.service.QrCodeConfigService;
@@ -30,7 +31,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -44,8 +44,10 @@ import java.util.*;
 @Slf4j
 public class QrCodeGenerator {
 
-    protected final QrCodeConfigService qrCodeConfigService = QrCodeConfigService.getInstance();
+    private final GS1DigitalLinkCompression compressor = new GS1DigitalLinkCompression();
+    private final QrCodeConfigService qrCodeConfigService = QrCodeConfigService.getInstance();
     private static Font OCR_B_FONT;
+
 
     static {
         try {
@@ -80,9 +82,9 @@ public class QrCodeGenerator {
             encodingHints.put(EncodeHintType.MARGIN, config.getMargin());
 
             // Create a Zxing QRCodeWriter object to generate the QR code.
-            final String qrContent = config.isCompressWithUppercase() ? StringUtils.upperCase(config.getData()) : config.getData();
+            final String qrContent = prepareQrData(config);
             final QRCodeWriter qrWriter = new QRCodeWriter();
-            final BitMatrix bitMatrix = qrWriter.encode(StringUtils.trim(qrContent), BarcodeFormat.QR_CODE, 1, 1, encodingHints);
+            final BitMatrix bitMatrix = qrWriter.encode(qrContent, BarcodeFormat.QR_CODE, 1, 1, encodingHints);
 
             // Create a BufferedImage (ARGB) to hold the QR code image.
             final BufferedImage qrImage = new BufferedImage(config.getQrWidth(), config.getQrHeight(), BufferedImage.TYPE_INT_RGB);
@@ -179,13 +181,8 @@ public class QrCodeGenerator {
                 log.warn("Failed to parse URL for HRI data, hence skipping them : " + e.getMessage());
             }
 
-            // If compressDigitalLink is enabled, compress the URL before generating the QR Code
-            if (qrCodeConfig.isCompressDigitalLink()) {
-                // TODO: Implement URL compression logic here based on logic introduced  within Utils module
-            }
-
-            // If HRI enabled (& compressDigitalLink is disabled) return generated QR Code image with HRI image
-            if (!qrCodeConfig.isCompressDigitalLink() && qrCodeConfig.isAddHri() && isValidUrl) {
+            // If HRI enabled return generated QR Code image with HRI image
+            if (config.isAddHri() && isValidUrl) {
                 log.debug("Adding HRI data to the QR code image");
                 return writeHRIData(digitalLinkURL, config, qrImage);
             }
@@ -197,7 +194,24 @@ public class QrCodeGenerator {
             log.error("Error generating the QR code: " + e.getMessage(), e);
             throw new QrCodeGeneratorException("Error generating the QR code: " + e.getMessage(), e);
         }
+    }
 
+    // Method to prepare the content to be added for the generated QR Code
+    private String prepareQrData(final QrCodeConfig config) {
+        // Get the raw content
+        String qrData = StringUtils.trim(config.getData());
+
+        // If compression enabled then compress
+        if (config.isCompressDigitalLink()) {
+            qrData = compressor.compressGS1DigitalLink(qrData, true, true);
+        }
+
+        // If uppercase is enabled then convert to uppercase
+        if (config.isCompressWithUppercase()) {
+            qrData = StringUtils.upperCase(qrData);
+        }
+
+        return qrData;
     }
 
 
@@ -209,7 +223,7 @@ public class QrCodeGenerator {
             final String formatName = StringUtils.substringAfter(mimeType, "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image, formatName, byteArrayOutputStream);
-            //ImageIO.write(image, formatName, new File("qrCode" + Math.random() + ".png"));
+            //ImageIO.write(image, formatName, new File("qrCode" + ".png"));
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             log.error("Error writing image to bytes: " + e.getMessage(), e);
