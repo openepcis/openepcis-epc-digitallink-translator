@@ -12,6 +12,7 @@ package io.openepcis.identifiers.validator;
 
 
 import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
+import io.openepcis.core.exception.ValidationException;
 import io.openepcis.digitallink.toolkit.GS1DigitalLinkNormalizer;
 import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
@@ -87,7 +88,8 @@ public class ValidatorFactory {
      * @throws UnsupportedGS1IdentifierException if no registered validator supports this identifier under the
      *                                           given epcisCompliant setting
      */
-    public boolean validateIdentifier(final String identifier, final ValidationContext validationContext) {
+    public boolean validateIdentifier(final String identifier,
+                                      final ValidationContext validationContext) {
         // Iterate through all registered validators and check if they support the identifier.
         for (final ApplicationIdentifierValidator validator : validators) {
             if (validator.supportsValidation(identifier, validationContext.isEpcisCompliant())) {
@@ -99,31 +101,49 @@ public class ValidatorFactory {
         throw new UnsupportedGS1IdentifierException(String.format("Identifier did not match any GS1 identifiers format: %s", identifier));
     }
 
-    public URL validateIdentifier(final URL digitalLink) throws MalformedURLException {
 
+    /**
+     * Validate GS1 identifier from Digital Link URI using default ValidationContext.
+     */
+    public URL validateIdentifier(final URL digitalLink) throws MalformedURLException {
         final URL normalizedUrl = gs1DigitalLinkNormalizer.normalize(digitalLink);
         final String normalizedIdentifier = normalizedUrl.toString();
-
         final ValidationContext contextWithGcp = ValidationContext.builder()
                 .gcpLength(gcpLengthProvider.getGcpLength(normalizedIdentifier))
                 .build();
 
-        for (final ApplicationIdentifierValidator validator : validators) {
-            if (validator.supportsValidation(normalizedIdentifier, contextWithGcp.isEpcisCompliant())) {
-                if (validator.validate(normalizedIdentifier, contextWithGcp)) {
-                    return normalizedUrl;
-                }
-            }
+        if (validateIdentifier(normalizedIdentifier, contextWithGcp)) {
+            return normalizedUrl;
         }
-        throw new UnsupportedGS1IdentifierException(String.format("Identifier did not match any GS1 identifier format: %s", digitalLink)
-        );
+
+        throw new UnsupportedGS1IdentifierException("Identifier did not match any GS1 identifier format: " + digitalLink);
+    }
+
+    /**
+     * Validate GS1 identifier from Digital Link URI using custom ValidationContext.
+     */
+    public URL validateIdentifier(final URL digitalLink,
+                                  final ValidationContext context) {
+        try {
+            final URL normalizedUrl = gs1DigitalLinkNormalizer.normalize(digitalLink);
+            final String normalizedIdentifier = normalizedUrl.toString();
+
+            if (validateIdentifier(normalizedIdentifier, context)) {
+                return normalizedUrl;
+            }
+
+            throw new UnsupportedGS1IdentifierException("Identifier did not match any GS1 identifier format: " + digitalLink);
+        } catch (Exception e) {
+            throw new ValidationException("Invalid GS1 Digital Link URI: " + digitalLink, e);
+        }
+
     }
 
     /**
      * Validate a GS1 identifier string using the provided options.
      *
-     * @param identifier        the raw GS1 identifier to validate (URN or Digital Link URI)
-     * @param gcpLength         GCP length
+     * @param identifier the raw GS1 identifier to validate (URN or Digital Link URI)
+     * @param gcpLength  GCP length
      * @return true if the identifier passes all checks in the first matching validator;
      * false if that validator’s validate method returns false
      * @throws UnsupportedGS1IdentifierException if no registered validator supports this identifier under the
