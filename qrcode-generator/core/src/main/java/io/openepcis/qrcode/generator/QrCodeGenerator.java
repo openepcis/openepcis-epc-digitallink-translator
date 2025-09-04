@@ -19,6 +19,7 @@ import io.openepcis.digitallink.toolkit.GS1DigitalLinkCompression;
 import io.openepcis.digitallink.utils.GS1DigitalLinkParser;
 import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import io.openepcis.qrcode.generator.spi.service.QrCodeConfigService;
+import io.quarkus.logging.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -465,9 +466,11 @@ public class QrCodeGenerator {
                           final int w, final int h) {
         try {
             BufferedImage logo;
+            Log.debug("reading logo from " + logoResourceUrl);
             final URI logoUri = new URI(logoResourceUrl);
 
             if (!logoUri.isAbsolute()) {
+                Log.debug("use logo from absolute file path");
                 // Treat as a relative file path. Adjust the base directory as needed.
                 final File logoFile = new File(logoResourceUrl);
                 if (!logoFile.exists()) {
@@ -476,6 +479,7 @@ public class QrCodeGenerator {
                 }
                 logo = ImageIO.read(logoFile);
             } else {
+                Log.debug("use logo from url");
                 // Absolute URI; convert to URL
                 final URL logoUrl = logoUri.toURL();
                 if ("file".equalsIgnoreCase(logoUrl.getProtocol())) {
