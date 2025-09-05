@@ -68,21 +68,36 @@ public class GTINLotSerialExpiryValidator implements ApplicationIdentifierValida
                         "(http|https)://.*./01/[0-9]{14}/10/[!%-?A-Z_a-z\\x22]{1,20}/21/[!%-?A-Z_a-z\\x22]{1,20}.*",
                         "Invalid Identifier, contains invalid Serial Number (21) (Ex: https://id.gs1.org/01/09520123456788/10/ABC1/21/12345). Please check the DL URI: %s"));
 
-        // Validate for the Expiry Date (17)
+        // Validate for the optional Expiry Date (17) - if provided validate format
         URI_MATCHERS.add(
-                new Matcher(
-                        "(http|https)://.*./01/[0-9]{14}/10/[!%-?A-Z_a-z\\x22]{1,20}/21/[!%-?A-Z_a-z\\x22]{1,20}\\?17=(\\d{2}(?:0\\d|1[0-2])(?:[0-2]\\d|3[01]))",
-                        "Invalid Identifier, contains invalid Expiry Date (17) (Ex: https://id.gs1.org/01/09520123456788/10/ABC1/21/12345?17=180426). Please check the DL URI: %s"));
+                new Matcher("(?s).*", "Invalid 17 date") {
+                    @Override
+                    public void validate(final String uri) throws ValidationException {
+                        final int q = uri.indexOf('?');
+                        if (q < 0) return; // no query string
+
+                        final String query = uri.substring(q + 1);
+                        for (final String p : query.split("&")) {
+                            if (p.startsWith("17=")) {
+                                final String v = p.substring(3);
+                                if (!v.matches("\\d{2}(?:0\\d|1[0-2])(?:[0-2]\\d|3[01])")) {
+                                    throw new ValidationException(
+                                            String.format("Invalid Identifier, contains invalid Expiry Date (17). Expected YYMMDD, got `%s` in: %s", v, uri)
+                                    );
+                                }
+                            }
+                        }
+                    }
+                });
 
     }
 
     @Override
     public boolean supportsValidation(final String identifier) {
-        // For DL URI identifier check if identifier contains DL URI part: "/01/", "/10/", "/21/" and "?17="
+        // For DL URI identifier check if identifier contains DL URI part: "/01/", "/10/", "/21/" and optional "?17="
         return identifier.contains(SGTIN_AI_URI_PREFIX) &&
                 identifier.contains(LGTIN_AI_BATCH_LOT_PREFIX) &&
-                identifier.contains(SGTIN_AI_URI_SERIAL_PREFIX) &&
-                identifier.contains(EXPIRY_DATE_AI_PARAM);
+                identifier.contains(SGTIN_AI_URI_SERIAL_PREFIX);
     }
 
     @Override
@@ -92,7 +107,7 @@ public class GTINLotSerialExpiryValidator implements ApplicationIdentifierValida
             return false;
         }
 
-        // else check if identifier contains DL URI part: "/01/", "/10/", "/21/" and "?17="
+        // else check if identifier contains DL URI part: "/01/", "/10/", "/21/" and optional "?17="
         return supportsValidation(identifier);
     }
 

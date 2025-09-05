@@ -12,8 +12,8 @@ class GTINLotSerialExpiryValidatorTest {
     @Test
     @Order(0)
     void invalidUriTest() throws ValidationException {
-        // Without Expiry Date
-        ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/01/09520123456788/10/ABC1/21/12345", false, 10);
+        // Invalid Expiry Date format
+        ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/01/09520123456788/10/ABC1/21/12345?17=55", false, 10);
 
         // Without GTIN
         ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/10/ABC1/21/12345?17=180426", false, 10);
