@@ -32,6 +32,8 @@ public class OpenEPCISQrCodeConfigHandler implements QrCodeConfigProvider {
     public QrCodeConfig customizeConfig(final QrCodeConfig qrCodeConfig) {
         final String logoResourceUrl = OpenEPCISQrCodeConfigHandler.class.getClassLoader().getResource("openepcis-logo.png").toString();
 
+        final Color color = new Color( 45, 77, 157);
+
         return QrCodeConfig.builder()
                 .data(qrCodeConfig.getData())
                 .designPreset("OpenEPCIS")
@@ -39,11 +41,12 @@ public class OpenEPCISQrCodeConfigHandler implements QrCodeConfigProvider {
                 .qrWidth(qrCodeConfig.getQrWidth())
                 .qrHeight(qrCodeConfig.getQrHeight())
                 .margin(qrCodeConfig.getMargin())
-                .backgroundColor(new Color(255, 255, 255, 255))
-                .gradientStart(new Color(59, 130, 246, 255))
-                .gradientEnd(new Color(59, 130, 246, 255))
+                .backgroundColor(qrCodeConfig.getBackgroundColor())
+                .gradientStart(color)
+                .gradientEnd(color)
                 .useRadialGradient(true)
                 .drawFinderGradient(true)
+                .drawShadows(qrCodeConfig.isDrawShadows())
                 .moduleShape(qrCodeConfig.getModuleShape())
                 .logoResourceUrl(logoResourceUrl)
                 .logoScale(0.2f)

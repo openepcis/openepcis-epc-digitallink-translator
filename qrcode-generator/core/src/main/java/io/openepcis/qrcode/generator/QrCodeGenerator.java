@@ -88,7 +88,7 @@ public class QrCodeGenerator {
             final BitMatrix bitMatrix = qrWriter.encode(qrContent, BarcodeFormat.QR_CODE, 1, 1, encodingHints);
 
             // Create a BufferedImage (ARGB) to hold the QR code image.
-            final BufferedImage qrImage = new BufferedImage(config.getQrWidth(), config.getQrHeight(), BufferedImage.TYPE_INT_RGB);
+            final BufferedImage qrImage = new BufferedImage(config.getQrWidth(), config.getQrHeight(), BufferedImage.TYPE_INT_ARGB);
             final Graphics2D qrGraphics = qrImage.createGraphics();
             qrGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             qrGraphics.setColor(config.getBackgroundColor());
@@ -338,7 +338,7 @@ public class QrCodeGenerator {
                     float py = (startY + row) * ((float) config.getQrHeight() / matrix.getHeight()); // Calculate the pixel y-coordinate of the module.
 
                     // Check if shadows should be drawn.
-                    if (config.isDrawFinderGradient() && config.getShadowColor() != null) {
+                    if (config.isDrawShadows() && config.isDrawFinderGradient() && config.getShadowColor() != null) {
                         g2d.setColor(config.getShadowColor()); // Set the color for the shadow.
                         float offset = moduleSize * config.getShadowOffsetPct(); // Calculate the offset for the shadow.
                         createShape(g2d, px + offset, py + offset, moduleSize, config.getModuleShape()); // Create & fill the shape for the shadow.
