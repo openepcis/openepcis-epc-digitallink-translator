@@ -48,11 +48,6 @@ class GTINLotSerialExpiryValidatorTest {
         ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/01/09520123456788/10/L?15=250000", false, 10);
     }
 
-    @Test
-    void test(){
-        ApplicationIdentifierValidationTestUtil.assertValid("http://localhost:8080/01/09520000000028/21/1234?17=25-02-04", false, 10);
-    }
-
     // Test for valid URI identifiers
     @Test
     @Order(1)

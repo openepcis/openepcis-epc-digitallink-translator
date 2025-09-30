@@ -39,7 +39,7 @@ public class QrCodeService {
         qrCodeConfig.setMimeType(mime);
 
         // apply design, HRI, compression flags
-        qrCodeConfig.setDesignPreset(Optional.ofNullable(params.getDesignPresetHeader()).orElse(""));
+        qrCodeConfig.setDesignPreset(Optional.ofNullable(params.getDesignPresetHeader()).orElse(qrCodeConfig.getDesignPreset()));
         qrCodeConfig.setAddHri(params.getHriHeader());
         qrCodeConfig.setCompressDigitalLink(params.getCompressedHeader());
 
@@ -70,10 +70,19 @@ public class QrCodeService {
         return Uni.createFrom().item(presets);
     }
 
+    public String normalizePathWithBaseUrl(final String baseUrl, final String linkPath) {
+        // Append baseUrl + normalized relative path
+        final String normalizedBase = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+        final String normalizedPath = linkPath.startsWith("/") ? linkPath.substring(1) : linkPath;
+        return normalizedBase + normalizedPath;
+    }
+
     private String validateMime(final String accept) {
         return Arrays.stream(ImageIO.getWriterMIMETypes())
                 .filter(m -> m.equalsIgnoreCase(accept))
                 .findFirst()
                 .orElse("image/png");
     }
+
+
 }

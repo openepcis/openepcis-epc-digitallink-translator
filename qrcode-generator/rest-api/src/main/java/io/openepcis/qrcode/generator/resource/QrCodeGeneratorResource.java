@@ -11,6 +11,7 @@
 package io.openepcis.qrcode.generator.resource;
 
 import io.openepcis.qrcode.generator.QrCodeConfig;
+import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import io.openepcis.qrcode.generator.resource.params.QrCodeGenerationParams;
 import io.openepcis.qrcode.generator.resource.service.QrCodeService;
 import io.openepcis.qrcode.generator.resource.specs.QrCodeGeneratorApi;
@@ -20,10 +21,12 @@ import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class QrCodeGeneratorResource implements QrCodeGeneratorApi {
@@ -46,8 +49,28 @@ public class QrCodeGeneratorResource implements QrCodeGeneratorApi {
     // Method to generate the QR Code based on a Digital Link path by adding domain and return
     @Override
     public Uni<Response> fetch(@BeanParam QrCodeGenerationParams params,
-                                   @PathParam("linkPath") String linkPath) {
-        final String dlUrl = baseUrl + Optional.ofNullable(linkPath).orElse("");
+                               @PathParam("linkPath") String linkPath) {
+        if (StringUtils.isBlank(linkPath)) {
+            throw new QrCodeGeneratorException("Cannot generate QR Code : Invalid Digital Link path, cannot be blank.");
+        }
+
+        String dlUrl;
+        try {
+            final URI uri = new URI(linkPath);
+
+            // If linkPath is absolute, use as-is without appending baseUrl
+            if (uri.isAbsolute()) {
+                dlUrl = linkPath;
+            } else {
+                // Append baseUrl + normalized relative path
+                dlUrl = qrCodeService.normalizePathWithBaseUrl(baseUrl, linkPath);
+            }
+
+        } catch (URISyntaxException e) {
+            // If URI is invalid then treat it as a relative path
+            dlUrl = qrCodeService.normalizePathWithBaseUrl(baseUrl, linkPath);
+        }
+
         final QrCodeConfig qrCodeConfig = QrCodeConfig.builder().data(dlUrl).build();
         return qrCodeService.generate(params, qrCodeConfig);
     }
