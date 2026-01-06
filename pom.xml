@@ -175,6 +175,17 @@
     </dependencyManagement>
 
     <repositories>
+        <!-- GitLab Maven Package Registry -->
+        <repository>
+            <id>gitlab-maven</id>
+            <url>${env.CI_API_V4_URL}/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
         <!-- Sonatype Central snapshots -->
         <repository>
             <id>central-snapshots</id>
@@ -211,9 +222,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <configuration>
-                        <skip>true</skip>
-                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
