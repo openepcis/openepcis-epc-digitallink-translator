@@ -178,7 +178,7 @@
         <!-- GitLab Maven Package Registry -->
         <repository>
             <id>gitlab-maven</id>
-            <url>${env.CI_API_V4_URL}/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+            <url>https://code.company-group.com/api/v4/projects/79/packages/maven</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
