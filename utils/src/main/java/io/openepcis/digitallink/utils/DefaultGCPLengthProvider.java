@@ -36,6 +36,7 @@ public final class DefaultGCPLengthProvider implements GCPLengthProvider {
    * ------------------------------------------------------------------ */
 
   private static final String RESOURCE = "/gcpprefixformatlist.json";
+  private static final String CUSTOM_RESOURCE = "/gcpprefixformatlist-custom.json";
   private static final String NO_GCP_HINT =
           "Visit GEPIR (https://gepir.gs1.org/) or contact your GS1 MO.";
 
@@ -58,33 +59,55 @@ public final class DefaultGCPLengthProvider implements GCPLengthProvider {
   }
 
   private static List<Entry> loadPrefixEntries() {
-    try (InputStream in = Objects.requireNonNull(
-            DefaultGCPLengthProvider.class.getResourceAsStream(RESOURCE),
-            RESOURCE + " not found on classpath")) {
+    final List<Entry> list = loadFromResource(RESOURCE, true);
 
-      final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-      final JsonNode root = mapper.readTree(in)
-              .path("GCPPrefixFormatList")
-              .path("entry");
-
-      final List<Entry> list = new ArrayList<>(root.size());
-      for (JsonNode n : root) {
-        list.add(new Entry(
-                n.get("prefix").asText(),
-                n.get("gcpLength").asInt()
-        ));
+    // Merge custom overlay entries if present on classpath
+    try (InputStream customIn = DefaultGCPLengthProvider.class.getResourceAsStream(CUSTOM_RESOURCE)) {
+      if (customIn != null) {
+        List<Entry> custom = loadFromResource(customIn);
+        list.addAll(custom);
+        log.info("Loaded {} custom GCP prefix entries from {}", custom.size(), CUSTOM_RESOURCE);
       }
+    } catch (Exception e) {
+      log.warn("Failed to load custom GCP prefixes from {}: {}", CUSTOM_RESOURCE, e.getMessage());
+    }
 
-      list.sort(Comparator
-              .comparingInt((Entry e) -> e.prefix().length())
-              .reversed()
-              .thenComparing(Entry::prefix));
+    list.sort(Comparator
+            .comparingInt((Entry e) -> e.prefix().length())
+            .reversed()
+            .thenComparing(Entry::prefix));
 
-      return List.copyOf(list);            // make immutable
+    return List.copyOf(list);
+  }
+
+  private static List<Entry> loadFromResource(String resource, boolean required) {
+    try (InputStream in = required
+            ? Objects.requireNonNull(
+                    DefaultGCPLengthProvider.class.getResourceAsStream(resource),
+                    resource + " not found on classpath")
+            : DefaultGCPLengthProvider.class.getResourceAsStream(resource)) {
+      if (in == null) return new ArrayList<>();
+      return loadFromResource(in);
     } catch (IOException e) {
-      log.error("Failed to read {}", RESOURCE, e);
+      log.error("Failed to read {}", resource, e);
       throw new UrnDLTransformationException("Cannot initialise GCP length map", e);
     }
+  }
+
+  private static List<Entry> loadFromResource(InputStream in) throws IOException {
+    final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    final JsonNode root = mapper.readTree(in)
+            .path("GCPPrefixFormatList")
+            .path("entry");
+
+    final List<Entry> list = new ArrayList<>(root.size());
+    for (JsonNode n : root) {
+      list.add(new Entry(
+              n.get("prefix").asText(),
+              n.get("gcpLength").asInt()
+      ));
+    }
+    return list;
   }
 
   /* ------------------------------------------------------------------ *
