@@ -13,12 +13,14 @@ package io.openepcis.identifiers.validator.core;
 import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.validator.ValidationContext;
 
+import java.util.regex.Pattern;
+
 public class Matcher {
-    private final String pattern;
+    private final Pattern compiledPattern;
     private final String message;
 
     public Matcher(final String pattern, final String message) {
-        this.pattern = pattern;
+        this.compiledPattern = Pattern.compile(pattern);
         this.message = message;
     }
 
@@ -26,7 +28,7 @@ public class Matcher {
      * Validates the input string against the pattern. Returns true if valid, false otherwise.
      */
     public void validate(final String urn) throws ValidationException {
-        if (!urn.matches(pattern)) {
+        if (!compiledPattern.matcher(urn).matches()) {
             throw new ValidationException(String.format(message, urn));
         }
     }
