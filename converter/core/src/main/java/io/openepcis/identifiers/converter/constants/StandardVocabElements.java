@@ -38,9 +38,9 @@ public enum StandardVocabElements {
     return urn.startsWith(this.urnPrefix);
   }
 
-  // Check DL URI belongs to which standard vocab element
+  // Check DL URI belongs to which standard vocab element (case-insensitive for WebURI path)
   public boolean supportsURN(String dlURI) {
-    return dlURI.startsWith(this.dlPrefix);
+    return dlURI.regionMatches(true, 0, this.dlPrefix, 0, this.dlPrefix.length());
   }
 
   // Convert to corresponding standard vocab element Digital Link URI

@@ -96,27 +96,27 @@ public class EventVocabularyFormatter implements VocabularyFormat {
 
     if (urnVocabulary.startsWith(EPCIS.BIZ_STEP_URN_PREFIX)) {
       // Business Step remove the urn:epcglobal:cbv:bizstep: and replace with
-      // https://ns.gs1.org/voc/Bizstep-
+      // https://ref.gs1.org/cbv/BizStep-
       webURI = EPCIS.BIZ_STEP_WEBURI_CBV_PREFIX;
 
     } else if (urnVocabulary.startsWith(EPCIS.DISPOSITION_URN_PREFIX)) {
       // Disposition remove the urn:epcglobal:cbv:disp: and replace with
-      // https://ns.gs1.org/voc/Disp-
+      // https://ref.gs1.org/cbv/Disp-
       webURI = EPCIS.DISPOSITION_WEBURI_CBV_PREFIX;
 
     } else if (urnVocabulary.startsWith(EPCIS.BIZ_TRANSACTION_URN_PREFIX)) {
       // BizTransaction type remove the urn:epcglobal:cbv:btt and replace with
-      // https://ns.gs1.org/voc/BTT-
+      // https://ref.gs1.org/cbv/BTT-
       webURI = EPCIS.BIZ_TRANSACTION_WEBURI_CBV_PREFIX;
 
     } else if (urnVocabulary.startsWith(EPCIS.SRC_DEST_URN_PREFIX)) {
       // Source and Destination remove the urn:epcglobal:cbv:sdt: and replace with
-      // https://ns.gs1.org/voc/SDT-
+      // https://ref.gs1.org/cbv/SDT-
       webURI = EPCIS.SRC_DEST_WEBURI_CBV_PREFIX;
 
     } else if (urnVocabulary.startsWith(EPCIS.ERROR_REASON_URN_PREFIX)) {
       // For ErrorDeclaration reason remove the urn:epcglobal:cbv:er: and replace with
-      // https://ns.gs1.org/voc/ER-
+      // https://ref.gs1.org/cbv/ER-
       webURI = EPCIS.ERR_REASON_WEBURI_CBV_PREFIX;
     } else {
       return urnVocabulary;
@@ -129,32 +129,23 @@ public class EventVocabularyFormatter implements VocabularyFormat {
   // JSON/JSON-LD conversion to XML.
   public String canonicalString(final String webUriVocabulary) {
 
-    if (webUriVocabulary.startsWith(EPCIS.BIZ_STEP_WEBURI_CBV_PREFIX)) {
-      // For Business Step remove the https://ns.gs1.org/voc/Bizstep- and replace with
-      // urn:epcglobal:cbv:bizstep:
+    if (startsWithIgnoreCase(webUriVocabulary, EPCIS.BIZ_STEP_WEBURI_CBV_PREFIX)) {
       return EPCIS.BIZ_STEP_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(EPCIS.DISPOSITION_WEBURI_CBV_PREFIX)) {
-      // For Disposition remove https://ns.gs1.org/voc/Disp- and replace with
-      // urn:epcglobal:cbv:disp:
+    } else if (startsWithIgnoreCase(webUriVocabulary, EPCIS.DISPOSITION_WEBURI_CBV_PREFIX)) {
       return EPCIS.DISPOSITION_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(EPCIS.BIZ_TRANSACTION_WEBURI_CBV_PREFIX)) {
-      // For Business Transaction remove https://ns.gs1.org/voc/BTT- and replace with
-      // urn:epcglobal:cbv:btt:
+    } else if (startsWithIgnoreCase(webUriVocabulary, EPCIS.BIZ_TRANSACTION_WEBURI_CBV_PREFIX)) {
       return EPCIS.BIZ_TRANSACTION_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(EPCIS.SRC_DEST_WEBURI_CBV_PREFIX)) {
-      // For Source/Destination remove prefix https://ns.gs1.org/voc/SDT- and replace with
-      // urn:epcglobal:cbv:sdt:
+    } else if (startsWithIgnoreCase(webUriVocabulary, EPCIS.SRC_DEST_WEBURI_CBV_PREFIX)) {
       return EPCIS.SRC_DEST_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
 
-    } else if (webUriVocabulary.startsWith(EPCIS.ERR_REASON_WEBURI_CBV_PREFIX)) {
-      // For Error Reason remove https://ns.gs1.org/voc/ER- and replace with urn:epcglobal:cbv:er:
+    } else if (startsWithIgnoreCase(webUriVocabulary, EPCIS.ERR_REASON_WEBURI_CBV_PREFIX)) {
       return EPCIS.ERROR_REASON_URN_PREFIX
           + webUriVocabulary.substring(webUriVocabulary.lastIndexOf("-") + 1);
     }
@@ -166,15 +157,12 @@ public class EventVocabularyFormatter implements VocabularyFormat {
   // during XML -> JSON/JSON-LD conversion.
   public String bareString(final String cbvVocabulary) {
     if (URN_FORMATTED_CBV_STRING.stream().anyMatch(cbvVocabulary::startsWith)) {
-      // Check if the CBV URN Vocabulary matches any of the pre-defined CBV URN string if so remove
-      // the URN prefix and return bare string.
       return cbvVocabulary.substring(cbvVocabulary.lastIndexOf(":") + 1);
-    } else if (WEBURI_FORMATTED_CBV_STRING.stream().anyMatch(cbvVocabulary::startsWith)) {
-      // Check if the CBV WebURI vocabulary matches any of the pre-defined CBV WebURI string if so
-      // remove the WebURI prefix and return bare string.
+    }
+    // Case-insensitive matching for WebURI/CURIE prefixes to handle JAXB/MOXy case normalization
+    if (WEBURI_FORMATTED_CBV_STRING.stream().anyMatch(p -> startsWithIgnoreCase(cbvVocabulary, p))) {
       return cbvVocabulary.substring(cbvVocabulary.lastIndexOf("-") + 1);
-    } else if (CURIE_FORMATTED_CBV_STRING.stream().anyMatch(cbvVocabulary::startsWith)) {
-      // If the cbv matches the curie urn then remove the prefix and return bare string
+    } else if (CURIE_FORMATTED_CBV_STRING.stream().anyMatch(p -> startsWithIgnoreCase(cbvVocabulary, p))) {
       return cbvVocabulary.substring(cbvVocabulary.lastIndexOf("-") + 1);
     }
     return cbvVocabulary;
@@ -249,6 +237,10 @@ public class EventVocabularyFormatter implements VocabularyFormat {
     }
 
     return fieldValue.contains(prefix) ? fieldValue.substring(prefix.length()) : fieldValue;
+  }
+
+  private static boolean startsWithIgnoreCase(String value, String prefix) {
+    return value.regionMatches(true, 0, prefix, 0, prefix.length());
   }
 
   // Method to replace the domain and key with respective identifier during preHash generation

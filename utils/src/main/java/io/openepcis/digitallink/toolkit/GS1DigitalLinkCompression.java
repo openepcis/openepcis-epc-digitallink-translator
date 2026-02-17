@@ -697,7 +697,7 @@ public class GS1DigitalLinkCompression {
 
         // Initialize context
         context.put("schema", "http://schema.org/");
-        context.put("gs1", "https://gs1.org/voc/");
+        context.put("gs1", "https://ref.gs1.org/voc/");
         context.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 
         AnalysisResult rv = analyseURI(gs1DigitalLinkURI, true);

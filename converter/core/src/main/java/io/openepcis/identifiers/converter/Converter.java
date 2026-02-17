@@ -194,8 +194,8 @@ public class Converter {
    *
    * @param urnVocabulary CBV formatted URN vocabulary ex: urn:epcglobal:cbv:bizstep:departing or
    *     urn:epcglobal:cbv:btt:po.
-   * @return returns CBV formatted WebURI vocabulary ex: https://ref.gs1.org/voc/Bizstep-departing
-   *     or https://ref.gs1.org/voc/BTT-po
+   * @return returns CBV formatted WebURI vocabulary ex: https://ref.gs1.org/cbv/BizStep-departing
+   *     or https://ref.gs1.org/cbv/BTT-po
    */
   public String toWebURIVocabulary(final String urnVocabulary) {
     return StringUtils.isBlank(urnVocabulary)
@@ -207,7 +207,7 @@ public class Converter {
    * Method to convert the CBV formatted WebURI vocabularies into CBV formatted URN vocabulary.
    *
    * @param webUriVocabulary CBV formatted WebURI vocabulary ex:
-   *     https://ref.gs1.org/voc/Bizstep-departing or https://ref.gs1.org/voc/BTT-po
+   *     https://ref.gs1.org/cbv/BizStep-departing or https://ref.gs1.org/cbv/BTT-po
    * @return returns the CBV formatted URN vocabulary ex: urn:epcglobal:cbv:bizstep:departing or
    *     urn:epcglobal:cbv:btt:po.
    */
@@ -221,7 +221,7 @@ public class Converter {
    * Method to convert the CBV formatted URN/WebURI vocabularies into BareString vocabulary.
    *
    * @param eventVocabulary CBV Vocabulary that needs to be converted to bare string ex:
-   *     https://ref.gs1.org/voc/Bizstep-departing or urn:epcglobal:cbv:bizstep:receiving.
+   *     https://ref.gs1.org/cbv/BizStep-departing or urn:epcglobal:cbv:bizstep:receiving.
    * @return returns the converted bare string vocabulary ex: departing or receiving.
    */
   public String toBareStringVocabulary(final String eventVocabulary) {
