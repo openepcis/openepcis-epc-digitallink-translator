@@ -153,7 +153,11 @@ public final class DefaultGCPLengthProvider implements GCPLengthProvider {
         // Step 1: Static prefix table lookup
         for (Entry e : PREFIX_ENTRIES) {
             if (identifier.startsWith(e.prefix())) {
-                return e.len();
+                if (e.len() > 0) {
+                    return e.len();
+                }
+                log.debug("Prefix table returned GCP length 0 for identifier {}, falling through to SPI resolution", originalIdentifier);
+                break;
             }
         }
 
