@@ -18,6 +18,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.ServiceLoader;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @Slf4j
 public class GCPLengthResolverManager {
@@ -59,6 +61,37 @@ public class GCPLengthResolverManager {
             }
         }
         return OptionalInt.empty();
+    }
+
+    /**
+     * Asynchronous variant — chains resolvers sequentially via {@link CompletionStage},
+     * returning the first non-empty result without blocking.
+     *
+     * @param identifier the raw GS1 identifier
+     * @return stage completing with the GCP length, or empty if no resolver can determine it
+     */
+    public CompletionStage<OptionalInt> resolveAsync(final String identifier) {
+        CompletionStage<OptionalInt> chain = CompletableFuture.completedFuture(OptionalInt.empty());
+        for (final GCPLengthResolver resolver : resolvers) {
+            chain = chain.thenCompose(result -> {
+                if (result.isPresent()) {
+                    return CompletableFuture.completedFuture(result);
+                }
+                try {
+                    return resolver.resolveAsync(identifier)
+                            .exceptionally(e -> {
+                                log.warn("GCPLengthResolver {} failed async for identifier {}: {}",
+                                        resolver.getClass().getSimpleName(), identifier, e.getMessage());
+                                return OptionalInt.empty();
+                            });
+                } catch (Exception e) {
+                    log.warn("GCPLengthResolver {} failed for identifier {}: {}",
+                            resolver.getClass().getSimpleName(), identifier, e.getMessage());
+                    return CompletableFuture.completedFuture(OptionalInt.empty());
+                }
+            });
+        }
+        return chain;
     }
 
     // return true if at least one resolver is registered via SPI

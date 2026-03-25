@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class Converter {
 
@@ -187,6 +189,38 @@ public class Converter {
       }
     }
     throw new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI));
+  }
+
+  /**
+   * Asynchronous variant of {@link #toURN(String)} — resolves GCP length without blocking.
+   *
+   * @param dlURI Instance level DigitalLink URI
+   * @return CompletionStage completing with the converted URN map
+   */
+  public CompletionStage<Map<String, String>> toURNAsync(final String dlURI) {
+    for (io.openepcis.identifiers.converter.core.Converter inputuri : dl) {
+      if (inputuri.supportsURN(dlURI)) {
+        return inputuri.convertToURNAsync(dlURI);
+      }
+    }
+    return CompletableFuture.failedFuture(
+        new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI)));
+  }
+
+  /**
+   * Asynchronous variant of {@link #toURNForClassLevelIdentifier(String)} — resolves GCP length without blocking.
+   *
+   * @param dlURI Class level DigitalLink URI
+   * @return CompletionStage completing with the converted URN map
+   */
+  public CompletionStage<Map<String, String>> toURNForClassLevelIdentifierAsync(final String dlURI) {
+    for (io.openepcis.identifiers.converter.core.Converter inputuri : classLevelTranslator) {
+      if (inputuri.supportsURN(dlURI)) {
+        return inputuri.convertToURNAsync(dlURI);
+      }
+    }
+    return CompletableFuture.failedFuture(
+        new UnsupportedGS1IdentifierException(String.format(INVALID_URI_MESSAGE, dlURI)));
   }
 
   /**

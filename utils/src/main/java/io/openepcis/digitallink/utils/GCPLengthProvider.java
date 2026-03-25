@@ -10,4 +10,17 @@
  */
 package io.openepcis.digitallink.utils;
 
-public interface GCPLengthProvider {}
+import java.util.concurrent.CompletionStage;
+
+public interface GCPLengthProvider {
+
+    /**
+     * Synchronous GCP length resolution — may block.
+     */
+    int getGcpLength(String gs1DigitalLinkURI);
+
+    /**
+     * Asynchronous GCP length resolution — never blocks the calling thread.
+     */
+    CompletionStage<Integer> getGcpLengthAsync(String gs1DigitalLinkURI);
+}

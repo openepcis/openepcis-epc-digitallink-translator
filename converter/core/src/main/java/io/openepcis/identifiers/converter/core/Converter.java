@@ -14,6 +14,8 @@ package io.openepcis.identifiers.converter.core;
 import io.openepcis.core.exception.ValidationException;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public interface Converter {
   // Check if the URN is supported and belongs to which class in the project
@@ -29,4 +31,15 @@ public interface Converter {
   Map<String, String> convertToURN(String dlURI, int gcpLength) throws ValidationException;
 
   Map<String, String> convertToURN(String dlURI) throws ValidationException;
+
+  /**
+   * Asynchronous variant of {@link #convertToURN(String)} — resolves GCP length
+   * without blocking the calling thread.
+   * <p>Default implementation delegates to the sync method on the common fork-join pool.
+   * Converters that call {@code DefaultGCPLengthProvider.getGcpLength()} should override
+   * this to use {@code getGcpLengthAsync()} instead.
+   */
+  default CompletionStage<Map<String, String>> convertToURNAsync(String dlURI) {
+    return CompletableFuture.supplyAsync(() -> convertToURN(dlURI));
+  }
 }

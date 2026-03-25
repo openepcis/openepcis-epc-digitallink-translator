@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 import java.util.regex.Pattern;
 
 import static io.openepcis.constants.ApplicationIdentifierConstants.*;
@@ -214,5 +215,24 @@ public class ITIPConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+  }
+
+  @Override
+  public CompletionStage<Map<String, String>> convertToURNAsync(final String dlURI) {
+    final String itip;
+    if (isClassLevel) {
+      itip = dlURI.substring(dlURI.indexOf(ITIP_AI_URI_PREFIX) + ITIP_AI_URI_PREFIX.length());
+    } else {
+      itip = dlURI.substring(
+          dlURI.indexOf(ITIP_AI_URI_PREFIX) + ITIP_AI_URI_PREFIX.length(),
+          dlURI.indexOf(ITIP_AI_URI_SERIAL_PREFIX));
+    }
+
+    return DefaultGCPLengthProvider.getInstance()
+        .getGcpLengthAsync(dlURI, itip, ITIP_AI_URI_PREFIX)
+        .thenApply(gcpLength -> {
+          ITIP_VALIDATOR.validate(dlURI, gcpLength);
+          return getEPCMap(dlURI, gcpLength, itip);
+        });
   }
 }

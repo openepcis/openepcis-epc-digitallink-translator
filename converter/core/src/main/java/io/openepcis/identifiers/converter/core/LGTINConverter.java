@@ -18,6 +18,7 @@ import io.openepcis.identifiers.validator.core.epcis.compliant.LGTINValidator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 import java.util.regex.Pattern;
 
 import static io.openepcis.constants.ApplicationIdentifierConstants.*;
@@ -155,5 +156,19 @@ public class LGTINConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+  }
+
+  @Override
+  public CompletionStage<Map<String, String>> convertToURNAsync(final String dlURI) {
+    final String lgtin = dlURI.substring(
+        dlURI.indexOf(LGTIN_AI_URI_PREFIX) + LGTIN_AI_URI_PREFIX.length(),
+        dlURI.indexOf(LGTIN_AI_BATCH_LOT_PREFIX));
+
+    return DefaultGCPLengthProvider.getInstance()
+        .getGcpLengthAsync(dlURI, lgtin, LGTIN_AI_URI_PREFIX)
+        .thenApply(gcpLength -> {
+          LGTIN_VALIDATOR.validate(dlURI, gcpLength);
+          return getEPCMap(dlURI, gcpLength, lgtin);
+        });
   }
 }

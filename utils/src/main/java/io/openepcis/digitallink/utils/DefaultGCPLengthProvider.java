@@ -22,6 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,6 +123,7 @@ public final class DefaultGCPLengthProvider implements GCPLengthProvider {
      * @throws UnsupportedGS1IdentifierException if the URI is blank, a URN,
      *                                           or no matching GCP can be found and no default is configured
      */
+    @Override
     public int getGcpLength(final String gs1DigitalLinkURI) {
         if (StringUtils.isBlank(gs1DigitalLinkURI) || gs1DigitalLinkURI.contains("urn:")) {
             throw new UnsupportedGS1IdentifierException("GCP length not found for: " + gs1DigitalLinkURI + ". " + NO_GCP_HINT);
@@ -186,6 +189,91 @@ public final class DefaultGCPLengthProvider implements GCPLengthProvider {
             }
         }
 
+        throw new UnsupportedGS1IdentifierException("GCP length not found for Digital Link URI: " + gs1DigitalLinkURI + ". " + NO_GCP_HINT);
+    }
+
+    /* ------------------------------------------------------------------ *
+     *  Async Public API                                                   *
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Asynchronous variant of {@link #getGcpLength(String)} — never blocks the calling thread.
+     */
+    @Override
+    public CompletionStage<Integer> getGcpLengthAsync(final String gs1DigitalLinkURI) {
+        if (StringUtils.isBlank(gs1DigitalLinkURI) || gs1DigitalLinkURI.contains("urn:")) {
+            return CompletableFuture.failedFuture(
+                    new UnsupportedGS1IdentifierException("GCP length not found for: " + gs1DigitalLinkURI + ". " + NO_GCP_HINT));
+        }
+
+        final Pattern p = Pattern.compile("(/|^)(\\d+/|/\\d+/)([^/]+)");
+        final Matcher m = p.matcher(gs1DigitalLinkURI);
+
+        if (m.find()) {
+            final String prefix = m.group(2).startsWith("/") ? m.group(2) : "/" + m.group(2);
+            final String identifier = m.group(3);
+            return getGcpLengthAsync(gs1DigitalLinkURI, identifier, prefix);
+        }
+        return CompletableFuture.failedFuture(
+                new UnsupportedGS1IdentifierException("GCP length not found for: " + gs1DigitalLinkURI + ". " + NO_GCP_HINT));
+    }
+
+    /**
+     * Asynchronous variant of {@link #getGcpLength(String, String, String)}.
+     * Step 1 (static table) is synchronous and fast. Only Step 2 (SPI) goes async.
+     */
+    public CompletionStage<Integer> getGcpLengthAsync(final String gs1DigitalLinkURI, String identifier, final String gs1IdentifierPrefix) {
+        final String originalIdentifier = identifier;
+
+        if (!PREFIXES_WITH_GCP.contains(gs1IdentifierPrefix) && identifier.length() > 13) {
+            identifier = identifier.substring(1);
+        }
+
+        // Step 1: Static prefix table lookup (fast, synchronous)
+        for (Entry e : PREFIX_ENTRIES) {
+            if (identifier.startsWith(e.prefix())) {
+                if (e.len() > 0) {
+                    return CompletableFuture.completedFuture(e.len());
+                }
+                log.debug("Prefix table returned GCP length 0 for identifier {}, falling through to SPI resolution", originalIdentifier);
+                break;
+            }
+        }
+
+        // Step 2: SPI-based async resolution
+        final GCPLengthResolverManager resolverManager = GCPLengthResolverManager.getInstance();
+        if (resolverManager.hasResolvers()) {
+            return resolverManager.resolveAsync(originalIdentifier)
+                    .thenApply(spiResult -> {
+                        if (spiResult.isPresent()) {
+                            log.debug("GCP length resolved via SPI for identifier {}: {}", originalIdentifier, spiResult.getAsInt());
+                            return spiResult.getAsInt();
+                        }
+                        // Step 3: JVM property default
+                        return getDefaultGcpLength(gs1DigitalLinkURI);
+                    });
+        }
+
+        // No resolvers — fall through to default
+        try {
+            return CompletableFuture.completedFuture(getDefaultGcpLength(gs1DigitalLinkURI));
+        } catch (Exception ex) {
+            return CompletableFuture.failedFuture(ex);
+        }
+    }
+
+    /**
+     * Step 3: JVM property fallback, or throw if not configured.
+     */
+    private int getDefaultGcpLength(final String gs1DigitalLinkURI) {
+        final String prop = System.getProperty(getClass().getName() + ".defaultGcpLength");
+        if (prop != null) {
+            try {
+                return Integer.parseInt(prop);
+            } catch (NumberFormatException nfe) {
+                throw new IllegalArgumentException("Invalid default GCP length value: " + prop, nfe);
+            }
+        }
         throw new UnsupportedGS1IdentifierException("GCP length not found for Digital Link URI: " + gs1DigitalLinkURI + ". " + NO_GCP_HINT);
     }
 

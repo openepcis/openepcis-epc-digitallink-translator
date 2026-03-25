@@ -18,6 +18,7 @@ import io.openepcis.identifiers.validator.core.epcis.compliant.SGTINValidator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 import java.util.regex.Pattern;
 
 import static io.openepcis.constants.ApplicationIdentifierConstants.*;
@@ -190,5 +191,24 @@ public class SGTINConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+  }
+
+  @Override
+  public CompletionStage<Map<String, String>> convertToURNAsync(final String dlURI) {
+    final String sgtin;
+    if (isClassLevel) {
+      sgtin = dlURI.substring(dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length());
+    } else {
+      sgtin = dlURI.substring(
+          dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length(),
+          dlURI.indexOf(SGTIN_AI_URI_SERIAL_PREFIX));
+    }
+
+    return DefaultGCPLengthProvider.getInstance()
+        .getGcpLengthAsync(dlURI, sgtin, SGTIN_AI_URI_PREFIX)
+        .thenApply(gcpLength -> {
+          SGTIN_VALIDATOR.validate(dlURI, gcpLength);
+          return getEPCMap(dlURI, gcpLength, sgtin);
+        });
   }
 }

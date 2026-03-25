@@ -17,6 +17,7 @@ import io.openepcis.identifiers.validator.core.epcis.compliant.CPIValidator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 import java.util.regex.Pattern;
 
 import static io.openepcis.constants.ApplicationIdentifierConstants.*;
@@ -186,5 +187,24 @@ public class CPIConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+  }
+
+  @Override
+  public CompletionStage<Map<String, String>> convertToURNAsync(final String dlURI) {
+    final String cpi;
+    if (isClassLevel) {
+      cpi = dlURI.substring(dlURI.indexOf(CPI_AI_URI_PREFIX) + CPI_AI_URI_PREFIX.length());
+    } else {
+      cpi = dlURI.substring(
+          dlURI.indexOf(CPI_AI_URI_PREFIX) + CPI_AI_URI_PREFIX.length(),
+          dlURI.indexOf(CPI_AI_URI_SERIAL_PREFIX));
+    }
+
+    return DefaultGCPLengthProvider.getInstance()
+        .getGcpLengthAsync(dlURI, cpi, CPI_AI_URI_PREFIX)
+        .thenApply(gcpLength -> {
+          CPI_VALIDATOR.validate(dlURI, gcpLength);
+          return getEPCMap(dlURI, gcpLength, cpi);
+        });
   }
 }

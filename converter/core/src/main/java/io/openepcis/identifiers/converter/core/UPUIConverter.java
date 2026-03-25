@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 import java.util.regex.Pattern;
 
 import static io.openepcis.constants.ApplicationIdentifierConstants.*;
@@ -156,5 +157,19 @@ public class UPUIConverter implements Converter {
               + "\n"
               + exception.getMessage());
     }
+  }
+
+  @Override
+  public CompletionStage<Map<String, String>> convertToURNAsync(final String dlURI) {
+    final String upui = dlURI.substring(
+        dlURI.indexOf(UPUI_AI_URI_PREFIX) + UPUI_AI_URI_PREFIX.length(),
+        dlURI.indexOf(UPUI_AI_URI_SERIAL_PREFIX));
+
+    return DefaultGCPLengthProvider.getInstance()
+        .getGcpLengthAsync(dlURI, upui, UPUI_AI_URI_PREFIX)
+        .thenApply(gcpLength -> {
+          UPUI_VALIDATOR.validate(dlURI, gcpLength);
+          return getEPCMap(dlURI, gcpLength, upui);
+        });
   }
 }
