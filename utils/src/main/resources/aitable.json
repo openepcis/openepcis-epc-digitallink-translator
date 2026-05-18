@@ -3586,6 +3586,17 @@
     "regex": "(\\d{13})"
   },
   {
+    "title": "Identification of a party by Global Location Number",
+    "label": "PARTY",
+    "shortcode": "partygln",
+    "ai": "417",
+    "format": "N13",
+    "type": "I",
+    "fixedLength": true,
+    "checkDigit": "L",
+    "regex": "(\\d{13})"
+  },
+  {
     "title": "Global Location Number of the invoicing party",
     "label": "PAY TO",
     "shortcode": "payto",
