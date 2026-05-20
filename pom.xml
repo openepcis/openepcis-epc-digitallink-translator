@@ -223,22 +223,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                 </plugin>
-                <!-- Pin the pre-commit formatter version and declare its
-                     google-java-format dependency. Without the SPI impl,
-                     the auto-installed pre-commit hook fails every commit
-                     with "No interface CodeFormatter instance found". -->
-                <plugin>
-                    <groupId>com.cosium.code</groupId>
-                    <artifactId>git-code-format-maven-plugin</artifactId>
-                    <version>${git-code-format-maven-plugin.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.cosium.code</groupId>
-                            <artifactId>google-java-format</artifactId>
-                            <version>${git-code-format-maven-plugin.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
