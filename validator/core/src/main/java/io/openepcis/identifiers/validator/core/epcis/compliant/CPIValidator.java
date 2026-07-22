@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.validator.core.epcis.compliant;
 
 import io.openepcis.core.exception.ValidationException;
+import io.openepcis.digitallink.utils.Gs1UriEscape;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
 import io.openepcis.identifiers.validator.core.Matcher;
@@ -55,21 +56,21 @@ public class CPIValidator implements ApplicationIdentifierValidator {
                     @Override
                     public void validate(final String urn) throws ValidationException {
                         super.validate(urn);
-                        final String cpi = urn.substring(urn.lastIndexOf(":"), urn.lastIndexOf("."));
-                        if (cpi.length() < 7 || cpi.length() > 31) {
-                            throw new ValidationException(
-                                    String.format(
-                                            "Invalid CPI, CPI must be between 7 and 30 digits (Ex: urn:epc:id:cpi:123456789.0123459.1234). Please check the provided URN: %s",
-                                            urn));
+
+                        // Split the URN body into GCP . Component/Part Reference . Serial
+                        final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
+                        final String reference = urn.substring(urn.indexOf(".") + 1, urn.lastIndexOf("."));
+
+                        // AI 8010 value = GCP + Reference, no separators; '#'/'/' already decoded to one char each
+                        final String cpid = gcp + reference;
+                        if (cpid.length() < 7 || cpid.length() > 30) {                              // AI 8010 is 1*30 (min 7 with a 6-digit GCP)
+                            throw new ValidationException(String.format(
+                                    "Invalid CPI, CPI must be between 7 and 30 digits (Ex: urn:epc:id:cpi:123456789.0123459.1234). Please check the provided URN: %s", urn));
                         }
 
                         // Check if GCP contains any characters apart from decimal
-                        final String gcp = urn.substring(urn.lastIndexOf(":") + 1, urn.indexOf("."));
                         if (!Pattern.matches("\\d+", gcp)) {
-                            throw new ValidationException(
-                                    String.format(
-                                            "Invalid CPI, CPI should consist of GCP with 6-12 digits, Please check the provided URN: %s",
-                                            urn));
+                            throw new ValidationException(String.format("Invalid CPI, CPI should consist of GCP with 6-12 digits, Please check the provided URN: %s", urn));
                         }
                     }
                 });
@@ -195,10 +196,12 @@ public class CPIValidator implements ApplicationIdentifierValidator {
     }
 
     @Override
-    public boolean validate(final String identifier, final ValidationContext validationContext)
-            throws ValidationException {
+    public boolean validate(final String identifier, final ValidationContext validationContext) throws ValidationException {
         // Determine identifier type directly from the provided identifier
         boolean isUrn = identifier.contains(CPI_AI_URN_PREFIX);
+
+        // Normalize the identifiers by converting and escaping the special characters in the URN and URI identifiers
+        final String normalized = Gs1UriEscape.decode(identifier);
 
         // For URNs, use CLASS_URN_PART; for URIs, if it has CPI_URI_PART without CPI_URI_SERIAL_PART,
         // it's non‑class-level.
@@ -224,9 +227,9 @@ public class CPIValidator implements ApplicationIdentifierValidator {
         // Iterate over the chosen matchers and validate the identifier.
         for (Matcher m : matchers) {
             if (isUrn) {
-                m.validate(identifier);
+                m.validate(normalized);
             } else {
-                m.validate(identifier, validationContext.getGcpLength());
+                m.validate(normalized, validationContext.getGcpLength());
             }
         }
 

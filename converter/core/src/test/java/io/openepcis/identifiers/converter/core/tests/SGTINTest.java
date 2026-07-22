@@ -21,12 +21,12 @@ public class SGTINTest {
   private Converter converter;
 
   @BeforeEach
-  public void before() throws Exception {
+  void before() throws Exception {
     converter = new Converter();
   }
 
   @Test
-  public void testSGTIN() throws ValidationException {
+   void testSGTIN() throws ValidationException {
     // No Serial Number
     String sgtin = "urn:epc:id:sgtin:234567.1890123";
     TestIdentifiers.toDigitalLink(sgtin);
@@ -72,6 +72,10 @@ public class SGTINTest {
         "https://id.gs1.org/01/73875837843740/21/9302932",
         converter.toURI("urn:epc:id:sgtin:387583784374.7.9302932"));
 
+    // SGTIN with URL safe characters
+    assertEquals("https://id.gs1.org/01/80614141123458/21/6789%2F%26%25%22!%3F()",
+            converter.toURI("urn:epc:id:sgtin:0614141.812345.6789%2F%26%25%22!%3F()"));
+
     // SGTIN URI with SGTIN less than 14 digit
     sgtin = "https://id.gs1.org/01/1234567890123/21/9999";
     TestIdentifiers.toURN(sgtin, 6);
@@ -107,6 +111,11 @@ public class SGTINTest {
     assertEquals(
         "urn:epc:id:sgtin:0085859.689450.94304903",
         converter.toURN("https://lidl.de/food/frozen/01/60085859894507/21/94304903").get("asURN"));
+
+    // SGTIN URI with URL safe characters
+    assertEquals(
+            "urn:epc:id:sgtin:0614141.812345.6789%2F%26%25%22!%3F()",
+            converter.toURN("https://id.gs1.org/01/80614141123458/21/6789%2F%26%25%22!%3F()").get("asURN"));
 
     /** Class level GTIN identifiers testing with valid and invalid scenarios */
 

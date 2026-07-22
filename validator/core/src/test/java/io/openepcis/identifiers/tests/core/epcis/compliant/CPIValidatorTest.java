@@ -44,6 +44,7 @@ class CPIValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:cpi:123456.789012345.1111");
     ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:cpi:0614141.123ABC.123456789");
     ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:cpi:6282274.234748947/.94304");
+    ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:cpi:0614141.11111111111111-A%23%2F.1234");
   }
 
   // Test for invalid EPC URI identifiers.
@@ -91,6 +92,7 @@ class CPIValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://benelog.com/8010/123456789012/8011/1010", 10);
     ApplicationIdentifierValidationTestUtil.assertValid("https://benelog.com/8010/1234567890ANC/8011/124", 10);
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8010/4748374/23748#94//8011/94304", 7);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8010/061414111111111111111-A%23%2F/8011/1234", 7);
   }
 
   // Test for invalid class-level URN identifiers.

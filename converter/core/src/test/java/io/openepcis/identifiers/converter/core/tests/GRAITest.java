@@ -16,17 +16,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GRAITest {
+class GRAITest {
 
   private Converter converter;
 
   @BeforeEach
-  public void before() throws Exception {
+  void before() throws Exception {
     converter = new Converter();
   }
 
   @Test
-  public void testGRAI() throws ValidationException {
+  void testGRAI() throws ValidationException {
 
     // GRAI with invalid GS1 syntax
     String grai = "urn:epc:i:grai:1234567890.12.ABC";
@@ -53,18 +53,10 @@ public class GRAITest {
     TestIdentifiers.toDigitalLink(grai);
 
     // Valid GRAI
-    assertEquals(
-        "https://id.gs1.org/8003/12345678901284ABC",
-        converter.toURI("urn:epc:id:grai:1234567890.12.4ABC"));
-    assertEquals(
-        "https://id.gs1.org/8003/1234567890128!\"%&'()*+,-.",
-        converter.toURI("urn:epc:id:grai:123456789012..!\"%&'()*+,-."));
-    assertEquals(
-        "https://id.gs1.org/8003/43847837483703:;<>=?AZ_az",
-        converter.toURI("urn:epc:id:grai:438478.374837.3:;<>=?AZ_az"));
-    assertEquals(
-        "https://id.gs1.org/8003/12345678901284",
-        converter.toURI("urn:epc:id:grai:123456789012..4"));
+    assertEquals("https://id.gs1.org/8003/012345678901284ABC", converter.toURI("urn:epc:id:grai:1234567890.12.4ABC"));
+    assertEquals("https://id.gs1.org/8003/01234567890128!\"%&'()*+,-.", converter.toURI("urn:epc:id:grai:123456789012..!\"%&'()*+,-."));
+    assertEquals("https://id.gs1.org/8003/043847837483703:;<>=?AZ_az", converter.toURI("urn:epc:id:grai:438478.374837.3:;<>=?AZ_az"));
+    assertEquals("https://id.gs1.org/8003/012345678901284", converter.toURI("urn:epc:id:grai:123456789012..4"));
 
     // GRAI URI with invalid domain
     grai = "hps://id.gs1.org/8003/12345678901284ABC";
@@ -79,24 +71,12 @@ public class GRAITest {
     TestIdentifiers.toURN(grai, 13);
 
     // GRAI with valid URI
-    assertEquals(
-        "urn:epc:id:grai:123456.789012.4ABCD",
-        converter.toURN("https://id.gs1.org/8003/12345678901284ABCD", 6).get("asURN"));
-    assertEquals(
-        "urn:epc:id:grai:123456.789012.4ABCD",
-        converter.toURN("https://youtube.com.org/8003/12345678901284ABCD", 6).get("asURN"));
-    assertEquals(
-        "urn:epc:id:grai:1234567890.12.AABC",
-        converter.toURN("https://id.gs1.org/8003/1234567890128AABC", 10).get("asURN"));
-    assertEquals(
-        "urn:epc:id:grai:438478.374837.3:;<>=?AZ_az",
-        converter.toURN("https://id.gs1.org/8003/43847837483703:;<>=?AZ_az", 6).get("asURN"));
-    assertEquals(
-        "urn:epc:id:grai:123456789012..!\"%&'()*+,-.",
-        converter.toURN("https://id.gs1.org/8003/1234567890128!\"%&'()*+,-.", 12).get("asURN"));
-    assertEquals(
-        "urn:epc:id:grai:1234567890.12.4",
-        converter.toURN("https://id.gs1.org/8003/12345678901284").get("asURN"));
+    assertEquals("urn:epc:id:grai:123456.789012.4ABCD", converter.toURN("https://id.gs1.org/8003/012345678901284ABCD", 6).get("asURN"));
+    assertEquals("urn:epc:id:grai:123456.789012.4ABCD", converter.toURN("https://youtube.com.org/8003/012345678901284ABCD", 6).get("asURN"));
+    assertEquals("urn:epc:id:grai:1234567890.12.AABC", converter.toURN("https://id.gs1.org/8003/01234567890128AABC", 10).get("asURN"));
+    assertEquals("urn:epc:id:grai:438478.374837.3:;<>=?AZ_az", converter.toURN("https://id.gs1.org/8003/043847837483703:;<>=?AZ_az", 6).get("asURN"));
+    assertEquals("urn:epc:id:grai:123456789012..!\"%&'()*+,-.", converter.toURN("https://id.gs1.org/8003/01234567890128!\"%&'()*+,-.", 12).get("asURN"));
+    assertEquals("urn:epc:id:grai:1234567890.12.4", converter.toURN("https://id.gs1.org/8003/012345678901284").get("asURN"));
 
     /** GRAI Class identifier validations */
 
@@ -123,26 +103,14 @@ public class GRAITest {
     TestIdentifiers.toURNForClassLevelIdentifier(grai, 13);
 
     // Class level GRAI with valid identifiers
-    assertEquals(
-        "urn:epc:idpat:grai:1234567890.12.*",
-        converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890128", 10)
-            .get("asURN"));
-    assertEquals(
-        "urn:epc:idpat:grai:1234567890.12.*",
-        converter
-            .toURNForClassLevelIdentifier("https://id.gs1.org/8003/1234567890128")
-            .get("asURN"));
-    assertEquals(
-        "urn:epc:idpat:grai:784283728372..*",
-        converter
-            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283729", 12)
-            .get("asURN"));
-    assertEquals(
-        "urn:epc:idpat:grai:7842837.28372.*",
-        converter
-            .toURNForClassLevelIdentifier("https://id.example.com/8003/7842837283729")
-            .get("asURN"));
+    assertEquals("urn:epc:idpat:grai:1234567890.12.*",
+            converter.toURNForClassLevelIdentifier("https://id.gs1.org/8003/01234567890128", 10).get("asURN"));
+    assertEquals("urn:epc:idpat:grai:1234567890.12.*",
+            converter.toURNForClassLevelIdentifier("https://id.gs1.org/8003/01234567890128").get("asURN"));
+    assertEquals("urn:epc:idpat:grai:784283728372..*",
+            converter.toURNForClassLevelIdentifier("https://id.example.com/8003/07842837283729", 12).get("asURN"));
+    assertEquals("urn:epc:idpat:grai:7842837.28372.*",
+            converter.toURNForClassLevelIdentifier("https://id.example.com/8003/07842837283729").get("asURN"));
 
     // Conversion from URN to Web URI
 
@@ -167,14 +135,8 @@ public class GRAITest {
     TestIdentifiers.toURIForClassLevelIdentifier(grai);
 
     // Valid Class level GRAI to Web URI conversion
-    assertEquals(
-        "https://id.gs1.org/8003/4843847384737",
-        converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:4843847.38473.*"));
-    assertEquals(
-        "https://id.gs1.org/8003/8493394839844",
-        converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8493394.83984.*"));
-    assertEquals(
-        "https://id.gs1.org/8003/8439483984392",
-        converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8439483.98439.*"));
+    assertEquals("https://id.gs1.org/8003/04843847384737", converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:4843847.38473.*"));
+    assertEquals("https://id.gs1.org/8003/08493394839844", converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8493394.83984.*"));
+    assertEquals("https://id.gs1.org/8003/08439483984392", converter.toURIForClassLevelIdentifier("urn:epc:idpat:grai:8439483.98439.*"));
   }
 }

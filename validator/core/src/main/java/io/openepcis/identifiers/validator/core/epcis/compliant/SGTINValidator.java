@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.validator.core.epcis.compliant;
 
 import io.openepcis.core.exception.ValidationException;
+import io.openepcis.digitallink.utils.Gs1UriEscape;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
 import io.openepcis.identifiers.validator.core.Matcher;
@@ -219,6 +220,9 @@ public class SGTINValidator implements ApplicationIdentifierValidator {
         // Determine identifier type directly from the provided identifier
         boolean isUrn = identifier.contains(SGTIN_AI_URN_PREFIX);
 
+        // Normalize the identifiers by converting and escaping the special characters in the URN and URI identifiers
+        final String normalized = Gs1UriEscape.decode(identifier);
+
         // For URNs, class-level is determined by checking for CLASS_URN_PART.
         // For Digital Link URIs, extract the numeric segment after "/01/" and if its length is exactly
         // 14, it's class-level.
@@ -252,9 +256,9 @@ public class SGTINValidator implements ApplicationIdentifierValidator {
         // Iterate over the chosen matchers and validate the identifier.
         for (Matcher m : matchers) {
             if (isUrn) {
-                m.validate(identifier);
+                m.validate(normalized);
             } else {
-                m.validate(identifier, validationContext);
+                m.validate(normalized, validationContext);
             }
         }
 

@@ -56,6 +56,7 @@ class SGTINValidatorTest {
         ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:sgtin:234567.1890123./19:;<=>?AZ_az");
         ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:sgtin:387583.7784374.9302932");
         ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:sgtin:387583784374.7.9302932");
+        ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:sgtin:0614141.812345.6789%2F%26%25%22!%3F()");
     }
 
     // Test for invalid EPC URI identifiers.
@@ -73,6 +74,9 @@ class SGTINValidatorTest {
 
         // SGTIN URI with GCP more than 12 digits
         ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/01/12345678901231/21/9090", 13);
+
+        // Invalid SGTIN with URL safe characters in 14 digit GTIN
+        ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/01/8061414112345%2F/21/6789%2F%26%25%22!%3F()", 7);
     }
 
     // Test for valid EPC URI identifiers.
@@ -86,6 +90,7 @@ class SGTINValidatorTest {
         ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/01/12345678901231/21//19:;<=>?AZ_az", 6);
         ApplicationIdentifierValidationTestUtil.assertValid("https://lidl.de/food/frozen/01/59046539203740/21/9302932", 12);
         ApplicationIdentifierValidationTestUtil.assertValid("https://lidl.de/food/frozen/01/60085859894506/21/94304903", 10);
+        ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/01/80614141123458/21/6789%2F%26%25%22!%3F()", 7);
     }
 
     // Test for invalid class-level URN identifiers.

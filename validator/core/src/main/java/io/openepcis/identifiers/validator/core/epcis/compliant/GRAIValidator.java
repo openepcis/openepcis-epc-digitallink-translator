@@ -104,7 +104,7 @@ public class GRAIValidator implements ApplicationIdentifierValidator {
                         "Invalid GRAI, GRAI should start with Domain name (Ex: https://id.gs1.org/), Please check the URI: %s"));
         URI_MATCHERS.add(
                 new Matcher(
-                        "(http|https)://.*/8003/[0-9]{13}[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,16}$",
+                        "(http|https)://.*/8003/[0-9]{14}[\\x21-\\x22\\x25-\\x2F\\x30-\\x39\\x3A-\\x3F\\x41-\\x5A\\x5F\\x61-\\x7A]{1,16}$",
                         "Invalid GRAI, GRAI with Serial must be 14 digits followed by 1 to 16 alphanumeric characters (Ex: https://id.gs1.org/8003/0123456789012123ABCD), Please check the URI: %s") {
                     @Override
                     public void validate(final String uri, final int gcpLength) throws ValidationException {
@@ -137,8 +137,8 @@ public class GRAIValidator implements ApplicationIdentifierValidator {
                         "Invalid GRAI, GRAI should start with Domain name (Ex: https://id.gs1.org/), Please check the URI: %s"));
         URI_WITHOUT_SERIAL_MATCHERS.add(
                 new Matcher(
-                        "(http|https)://.*/8003/[0-9]{13}",
-                        "Invalid GRAI, GRAI must be 13 digits (Ex: https://id.gs1.org/8003/9524321890009), Please ®check the URI: %s") {
+                        "(http|https)://.*/8003/[0-9]{14}",
+                        "Invalid GRAI, GRAI must be 14 digits (Ex: https://id.gs1.org/8003/09524321890009), Please check the URI: %s") {
                     @Override
                     public void validate(final String uri, final int gcpLength) throws ValidationException {
                         super.validate(uri, gcpLength);
@@ -201,8 +201,8 @@ public class GRAIValidator implements ApplicationIdentifierValidator {
             // Extract the segment after "/8003/" and check if it's exactly 13 characters long.
             final String value = identifier.substring(idx + GRAI_AI_URI_PREFIX.length());
 
-            // If the extracted numeric part is exactly 13 digits, it is class-level.
-            isClassLevel = (value.length() == 13);
+            // If the extracted numeric part is exactly 14 digits (leading 0 + 13), it is class-level.
+            isClassLevel = (value.length() == 14);
         }
 
         // Select the correct matcher list.

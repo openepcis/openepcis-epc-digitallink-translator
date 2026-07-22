@@ -82,7 +82,8 @@ public class CheckDigitValidator {
      * Validate GRAI (AI "/8003/", 12-digit + check digit).
      */
     public static void validateGRAI(final String uri) throws ValidationException {
-        validate(uri, GRAI_AI_URI_PREFIX, 12, "GRAI");
+        // AI 8003 value includes the mandatory leading 0
+        validate(uri, GRAI_AI_URI_PREFIX, 13, "GRAI");
     }
 
     /**

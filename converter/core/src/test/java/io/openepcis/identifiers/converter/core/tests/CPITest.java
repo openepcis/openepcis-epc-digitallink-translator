@@ -27,7 +27,7 @@ public class CPITest {
   }
 
   @Test
-  public void CPI() throws ValidationException {
+  void CPI() throws ValidationException {
 
     // CPI without serial
     String cpi = "urn:epc:id:cpi:1234567890.1234";
@@ -54,6 +54,7 @@ public class CPITest {
     assertEquals("https://id.gs1.org/8010/123456789012345/8011/1111", converter.toURI("urn:epc:id:cpi:123456.789012345.1111"));
     assertEquals("https://id.gs1.org/8010/0614141123ABC/8011/123456789", converter.toURI("urn:epc:id:cpi:0614141.123ABC.123456789"));
     assertEquals("https://id.gs1.org/8010/6282274234748947//8011/94304", converter.toURI("urn:epc:id:cpi:6282274.234748947/.94304"));
+    assertEquals("https://id.gs1.org/8010/061414111111111111111-A%23%2F/8011/1234", converter.toURI("urn:epc:id:cpi:0614141.11111111111111-A%23%2F.1234"));
 
     // Invlaid characters in CPI URI
     cpi = "https://id.gs1.org/8010/12345678901234A/8011/1111";
@@ -90,6 +91,9 @@ public class CPITest {
     assertEquals(
         "urn:epc:id:cpi:30056867.890#1294-5A.4893",
         converter.toURN("https://id.gs1.org/8010/30056867890#1294-5A/8011/4893").get("asURN"));
+    assertEquals(
+            "urn:epc:id:cpi:0614141.11111111111111-A%23%2F.1234",
+            converter.toURN("https://id.gs1.org/8010/061414111111111111111-A%23%2F/8011/1234").get("asURN"));
 
     /** Conversion of class level identifiers */
 

@@ -60,10 +60,12 @@ public class GRAIConverter implements Converter {
       grai = grai.substring(0, 12) + ConverterUtil.checksum(grai.substring(0, 12));
 
       if (isClassLevel) {
-        return GS1_IDENTIFIER_DOMAIN + GRAI_AI_URI_PREFIX + grai;
+        // "0" = mandatory leading digit of AI 8003 (N14)
+        return GS1_IDENTIFIER_DOMAIN + GRAI_AI_URI_PREFIX + "0" + grai;
       } else {
         final String serialNumber = urn.substring(urn.indexOf(".", urn.indexOf(".") + 1) + 1);
-        return GS1_IDENTIFIER_DOMAIN + GRAI_AI_URI_PREFIX + grai + serialNumber;
+        // GRAI: value is 0 + GCP + assetType + checkDigit + serial
+        return GS1_IDENTIFIER_DOMAIN + GRAI_AI_URI_PREFIX + "0" + grai + serialNumber;
       }
     } catch (Exception exception) {
       throw new ValidationException(
@@ -81,11 +83,11 @@ public class GRAIConverter implements Converter {
       // Call the Validator class for the GRAI to check the DLURI syntax
       GRAI_VALIDATOR.validate(dlURI, gcpLength);
 
-      // If the URI passed the validation then convert the URI to URN
+      // If the URI passed the validation then convert the URI to URN, +1 skips the mandatory leading 0 and 20 = prefix(6) + 14-digit value
       final String grai =
           dlURI.substring(
-              dlURI.indexOf(GRAI_AI_URI_PREFIX) + GRAI_AI_URI_PREFIX.length(),
-              dlURI.indexOf(GRAI_AI_URI_PREFIX) + 19);
+              dlURI.indexOf(GRAI_AI_URI_PREFIX) + GRAI_AI_URI_PREFIX.length() + 1,
+              dlURI.indexOf(GRAI_AI_URI_PREFIX) + 20);
       return getEPCMap(dlURI, gcpLength, grai);
     } catch (Exception exception) {
       throw new ValidationException(
@@ -110,7 +112,7 @@ public class GRAIConverter implements Converter {
       if (isClassLevel) {
         asURN = "urn:epc:idpat:grai:" + grai.substring(0, gcpLength) + "." + graiSubString + ".*";
       } else {
-        serial = dlURI.substring(dlURI.indexOf(GRAI_AI_URI_PREFIX) + 19);
+        serial = dlURI.substring(dlURI.indexOf(GRAI_AI_URI_PREFIX) + 20);
         final String urnBase =
             "urn:epc:id:grai:" + grai.substring(0, gcpLength) + "." + graiSubString;
         asURN = StringUtils.isNotBlank(serial) ? urnBase + "." + serial : urnBase;
@@ -152,12 +154,14 @@ public class GRAIConverter implements Converter {
       String grai;
 
       if (isClassLevel) {
-        grai = dlURI.substring(dlURI.indexOf(GRAI_AI_URI_PREFIX) + GRAI_AI_URI_PREFIX.length());
+        // +1 skips leading 0
+        grai = dlURI.substring(dlURI.indexOf(GRAI_AI_URI_PREFIX) + GRAI_AI_URI_PREFIX.length() + 1);
       } else {
+        // +1 skips leading 0, 20 = prefix(6) + 14-digit value
         grai =
             dlURI.substring(
-                dlURI.indexOf(GRAI_AI_URI_PREFIX) + GRAI_AI_URI_PREFIX.length(),
-                dlURI.indexOf(GRAI_AI_URI_PREFIX) + 19);
+                dlURI.indexOf(GRAI_AI_URI_PREFIX) + GRAI_AI_URI_PREFIX.length() + 1,
+                dlURI.indexOf(GRAI_AI_URI_PREFIX) + 20);
       }
 
       gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, grai, GRAI_AI_URI_PREFIX);

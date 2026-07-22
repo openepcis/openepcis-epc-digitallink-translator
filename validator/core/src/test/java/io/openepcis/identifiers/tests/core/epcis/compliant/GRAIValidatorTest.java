@@ -67,10 +67,10 @@ class GRAIValidatorTest {
   @Test
   @Order(4)
   void validGRAIUriTest() throws ValidationException {
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/12345678901234ABCD", 6);
-    ApplicationIdentifierValidationTestUtil.assertValid("https://youtube.com.org/8003/12345678901234ABCD", 6);
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/43847837483703:;<>=?AZ_az", 6);
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/1234567890128!\"%&'()*+,-.", 12);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/012345678901234ABCD", 6);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://youtube.com.org/8003/012345678901234ABCD", 6);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/043847837483703:;<>=?AZ_az", 6);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/01234567890128!\"%&'()*+,-.", 12);
   }
 
   @Test
@@ -119,9 +119,9 @@ class GRAIValidatorTest {
   @Test
   @Order(8)
   void validClassUriTest() throws ValidationException {
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/4843847384737", 7);
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/8493394839844", 7);
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/8439483984392", 7);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/04843847384737", 7);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/08493394839844", 7);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/08439483984392", 7);
   }
 
   @Test
@@ -130,13 +130,13 @@ class GRAIValidatorTest {
     final ValidationContext validationContext = ValidationContext.builder().validateCheckDigit(true).gcpLength(10).build();
 
     // GRAI with valid check digit
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/4843847384737", validationContext);
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/8493394839844", validationContext);
-    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/8439483984392", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/04843847384737", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/08493394839844", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/8003/08439483984392", validationContext);
 
     // GRAI with invalid check digit
-    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/8003/4843847384739", validationContext);
-    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/8003/8493394839840", validationContext);
-    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/8003/8439483984391", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/8003/04843847384739", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/8003/08493394839840", validationContext);
+    ApplicationIdentifierValidationTestUtil.assertInvalid("https://id.gs1.org/8003/08439483984391", validationContext);
   }
 }
