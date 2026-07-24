@@ -11,6 +11,7 @@
 package io.openepcis.identifiers.validator.core.epcis.compliant;
 
 import io.openepcis.core.exception.ValidationException;
+import io.openepcis.digitallink.utils.Gs1UriEscape;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.core.ApplicationIdentifierValidator;
 import io.openepcis.identifiers.validator.core.Matcher;
@@ -90,9 +91,7 @@ public class UPUIValidator implements ApplicationIdentifierValidator {
                         // Check the provided GCP Length is between 6 and 12 digits
                         if (!(gcpLength >= 6 && gcpLength <= 12)) {
                             throw new ValidationException(
-                                    String.format(
-                                            "Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s",
-                                            gcpLength));
+                                    String.format("Invalid GCP Length, GCP Length should be between 6-12 digits. Please check the provided GCP Length: %s", gcpLength));
                         }
                     }
                 });
@@ -116,10 +115,13 @@ public class UPUIValidator implements ApplicationIdentifierValidator {
     }
 
     @Override
-    public boolean validate(final String identifier, final ValidationContext validationContext)
-            throws ValidationException {
+    public boolean validate(final String identifier, final ValidationContext validationContext) throws ValidationException {
         // Determine identifier type directly from the provided identifier
         boolean isUrn = identifier.contains(UPUI_AI_URN_PREFIX);
+
+        // Normalize the identifiers by converting and escaping the special characters in the URN and URI identifiers
+        // Validation-only; the converter still returns the original (encoded) value
+        final String normalized = Gs1UriEscape.decode(identifier);
 
         // Select the correct matcher list.
         List<Matcher> matchers;
@@ -130,8 +132,7 @@ public class UPUIValidator implements ApplicationIdentifierValidator {
         } else {
             // For Digital Link URIs, ensure a valid GCP length is provided.
             if (validationContext.getGcpLength() == null) {
-                throw new ValidationException(
-                        "Digital Link URI detected. Use validate(String, int) to validate Digital Link URIs with a GCP length.");
+                throw new ValidationException("Digital Link URI detected. Use validate(String, int) to validate Digital Link URIs with a GCP length.");
             }
             matchers = URI_MATCHERS;
         }
@@ -139,9 +140,9 @@ public class UPUIValidator implements ApplicationIdentifierValidator {
         // Iterate over the chosen matchers and validate the identifier.
         for (Matcher m : matchers) {
             if (isUrn) {
-                m.validate(identifier);
+                m.validate(normalized);
             } else {
-                m.validate(identifier, validationContext.getGcpLength());
+                m.validate(normalized, validationContext.getGcpLength());
             }
         }
 

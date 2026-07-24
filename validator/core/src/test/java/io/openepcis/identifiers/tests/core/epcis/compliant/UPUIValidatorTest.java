@@ -41,6 +41,10 @@ class UPUIValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:upui:857458457485.7.!\"%&'()*+,-./");
     ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az");
     ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:upui:857834.7838473.8398439");
+
+    // UPUI with percent encoded characters
+    ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:upui:1234567.098765.51qIgY)%3C%26Jp3*j7'SDB");
+    ApplicationIdentifierValidationTestUtil.assertValid("urn:epc:id:upui:1234567.098765.51qIgY)%253C%2526Jp3*j7'SDB%253C%252");
   }
 
   // Test for invalid EPC URI identifiers.
@@ -65,5 +69,9 @@ class UPUIValidatorTest {
     ApplicationIdentifierValidationTestUtil.assertValid("https://maps.google.com.in.de.00/12/01/12345678901231/235/1111ANC", 10);
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/01/78574584574857/235/!\"%&'()*+,-./", 12);
     ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az", 6);
+
+    // UPUI URI with percent encoded characters
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/01/78578348384737/235/51qIgY)%3C%26Jp3*j7'SDB", 6);
+    ApplicationIdentifierValidationTestUtil.assertValid("https://id.gs1.org/01/57875874837438/235/51qIgY)%253C%2526Jp3*j7'SDB%253C%252", 6);
   }
 }

@@ -48,4 +48,33 @@ public class Gs1UriEscape {
         return out;
     }
 
+    // This method is intentionally not used as this violates GS1 TDS identifiers encoding rules: Table I.3.1-1 but kept here for reference and future use if needed.
+    // decode ANY %XX triplet to its character, for length-accurate validation. This will decode any %XX triplet
+    public static String decodeAll(final String value) {
+        if (StringUtils.isBlank(value) || !value.contains("%")) {
+            return value;
+        }
+
+        final StringBuilder out = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            final char c = value.charAt(i);
+
+            // A valid triplet needs '%' plus two hex digits following it
+            if (c == '%' && i + 2 <= value.length() && isHex(value.charAt(i + 1)) && isHex(value.charAt(i + 2))) {
+                out.append((char) Integer.parseInt(value.substring(i + 1, i + 3), 16)); // decoded char
+                i += 2; // skip the next two characters
+            } else {
+                out.append(c);
+            }
+        }
+
+        return out.toString();
+    }
+
+    // True for a hexadecimal digit (both cases), used to recognise a %XX triplet
+    private static boolean isHex(final char c) {
+        return (c >= '0' && c <= '9') ||
+                (c >= 'A' && c <= 'F') ||
+                (c >= 'a' && c <= 'f');
+    }
 }

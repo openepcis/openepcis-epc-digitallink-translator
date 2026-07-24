@@ -16,17 +16,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UPUITest {
+class UPUITest {
 
   private Converter converter;
 
   @BeforeEach
-  public void before() throws Exception {
+  void before() throws Exception {
     converter = new Converter();
   }
 
   @Test
-  public void UPUI() throws ValidationException {
+  void UPUI() throws ValidationException {
 
     // UPUI with less than 14 digit
     String upui = "urn:epc:id:upui:234567.189012.1111";
@@ -45,18 +45,16 @@ public class UPUITest {
     TestIdentifiers.toDigitalLink(upui);
 
     // Valid UPUI
-    assertEquals(
-        "https://id.gs1.org/01/12345678901231/235/1111ANC",
-        converter.toURI("urn:epc:id:upui:234567.1890123.1111ANC"));
-    assertEquals(
-        "https://id.gs1.org/01/78574584574857/235/!\"%&'()*+,-./",
-        converter.toURI("urn:epc:id:upui:857458457485.7.!\"%&'()*+,-./"));
-    assertEquals(
-        "https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az",
-        converter.toURI("urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az"));
-    assertEquals(
-        "https://id.gs1.org/01/78578348384737/235/8398439",
-        converter.toURI("urn:epc:id:upui:857834.7838473.8398439"));
+    assertEquals("https://id.gs1.org/01/12345678901231/235/1111ANC", converter.toURI("urn:epc:id:upui:234567.1890123.1111ANC"));
+    assertEquals("https://id.gs1.org/01/78574584574857/235/!\"%&'()*+,-./", converter.toURI("urn:epc:id:upui:857458457485.7.!\"%&'()*+,-./"));
+    assertEquals("https://id.gs1.org/01/57875874837438/235/19:;<=>?AZ_az", converter.toURI("urn:epc:id:upui:787587.5483743.19:;<=>?AZ_az"));
+    assertEquals("https://id.gs1.org/01/78578348384737/235/8398439", converter.toURI("urn:epc:id:upui:857834.7838473.8398439"));
+
+    // UPUI with percent encoded characters
+    assertEquals("https://id.gs1.org/01/78578348384737/235/51qIgY)%3C%26Jp3*j7'SDB",
+            converter.toURI("urn:epc:id:upui:8578348.738473.51qIgY)%3C%26Jp3*j7'SDB"));
+    assertEquals("https://id.gs1.org/01/57875874837438/235/51qIgY)%253C%2526Jp3*j7'SDB%253C%252",
+            converter.toURI("urn:epc:id:upui:7875874.583743.51qIgY)%253C%2526Jp3*j7'SDB%253C%252"));
 
     // UPUI URI with less than 14 digits
     upui = "https://id.gs1.org/01/1234567890123/235/1111ANC";
@@ -97,5 +95,13 @@ public class UPUITest {
     assertEquals(
         "urn:epc:id:upui:351152.9532635.0230293",
         converter.toURN("https://id.gs1.org/01/93511525326356/235/0230293").get("asURN"));
+
+    // UPUI with percent encoded characters
+    assertEquals(
+            "urn:epc:id:upui:8578348.738473.51qIgY)%3C%26Jp3*j7'SDB",
+            converter.toURN("https://id.gs1.org/01/78578348384737/235/51qIgY)%3C%26Jp3*j7'SDB", 7).get("asURN"));
+    assertEquals(
+            "urn:epc:id:upui:7875874.583743.51qIgY)%253C%2526Jp3*j7'SDB%253C%252",
+            converter.toURN("https://id.gs1.org/01/57875874837438/235/51qIgY)%253C%2526Jp3*j7'SDB%253C%252", 7).get("asURN"));
   }
 }
