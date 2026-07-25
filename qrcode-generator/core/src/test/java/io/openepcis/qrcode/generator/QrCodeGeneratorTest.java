@@ -314,6 +314,24 @@ public class QrCodeGeneratorTest {
         assertDoesNotThrow(() -> barCodeGenerator.generateQRCode(minimalConfig), "QR code generation should not throw an exception");
     }
 
+    // Every advertised output format must yield a non-empty, decodable image. JPEG/BMP writers
+    // reject the ARGB canvas (ImageIO.write returns false), which used to produce 0-byte output.
+    @Test
+    public void allAdvertisedMimeTypesProduceNonEmptyImagesTest() throws IOException {
+        for (final String mimeType : new String[]{"image/png", "image/jpeg", "image/gif", "image/bmp", "image/tiff"}) {
+            final QrCodeConfig config = QrCodeConfig.builder()
+                    .data("https://id.gs1.org/01/09520123456788")
+                    .mimeType(mimeType)
+                    .build();
+
+            final byte[] bytes = barCodeGenerator.generateQRCode(config);
+            org.junit.jupiter.api.Assertions.assertTrue(bytes.length > 0, "Zero-byte image for " + mimeType);
+            org.junit.jupiter.api.Assertions.assertNotNull(
+                    javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(bytes)),
+                    "Unreadable image for " + mimeType);
+        }
+    }
+
     // Ensure not to use the default OpenEPCIS config from extensions module to generate the QR Code
     @Test
     public void openEPCISNameQrCodeTest() throws IOException {

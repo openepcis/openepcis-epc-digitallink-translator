@@ -53,6 +53,10 @@ public class QrCodeGenerationParams {
     @Parameter(hidden = true, description = API_COMPRESSED_PARAMETER_DESCRIPTION, schema = @Schema(type = SchemaType.BOOLEAN, defaultValue = "false"))
     public boolean compressedQuery;
 
+    @HeaderParam("If-None-Match")
+    @Parameter(hidden = true, description = "Conditional request: returns 304 Not Modified when the ETag still matches.", schema = @Schema(type = SchemaType.STRING))
+    public String ifNoneMatchHeader;
+
     public String getDesignPresetHeader() {
         return StringUtils.isNotBlank(designPresetHeader) ? designPresetHeader : designPresetQuery;
     }
@@ -63,5 +67,9 @@ public class QrCodeGenerationParams {
 
     public boolean getCompressedHeader() {
         return compressedHeader || compressedQuery;
+    }
+
+    public String getIfNoneMatchHeader() {
+        return ifNoneMatchHeader;
     }
 }

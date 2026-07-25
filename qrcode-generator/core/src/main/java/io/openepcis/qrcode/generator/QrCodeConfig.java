@@ -11,7 +11,9 @@
 package io.openepcis.qrcode.generator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.openepcis.qrcode.generator.util.ColorDeserializer;
 import io.openepcis.qrcode.generator.util.ColorSerializer;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
@@ -86,6 +88,7 @@ public final class QrCodeConfig {
     @Builder.Default
     @Schema(description = "Background color of the entire QR image.", examples = "{\"red\": 255, \"green\": 255, \"blue\": 255, \"alpha\": 255}", defaultValue = "White")
     @JsonSerialize(using = ColorSerializer.class)
+    @JsonDeserialize(using = ColorDeserializer.class)
     private Color backgroundColor = Color.WHITE;
 
     /**
@@ -94,6 +97,7 @@ public final class QrCodeConfig {
     @Builder.Default
     @Schema(description = "The start color of the module gradient.", examples = "{\"red\": 0, \"green\": 0, \"blue\": 0, \"alpha\": 255}", defaultValue = "Black")
     @JsonSerialize(using = ColorSerializer.class)
+    @JsonDeserialize(using = ColorDeserializer.class)
     private Color gradientStart = Color.BLACK;
 
     /**
@@ -102,6 +106,7 @@ public final class QrCodeConfig {
     @Builder.Default
     @Schema(description = "The end color of the module gradient.", examples = "{\"red\": 0, \"green\": 0, \"blue\": 0, \"alpha\": 255}", defaultValue = "Black")
     @JsonSerialize(using = ColorSerializer.class)
+    @JsonDeserialize(using = ColorDeserializer.class)
     private Color gradientEnd = Color.BLACK;
 
     /**
@@ -117,6 +122,7 @@ public final class QrCodeConfig {
     @Builder.Default
     @Schema(description = "Fallback color for the finder patterns.", examples = "{\"red\": 0, \"green\": 0, \"blue\": 0, \"alpha\": 255}", defaultValue = "Black")
     @JsonSerialize(using = ColorSerializer.class)
+    @JsonDeserialize(using = ColorDeserializer.class)
     private Color finderColor = Color.BLACK;
 
     /**
@@ -153,6 +159,7 @@ public final class QrCodeConfig {
     @Builder.Default
     @Schema(description = "The color of the shadow, can have alpha.", examples = "{\"red\": 0, \"green\": 0, \"blue\": 0, \"alpha\": 50}", defaultValue = "new Color(0, 0, 0, 50)")
     @JsonSerialize(using = ColorSerializer.class)
+    @JsonDeserialize(using = ColorDeserializer.class)
     private Color shadowColor = new Color(0, 0, 0, 50);
 
     /**
@@ -190,6 +197,7 @@ public final class QrCodeConfig {
     @Builder.Default
     @Schema(description = "The company font color.", type = SchemaType.OBJECT, examples = "{\"red\": 0, \"green\": 0, \"blue\": 0, \"alpha\": 255}", defaultValue = "Black")
     @JsonSerialize(using = ColorSerializer.class)
+    @JsonDeserialize(using = ColorDeserializer.class)
     private Color displayLabelFontColor = Color.BLACK;
 
     /**

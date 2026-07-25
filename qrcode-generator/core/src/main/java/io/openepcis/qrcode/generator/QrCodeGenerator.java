@@ -19,7 +19,6 @@ import io.openepcis.digitallink.toolkit.GS1DigitalLinkCompression;
 import io.openepcis.digitallink.utils.GS1DigitalLinkParser;
 import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import io.openepcis.qrcode.generator.spi.service.QrCodeConfigService;
-import io.quarkus.logging.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -223,8 +222,25 @@ public class QrCodeGenerator {
         try {
             final String formatName = StringUtils.substringAfter(mimeType, "/");
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, formatName, byteArrayOutputStream);
-            //ImageIO.write(image, formatName, new File("qrCode" + ".png"));
+            boolean written = ImageIO.write(image, formatName, byteArrayOutputStream);
+
+            if (!written) {
+                // Writers for formats without alpha support (JPEG, BMP) reject ARGB images and
+                // return false without output: flatten onto an opaque canvas and retry rather
+                // than responding with a zero-byte body.
+                final BufferedImage opaque = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+                final Graphics2D opaqueGraphics = opaque.createGraphics();
+                opaqueGraphics.setColor(Color.WHITE);
+                opaqueGraphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+                opaqueGraphics.drawImage(image, 0, 0, null);
+                opaqueGraphics.dispose();
+                written = ImageIO.write(opaque, formatName, byteArrayOutputStream);
+            }
+
+            if (!written) {
+                throw new QrCodeGeneratorException("No ImageIO writer available for mime type: " + mimeType);
+            }
+
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             log.error("Error writing image to bytes: " + e.getMessage(), e);
@@ -466,20 +482,28 @@ public class QrCodeGenerator {
                           final int w, final int h) {
         try {
             BufferedImage logo;
-            Log.debug("reading logo from " + logoResourceUrl);
+            log.debug("reading logo from {}", logoResourceUrl);
             final URI logoUri = new URI(logoResourceUrl);
 
             if (!logoUri.isAbsolute()) {
-                Log.debug("use logo from absolute file path");
-                // Treat as a relative file path. Adjust the base directory as needed.
+                log.debug("use logo from relative file path or classpath");
+                // Treat as a relative file path, falling back to a classpath resource. The
+                // fallback keeps design presets round-trippable: /qr/design-presets lists the
+                // bundled logos by bare file name (e.g. "openepcis-logo.png").
                 final File logoFile = new File(logoResourceUrl);
-                if (!logoFile.exists()) {
-                    log.error("Relative logo file not found: " + logoFile.getAbsolutePath());
-                    throw new QrCodeGeneratorException("Relative logo file not found: " + logoFile.getAbsolutePath());
+                if (logoFile.exists()) {
+                    logo = ImageIO.read(logoFile);
+                } else {
+                    final String resourcePath = logoResourceUrl.startsWith("/") ? logoResourceUrl.substring(1) : logoResourceUrl;
+                    final URL classpathLogo = QrCodeGenerator.class.getClassLoader().getResource(resourcePath);
+                    if (classpathLogo == null) {
+                        log.error("Logo not found as file or classpath resource: " + logoResourceUrl);
+                        throw new QrCodeGeneratorException("Logo not found as file or classpath resource: " + logoResourceUrl);
+                    }
+                    logo = ImageIO.read(classpathLogo);
                 }
-                logo = ImageIO.read(logoFile);
             } else {
-                Log.debug("use logo from url");
+                log.debug("use logo from url");
                 // Absolute URI; convert to URL
                 final URL logoUrl = logoUri.toURL();
                 if ("file".equalsIgnoreCase(logoUrl.getProtocol())) {

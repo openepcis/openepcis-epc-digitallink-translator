@@ -10,28 +10,76 @@
  */
 package io.openepcis.qrcode.generator.resource.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.openepcis.qrcode.generator.QrCodeConfig;
 import io.openepcis.qrcode.generator.QrCodeGenerator;
 import io.openepcis.qrcode.generator.exception.QrCodeGeneratorException;
 import io.openepcis.qrcode.generator.resource.params.QrCodeGenerationParams;
 import io.openepcis.qrcode.generator.spi.service.QrCodeConfigService;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.imageio.ImageIO;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @ApplicationScoped
 public class QrCodeService {
 
+    // ImageIO writer MIME types never change at runtime; avoid scanning the registry per request.
+    private static final Set<String> SUPPORTED_MIME_TYPES = Set.copyOf(Arrays.asList(ImageIO.getWriterMIMETypes()));
+
     @Inject
     QrCodeGenerator qrCodeGenerator;
+
+    @Inject
+    ObjectMapper objectMapper;
+
+    /**
+     * QR code images are deterministic for a given config, so identical requests (same Digital
+     * Link, preset, size, flags) are served from an in-memory cache instead of re-rasterizing.
+     */
+    @ConfigProperty(name = "openepcis.qr.cache.enabled", defaultValue = "true")
+    boolean cacheEnabled;
+
+    // Upper bound on cached image bytes (default 32 MiB; a 400px PNG is ~16 KiB -> ~2000 entries).
+    @ConfigProperty(name = "openepcis.qr.cache.maximum-weight-bytes", defaultValue = "33554432")
+    long cacheMaximumWeightBytes;
+
+    // Entries expire so design-preset changes (logos, colors) are picked up without a restart.
+    @ConfigProperty(name = "openepcis.qr.cache.expire-after-write", defaultValue = "PT6H")
+    Duration cacheExpireAfterWrite;
+
+    // max-age (seconds) for the Cache-Control header on successful responses.
+    @ConfigProperty(name = "openepcis.qr.http-cache-max-age-seconds", defaultValue = "3600")
+    int httpCacheMaxAgeSeconds;
+
+    private Cache<String, byte[]> qrCodeCache;
+
+    @PostConstruct
+    void initCache() {
+        qrCodeCache = Caffeine.newBuilder()
+                .maximumWeight(cacheMaximumWeightBytes)
+                .<String, byte[]>weigher((key, value) -> key.length() + value.length)
+                .expireAfterWrite(cacheExpireAfterWrite)
+                .build();
+    }
 
     public Uni<Response> generate(final QrCodeGenerationParams params, final QrCodeConfig qrCodeConfig) {
         // normalize accept header
@@ -43,15 +91,41 @@ public class QrCodeService {
         qrCodeConfig.setAddHri(params.getHriHeader());
         qrCodeConfig.setCompressDigitalLink(params.getCompressedHeader());
 
-        // Generate and wrap in a Response
-        return Uni.createFrom().item(() -> {
-            try {
-                final byte[] qrBytes = qrCodeGenerator.generateQRCode(qrCodeConfig);
-                return Response.ok(qrBytes, qrCodeConfig.getMimeType()).build();
-            } catch (Exception e) {
-                throw new QrCodeGeneratorException("QR generation failed: " + e.getMessage(), e);
+        // The config now fully determines the output image, so it is the cache key.
+        final String cacheKey = cacheKey(qrCodeConfig);
+        final String etag = '"' + cacheKey + '"';
+
+        // Conditional request: the client already holds the image.
+        if (etag.equals(params.getIfNoneMatchHeader())) {
+            return Uni.createFrom().item(withCacheHeaders(Response.notModified(), etag).build());
+        }
+
+        if (cacheEnabled) {
+            final byte[] cached = qrCodeCache.getIfPresent(cacheKey);
+            if (cached != null) {
+                return Uni.createFrom().item(
+                        withCacheHeaders(Response.ok(cached, qrCodeConfig.getMimeType()), etag)
+                                .header("X-Cache", "HIT")
+                                .build());
             }
-        });
+        }
+
+        // Generate on a worker thread: rasterization (and a possible logo fetch) is CPU/IO-heavy
+        // and must not run on the Vert.x event loop the reactive endpoint subscribes on.
+        return Uni.createFrom().item(() -> {
+                    try {
+                        final byte[] qrBytes = qrCodeGenerator.generateQRCode(qrCodeConfig);
+                        if (cacheEnabled && qrBytes != null && qrBytes.length > 0) {
+                            qrCodeCache.put(cacheKey, qrBytes);
+                        }
+                        return withCacheHeaders(Response.ok(qrBytes, qrCodeConfig.getMimeType()), etag)
+                                .header("X-Cache", "MISS")
+                                .build();
+                    } catch (Exception e) {
+                        throw new QrCodeGeneratorException("QR generation failed: " + e.getMessage(), e);
+                    }
+                })
+                .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
 
     public Uni<java.util.List<QrCodeConfig>> listPresets() {
@@ -78,11 +152,41 @@ public class QrCodeService {
     }
 
     private String validateMime(final String accept) {
-        return Arrays.stream(ImageIO.getWriterMIMETypes())
-                .filter(m -> m.equalsIgnoreCase(accept))
+        // ACCEPT_HEADER advertises image/jpg, but ImageIO only registers image/jpeg.
+        final String normalized = "image/jpg".equalsIgnoreCase(StringUtils.trim(accept)) ? "image/jpeg" : accept;
+        return SUPPORTED_MIME_TYPES.stream()
+                .filter(m -> m.equalsIgnoreCase(normalized))
                 .findFirst()
                 .orElse("image/png");
     }
 
+    /**
+     * SHA-256 over the Jackson serialization of the fully-populated config. Field order is the
+     * declaration order, and Colors go through {@code ColorSerializer}, so the key is stable for
+     * equal configs. Doubles as the ETag value.
+     */
+    private String cacheKey(final QrCodeConfig config) {
+        try {
+            final byte[] json = objectMapper.writeValueAsBytes(config);
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return HexFormat.of().formatHex(digest.digest(json));
+        } catch (Exception e) {
+            throw new QrCodeGeneratorException("Failed to compute QR cache key: " + e.getMessage(), e);
+        }
+    }
 
+    private Response.ResponseBuilder withCacheHeaders(final Response.ResponseBuilder builder, final String etag) {
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setMaxAge(httpCacheMaxAgeSeconds);
+        return builder.cacheControl(cacheControl).header("ETag", etag);
+    }
+
+    // package-private test hook
+    Cache<String, byte[]> cache() {
+        return qrCodeCache;
+    }
+
+    String cacheKeyFor(final QrCodeConfig config) {
+        return cacheKey(config);
+    }
 }

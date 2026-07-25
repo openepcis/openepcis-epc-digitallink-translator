@@ -32,19 +32,32 @@ public class GS1QrCodeConfigHandler implements QrCodeConfigProvider {
     public QrCodeConfig customizeConfig(QrCodeConfig qrCodeConfig) {
         final String logoResourceUrl = GS1QrCodeConfigHandler.class.getClassLoader().getResource("gs1-logo.png").toString();
 
+        final Color gs1Blue = new Color(0, 44, 108, 255);
+        final Color gs1Orange = new Color(242, 99, 52, 255);
+
+        // Theme values only fill fields the caller left at their builder defaults, so every
+        // QrCodeConfig option stays usable together with the preset. (Reference comparison with
+        // the Color constants is intentional: Jackson-provided values are always new instances.)
         return QrCodeConfig.builder()
                 .data(qrCodeConfig.getData())
                 .designPreset("GS1")
                 .mimeType(qrCodeConfig.getMimeType() != null ? qrCodeConfig.getMimeType() : "image/png")
-                .qrWidth(600)
-                .qrHeight(600)
-                .margin(2)
-                .backgroundColor(new Color(242, 99, 52, 255))
-                .gradientStart(new Color(0, 44, 108, 255))
-                .gradientEnd(new Color(0, 44, 108, 255))
-                .finderColor(new Color(0, 44, 108, 255))
+                .qrWidth(qrCodeConfig.getQrWidth() != 400 ? qrCodeConfig.getQrWidth() : 600)
+                .qrHeight(qrCodeConfig.getQrHeight() != 400 ? qrCodeConfig.getQrHeight() : 600)
+                .margin(qrCodeConfig.getMargin() != 4 ? qrCodeConfig.getMargin() : 2)
+                .backgroundColor(qrCodeConfig.getBackgroundColor() != Color.WHITE ? qrCodeConfig.getBackgroundColor() : gs1Orange)
+                .gradientStart(qrCodeConfig.getGradientStart() != Color.BLACK ? qrCodeConfig.getGradientStart() : gs1Blue)
+                .gradientEnd(qrCodeConfig.getGradientEnd() != Color.BLACK ? qrCodeConfig.getGradientEnd() : gs1Blue)
+                .finderColor(qrCodeConfig.getFinderColor() != Color.BLACK ? qrCodeConfig.getFinderColor() : gs1Blue)
                 .useRadialGradient(true)
                 .drawFinderGradient(true)
+                .moduleShape(qrCodeConfig.getModuleShape())
+                .moduleName(qrCodeConfig.getModuleName())
+                .drawShadows(qrCodeConfig.isDrawShadows())
+                .shadowColor(qrCodeConfig.getShadowColor())
+                .shadowOffsetPct(qrCodeConfig.getShadowOffsetPct())
+                .displayLabel(qrCodeConfig.getDisplayLabel())
+                .displayLabelFontColor(qrCodeConfig.getDisplayLabelFontColor())
                 .logoResourceUrl(logoResourceUrl)
                 .logoScale(0.16f)
                 .addHri(qrCodeConfig.isAddHri())

@@ -5,6 +5,7 @@ import io.openepcis.qrcode.generator.spi.QrCodeConfigProvider;
 import io.openepcis.qrcode.generator.spi.impl.CoreQrCodeConfigProvider;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -17,11 +18,15 @@ public class QrCodeConfigService {
     private final List<QrCodeConfigProvider> serviceProviders;
 
     private QrCodeConfigService(final List<QrCodeConfigProvider> serviceProviders) {
-        this.serviceProviders = serviceProviders == null || serviceProviders.isEmpty() ? new ArrayList<>() : serviceProviders;
+        this.serviceProviders = serviceProviders == null || serviceProviders.isEmpty() ? new ArrayList<>() : new ArrayList<>(serviceProviders);
 
         if (this.serviceProviders.isEmpty()) {
             this.serviceProviders.add(new CoreQrCodeConfigProvider());
         }
+
+        // CoreQrCodeConfigProvider.supports() matches every preset name, so it must be consulted
+        // last — otherwise ServiceLoader classpath order decides whether design presets apply.
+        this.serviceProviders.sort(Comparator.comparingInt(p -> p instanceof CoreQrCodeConfigProvider ? 1 : 0));
     }
 
     public static synchronized QrCodeConfigService newInstance() {

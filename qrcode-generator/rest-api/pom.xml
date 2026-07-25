@@ -34,6 +34,12 @@
             <artifactId>openepcis-qrcode-generator-extensions</artifactId>
         </dependency>
 
+        <!-- In-memory QR image cache (version managed via the Quarkus BOM) -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
         <!-- Quarkus Service related dependency-->
         <dependency>
             <groupId>io.quarkus</groupId>
