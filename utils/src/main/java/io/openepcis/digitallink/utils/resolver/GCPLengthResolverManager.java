@@ -8,11 +8,7 @@
  * benelog GmbH & Co. KG reserves all rights not expressly granted herein,
  * including the right to sell licenses for using this work.
  */
-
 package io.openepcis.digitallink.utils.resolver;
-
-
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,9 +17,8 @@ import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-@Slf4j
 public class GCPLengthResolverManager {
-
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GCPLengthResolverManager.class);
     private static GCPLengthResolverManager gcpLengthResolverManager;
     private final List<GCPLengthResolver> resolvers;
 
@@ -41,7 +36,6 @@ public class GCPLengthResolverManager {
     public static synchronized GCPLengthResolverManager newInstance() {
         return new GCPLengthResolverManager(ServiceLoader.load(GCPLengthResolver.class).stream().map(ServiceLoader.Provider::get).toList());
     }
-
 
     /**
      * Try each registered resolver in priority order. Returns the first successful (non-empty) result.
@@ -78,15 +72,12 @@ public class GCPLengthResolverManager {
                     return CompletableFuture.completedFuture(result);
                 }
                 try {
-                    return resolver.resolveAsync(identifier)
-                            .exceptionally(e -> {
-                                log.warn("GCPLengthResolver {} failed async for identifier {}: {}",
-                                        resolver.getClass().getSimpleName(), identifier, e.getMessage());
-                                return OptionalInt.empty();
-                            });
+                    return resolver.resolveAsync(identifier).exceptionally(e -> {
+                        log.warn("GCPLengthResolver {} failed async for identifier {}: {}", resolver.getClass().getSimpleName(), identifier, e.getMessage());
+                        return OptionalInt.empty();
+                    });
                 } catch (Exception e) {
-                    log.warn("GCPLengthResolver {} failed for identifier {}: {}",
-                            resolver.getClass().getSimpleName(), identifier, e.getMessage());
+                    log.warn("GCPLengthResolver {} failed for identifier {}: {}", resolver.getClass().getSimpleName(), identifier, e.getMessage());
                     return CompletableFuture.completedFuture(OptionalInt.empty());
                 }
             });

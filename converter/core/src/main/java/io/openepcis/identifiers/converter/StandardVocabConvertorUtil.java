@@ -13,14 +13,9 @@ package io.openepcis.identifiers.converter;
 import io.openepcis.core.exception.UnsupportedGS1IdentifierException;
 import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.converter.constants.StandardVocabElements;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StandardVocabConvertorUtil {
-
-  private static final String ERROR_MESSAGE =
-      "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s";
+  private static final String ERROR_MESSAGE = "Provided URN format does not match with any of the GS1 identifiers format.%nPlease check the URN: %s";
 
   public static String toURI(String urn) throws ValidationException {
     for (StandardVocabElements element : StandardVocabElements.values()) {
@@ -44,9 +39,9 @@ public class StandardVocabConvertorUtil {
     if (dlURI.startsWith("http://") || dlURI.startsWith("https://")) {
       throw new UnsupportedGS1IdentifierException(String.format(ERROR_MESSAGE, dlURI));
     }
-    throw new ValidationException(
-        String.format(
-            "Provided URI format does not match with any of the GS1 identifiers format.%nPlease check the URI: %s",
-            dlURI));
+    throw new ValidationException(String.format("Provided URI format does not match with any of the GS1 identifiers format.%nPlease check the URI: %s", dlURI));
+  }
+
+  private StandardVocabConvertorUtil() {
   }
 }

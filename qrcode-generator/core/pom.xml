@@ -37,10 +37,6 @@
         </dependency>
 
         <!-- For Getter/Setter and other methods -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
 
         <!-- ZXing core + javase for QR code generation and processing -->
         <dependency>

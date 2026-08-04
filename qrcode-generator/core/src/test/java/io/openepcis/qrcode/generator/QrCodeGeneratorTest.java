@@ -10,7 +10,6 @@
  */
 package io.openepcis.qrcode.generator;
 
-import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.io.IOException;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-@Slf4j
 public class QrCodeGeneratorTest {
 
     private QrCodeGenerator barCodeGenerator;

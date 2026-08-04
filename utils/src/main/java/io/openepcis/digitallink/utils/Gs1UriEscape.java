@@ -10,27 +10,14 @@
  */
 package io.openepcis.digitallink.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.Map;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Gs1UriEscape {
-
     // EPC TDS "URI Form" triplets that each stand for ONE logical character. It contains both:
     //   CSET-82 (X): " % & / < > ?   ->  %22 %25 %26 %2F %3C %3E %3F
     //   CPI    (Y): # /             ->  %23 %2F
-    private static final Map<String, String> ESCAPES = Map.of(
-            "%22", "\"",
-            "%23", "#",
-            "%25", "%",
-            "%26", "&",
-            "%2F", "/",
-            "%3C", "<",
-            "%3E", ">",
-            "%3F", "?");
+    private static final Map<String, String> ESCAPES = Map.of("%22", "\"", "%23", "#", "%25", "%", "%26", "&", "%2F", "/", "%3C", "<", "%3E", ">", "%3F", "?");
 
     // Collapse escape triplets to logical characters
     public static String decode(final String value) {
@@ -38,12 +25,10 @@ public class Gs1UriEscape {
         if (StringUtils.isBlank(value) || !value.contains("%")) {
             return value;
         }
-
         String out = value;
         for (Map.Entry<String, String> e : ESCAPES.entrySet()) {
             // replace both the upper-case and lower-case versions of the escape triplet
-            out = out.replace(e.getKey(), e.getValue())
-                    .replace(e.getKey().toLowerCase(), e.getValue());
+            out = out.replace(e.getKey(), e.getValue()).replace(e.getKey().toLowerCase(), e.getValue());
         }
         return out;
     }
@@ -54,11 +39,9 @@ public class Gs1UriEscape {
         if (StringUtils.isBlank(value) || !value.contains("%")) {
             return value;
         }
-
         final StringBuilder out = new StringBuilder(value.length());
         for (int i = 0; i < value.length(); i++) {
             final char c = value.charAt(i);
-
             // A valid triplet needs '%' plus two hex digits following it
             if (c == '%' && i + 2 <= value.length() && isHex(value.charAt(i + 1)) && isHex(value.charAt(i + 2))) {
                 out.append((char) Integer.parseInt(value.substring(i + 1, i + 3), 16)); // decoded char
@@ -67,14 +50,14 @@ public class Gs1UriEscape {
                 out.append(c);
             }
         }
-
         return out.toString();
     }
 
     // True for a hexadecimal digit (both cases), used to recognise a %XX triplet
     private static boolean isHex(final char c) {
-        return (c >= '0' && c <= '9') ||
-                (c >= 'A' && c <= 'F') ||
-                (c >= 'a' && c <= 'f');
+        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+    }
+
+    private Gs1UriEscape() {
     }
 }
