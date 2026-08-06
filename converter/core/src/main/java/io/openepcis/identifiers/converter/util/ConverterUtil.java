@@ -78,22 +78,16 @@ public class ConverterUtil {
     return converter.shortNameReplacer(gs1Identifier);
   }
 
+  /**
+   * The GS1 mod-10 check digit for a body of digits.
+   *
+   * <p>Delegates to {@link io.openepcis.digitallink.utils.Gs1CheckDigit}, which is the
+   * single home for this arithmetic. This method used to carry its own copy; it was
+   * verified to agree with the other two implementations before being pointed there,
+   * so the behaviour is unchanged.
+   */
   public static char checksum(final String s) {
-    int odd = 0;
-    int even = 0;
-    int index;
-    for (index = s.length() - 1; index >= 0; --index) {
-      if ((s.length() - index) % 2 == 0) {
-        even += Character.digit(s.charAt(index), 10);
-      } else {
-        odd += Character.digit(s.charAt(index), 10);
-      }
-    }
-    index = 10 - (even + 3 * odd) % 10;
-    if (index >= 10) {
-      index = 0;
-    }
-    return Character.forDigit(index, 10);
+    return io.openepcis.digitallink.utils.Gs1CheckDigit.of(s);
   }
 
   private ConverterUtil() {

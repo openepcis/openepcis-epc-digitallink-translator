@@ -30,6 +30,14 @@
             <artifactId>openepcis-digital-link-validator-core</artifactId>
         </dependency>
 
+        <!-- Gs1CheckDigit: the mod-10 arithmetic, kept in one place rather than
+             spelled out again in ConverterUtil. utils is the lowest module in the
+             toolkit and depends on nothing here, so this adds no cycle. -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-digital-link-utils</artifactId>
+        </dependency>
+
         <!-- For Getter/Setter and other methods -->
 
         <!-- Jackson related dependencies for JSON modifications -->

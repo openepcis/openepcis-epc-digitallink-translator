@@ -185,21 +185,14 @@ public class GS1DigitalLinkCompression {
      * @return The calculated check digit.
      */
     public int calculateCheckDigit(String ai, String gs1IDValue) {
-        int counter = 0;
-        int total = 0;
-        int l;
         if (!aiCheckDigitPosition.containsKey(ai)) return -1; // Not applicable
 
+        // What is specific to this method is WHERE the check digit sits — that
+        // varies per AI. The arithmetic itself does not, so it comes from
+        // Gs1CheckDigit rather than being spelled out a second time here.
         String pos = aiCheckDigitPosition.get(ai);
-        l = "L".equals(pos) ? gs1IDValue.length() : Integer.parseInt(pos);
-
-        for (int i = l - 2; i >= 0; i--) {
-            int d = Character.getNumericValue(gs1IDValue.charAt(i));
-            int multiplier = ((counter % 2) == 0) ? 3 : 1;
-            total += (d * multiplier);
-            counter++;
-        }
-        return (10 - (total % 10)) % 10;
+        int l = "L".equals(pos) ? gs1IDValue.length() : Integer.parseInt(pos);
+        return io.openepcis.digitallink.utils.Gs1CheckDigit.of(gs1IDValue.substring(0, l - 1)) - '0';
     }
 
     /**
