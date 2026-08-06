@@ -15,15 +15,15 @@ import io.openepcis.digitallink.toolkit.GS1DigitalLinkNormalizer;
 import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.validator.ValidationContext;
 import io.openepcis.identifiers.validator.ValidatorFactory;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 
 /**
  * Utility for asserting validity or invalidity of GS1 application identifiers.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApplicationIdentifierValidationTestUtil {
+
+  private ApplicationIdentifierValidationTestUtil() {
+  }
 
     // Create a shared ValidatorFactory instance for all tests.
     private static final ValidatorFactory VALIDATOR_FACTORY = new ValidatorFactory(new GS1DigitalLinkNormalizer(), DefaultGCPLengthProvider.getInstance());

@@ -1,43 +1,31 @@
 package io.openepcis.identifiers.validator.core.util;
 
 import io.openepcis.core.exception.ValidationException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.krysalis.barcode4j.impl.upcean.UPCEANLogicImpl;
-
 import static io.openepcis.constants.ApplicationIdentifierConstants.*;
 
 /**
  * Utility for validating GS1 AI check digits in Digital Link URIs.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CheckDigitValidator {
-
     private static void validate(final String uri, final String aiPrefix, final int payloadLength, final String elementName) {
         final int idx = uri.indexOf(aiPrefix);
-
         // Check if the prefix is present in the URI
         if (idx < 0) {
             throw new ValidationException(elementName + " prefix not found in: " + uri);
         }
-
         final int start = idx + aiPrefix.length();
         final int end = start + payloadLength + 1;
-
         // Check if the segment is long enough
         if (end > uri.length()) {
             throw new ValidationException(elementName + " segment too short (" + payloadLength + "+1 digits) in: " + uri);
         }
-
-
         final String segment = uri.substring(start, end);
         final String data = segment.substring(0, payloadLength);
         final char checksumChar = UPCEANLogicImpl.calcChecksum(data);
-
         // compute the expected and actual check digit
         final int expected = Character.getNumericValue(checksumChar);
         final int actual = segment.charAt(payloadLength) - '0';
-
         if (expected != actual) {
             throw new ValidationException(String.format("%s has invalid check digit: expected %d but found %d in %s", elementName, expected, actual, uri));
         }
@@ -107,4 +95,6 @@ public class CheckDigitValidator {
         validate(uri, GCN_AI_URI_PREFIX, 12, "GCN");
     }
 
+    private CheckDigitValidator() {
+    }
 }

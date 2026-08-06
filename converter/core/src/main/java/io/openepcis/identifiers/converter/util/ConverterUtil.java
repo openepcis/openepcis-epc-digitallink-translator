@@ -12,15 +12,9 @@ package io.openepcis.identifiers.converter.util;
 
 import io.openepcis.core.exception.ValidationException;
 import io.openepcis.identifiers.converter.Converter;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.util.Map;
-
 // Class to use the Converter method in a static way.
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConverterUtil {
-
   private static final Converter converter;
 
   static {
@@ -33,8 +27,7 @@ public class ConverterUtil {
   }
 
   // Check through each class and find DL URI belongs to which particular class
-  public static Map<String, String> toURN(final String dlURI, final int gcpLength)
-      throws ValidationException {
+  public static Map<String, String> toURN(final String dlURI, final int gcpLength) throws ValidationException {
     return converter.toURN(dlURI, gcpLength);
   }
 
@@ -49,14 +42,12 @@ public class ConverterUtil {
   }
 
   // Check through each class and find DL URI belongs to which particular class
-  public static Map<String, String> toURNForClassLevelIdentifier(final String dlURI)
-      throws ValidationException {
+  public static Map<String, String> toURNForClassLevelIdentifier(final String dlURI) throws ValidationException {
     return converter.toURNForClassLevelIdentifier(dlURI);
   }
 
   // Check through each class and find DL URI belongs to which particular class
-  public static Map<String, String> toURNForClassLevelIdentifier(
-      final String dlURI, final int gcpLength) throws ValidationException {
+  public static Map<String, String> toURNForClassLevelIdentifier(final String dlURI, final int gcpLength) throws ValidationException {
     return converter.toURNForClassLevelIdentifier(dlURI, gcpLength);
   }
 
@@ -78,8 +69,7 @@ public class ConverterUtil {
   }
 
   // Convert bareString values to CBV formatted vocabularies. Used during JSON -> XML conversion.
-  public static String toCbvVocabulary(
-      final String bareString, final String fieldName, final String format) {
+  public static String toCbvVocabulary(final String bareString, final String fieldName, final String format) {
     return converter.toCbvVocabulary(bareString, fieldName, format);
   }
 
@@ -104,5 +94,8 @@ public class ConverterUtil {
       index = 0;
     }
     return Character.forDigit(index, 10);
+  }
+
+  private ConverterUtil() {
   }
 }

@@ -10,14 +10,13 @@
  */
 package io.openepcis.identifiers.converter.constants;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConstantDigitalLinkTranslatorInfo {
   public static final String AS_CAPTURED = "asCaptured";
   public static final String CANONICAL_DL = "canonicalDL";
   public static final String AS_URN = "asURN";
   public static final String SERIAL = "serial";
   public static final String GCP_LENGTH = " GCP Length : ";
+
+  private ConstantDigitalLinkTranslatorInfo() {
+  }
 }

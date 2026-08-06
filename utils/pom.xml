@@ -35,18 +35,9 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
-        <!-- For Getter/Setter and other methods -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
         <dependency>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <groupId>jakarta.enterprise</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>lombok</artifactId>
-            <groupId>org.projectlombok</groupId>
         </dependency>
         <dependency>
             <artifactId>junit-jupiter-api</artifactId>

@@ -1,9 +1,5 @@
 package io.openepcis.qrcode.generator.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class QrCodeConstants {
     public static final String[] ACCEPT_HEADER = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/bmp", "image/tiff"};
     public static final String API_TAG_NAME = "QR Code Generator";
@@ -21,7 +17,7 @@ public class QrCodeConstants {
     public static final String GS1_IDENTIFIER_DOMAIN = "https://id.gs1.org/";
     public static final String GET_API_PATH_PARAMETER_DESCRIPTION = "Identifiers to be encoded in generated QR code.";
     public static final String API_ACCEPT_PARAMETER_DESCRIPTION = "Accept header to control image media type (defaults to image/png if not provided).";
-    public static final String API_DESIGN_PRESET_PARAMETER_DESCRIPTION = "Specifies the pre-defined design preset associated with the QR code configuration. This may trigger custom defaults if set to a value like 'openepcis, gs1, etc.'.";
+    public static final String API_DESIGN_PRESET_PARAMETER_DESCRIPTION = "Specifies the pre-defined design preset associated with the QR code configuration. This may trigger custom defaults if set to a value like \'openepcis, gs1, etc.\'.";
     public static final String API_HRI_PARAMETER_DESCRIPTION = "Specifies whether the Human Readable Interpretation (HRI) should be included in the QR code. Defaults to false if not specified.";
     public static final String API_COMPRESSED_PARAMETER_DESCRIPTION = "Specifies whether DL URL should be compressed before generating QR Code. Defaults to false if not specified and if enabled cannot generate HRI.";
     public static final String OPTIONS_API_OPERATION_SUMMARY = "Retrieve available QR code generation options";
@@ -32,4 +28,7 @@ public class QrCodeConstants {
     public static final String OPTIONS_API_RESPONSE_ERROR_DESCRIPTION = "Internal server error retrieving the options.";
     public static final String GET_DESIGN_PRESET_API_OPERATION_SUMMARY = "List all available QR code design presets";
     public static final String GET_DESIGN_PRESET_API_OPERATION_DESCRIPTION = "Fetches a list of predefined QR code design presets (`QrCodeConfig`). Each preset includes default styling attributes such as dimensions, gradient colors, background, and logo positioning, which can be applied when generating QR codes.";
+
+    private QrCodeConstants() {
+    }
 }

@@ -31,10 +31,6 @@
         </dependency>
 
         <!-- For Getter/Setter and other methods -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
 
         <!-- Jackson related dependencies for JSON modifications -->
         <dependency>
