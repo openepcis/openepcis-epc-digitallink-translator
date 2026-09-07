@@ -21,6 +21,8 @@ import io.openepcis.identifiers.validator.core.epcis.noncompliant.GTINCPVValidat
 import io.openepcis.identifiers.validator.core.epcis.noncompliant.GTINLotSerialExpiryValidator;
 import io.openepcis.identifiers.validator.core.epcis.noncompliant.GTINWeightAmountBestBeforeValidator;
 import io.openepcis.identifiers.validator.core.epcis.noncompliant.GTINWeightValidator;
+import io.openepcis.identifiers.validator.core.epcis.noncompliant.GMNValidator;
+import io.openepcis.identifiers.validator.core.epcis.noncompliant.PartyRoleGlnValidator;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,6 +56,10 @@ public class ValidatorFactory {
         this.validators.add(new GTINLotSerialExpiryValidator());
         this.validators.add(new GTINCPVValidator());
         this.validators.add(new GTINWeightValidator());
+        // Party-role GLNs (410, 411, 412, 413, 415): Digital-Link-only, no EPCIS URN form
+        this.validators.add(new PartyRoleGlnValidator());
+        // GMN (8013): Digital-Link-only, check character pair instead of a check digit
+        this.validators.add(new GMNValidator());
 
         // Initialize all well known EPC validator implementations which are compliant with EPCIS
         this.validators.add(new CPIValidator());
