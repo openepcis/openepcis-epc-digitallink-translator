@@ -53,6 +53,15 @@ public class CheckDigitValidator {
     }
 
     /**
+     * Validate a party-role GLN (AI /410/, /411/, /412/, /413/, /415/ — 12-digit + check
+     * digit). Same GLN structure as {@link #validateGLN} and {@link #validatePGLN}; only
+     * the AI differs, so {@code elementName} carries the role for the error message.
+     */
+    public static void validatePartyRoleGln(final String uri, final String aiPrefix, final String elementName) throws ValidationException {
+        validate(uri, aiPrefix, 12, elementName);
+    }
+
+    /**
      * Validate SSCC (AI /00/, 17-digit + check digit).
      */
     public static void validateSSCC(final String uri) throws ValidationException {
