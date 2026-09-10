@@ -14,6 +14,7 @@ import io.openepcis.core.exception.ValidationException;
 import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.converter.constants.ConstantDigitalLinkTranslatorInfo;
 import io.openepcis.identifiers.converter.util.ConverterUtil;
+import io.openepcis.identifiers.converter.util.DigitalLinkQualifiers;
 import io.openepcis.identifiers.validator.core.epcis.compliant.LGTINValidator;
 
 import java.util.HashMap;
@@ -62,19 +63,44 @@ public class LGTINConverter implements Converter {
     }
   }
 
+  /**
+   * The Digital Link as the LGTIN rules read it: a serial segment ({@code /21/{ser}})
+   * is cut out first. At CLASS level the URI names the lot; the serial belongs to one
+   * instance of that lot and has no place in an LGTIN. The plain form is what the
+   * validator and the parsing were written for — before this, the lot value was read
+   * up to the END of the URI and swallowed {@code /21/{ser}} into the lot. The captured
+   * URI, the lot and the dropped serial are put back into the result by
+   * {@link #withCaptured}.
+   */
+  private static String normalized(final String dlURI) {
+    return DigitalLinkQualifiers.withoutSegment(dlURI, SGTIN_AI_URI_SERIAL_PREFIX);
+  }
+
+  /** Report the URI as captured, the lot under its own key and a dropped serial. */
+  private static Map<String, String> withCaptured(final Map<String, String> result, final String dlURI) {
+    result.put(ConstantDigitalLinkTranslatorInfo.AS_CAPTURED, dlURI);
+    result.put(ConstantDigitalLinkTranslatorInfo.LOT, result.get(ConstantDigitalLinkTranslatorInfo.SERIAL));
+    final String serial = DigitalLinkQualifiers.segmentValue(dlURI, SGTIN_AI_URI_SERIAL_PREFIX);
+    if (serial != null) {
+      result.put(ConstantDigitalLinkTranslatorInfo.SERIAL_NUMBER, serial);
+    }
+    return result;
+  }
+
   // Convert the provided Digital Link URI to respective URN of LGTIN Type
   public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
       throws ValidationException {
     try {
+      final String plain = normalized(dlURI);
       // Call the Validator class for the LGTIN to check the DLURI syntax
-      LGTIN_VALIDATOR.validate(dlURI, gcpLength);
+      LGTIN_VALIDATOR.validate(plain, gcpLength);
 
       // If the URI passed the validation then convert the URI to URN
       final String lgtin =
-          dlURI.substring(
-              dlURI.indexOf(LGTIN_AI_URI_PREFIX) + LGTIN_AI_URI_PREFIX.length(),
-              dlURI.indexOf(LGTIN_AI_BATCH_LOT_PREFIX));
-      return getEPCMap(dlURI, gcpLength, lgtin);
+          plain.substring(
+              plain.indexOf(LGTIN_AI_URI_PREFIX) + LGTIN_AI_URI_PREFIX.length(),
+              plain.indexOf(LGTIN_AI_BATCH_LOT_PREFIX));
+      return withCaptured(getEPCMap(plain, gcpLength, lgtin), dlURI);
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of LGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
@@ -136,17 +162,18 @@ public class LGTINConverter implements Converter {
   public Map<String, String> convertToURN(String dlURI) throws ValidationException {
     int gcpLength = 0;
     try {
+      final String plain = normalized(dlURI);
       final String lgtin =
-          dlURI.substring(
-              dlURI.indexOf(LGTIN_AI_URI_PREFIX) + LGTIN_AI_URI_PREFIX.length(),
-              dlURI.indexOf(LGTIN_AI_BATCH_LOT_PREFIX));
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, lgtin, LGTIN_AI_URI_PREFIX);
+          plain.substring(
+              plain.indexOf(LGTIN_AI_URI_PREFIX) + LGTIN_AI_URI_PREFIX.length(),
+              plain.indexOf(LGTIN_AI_BATCH_LOT_PREFIX));
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(plain, lgtin, LGTIN_AI_URI_PREFIX);
 
       // Call the Validator class for the LGTIN to check the DLURI syntax
-      LGTIN_VALIDATOR.validate(dlURI, gcpLength);
+      LGTIN_VALIDATOR.validate(plain, gcpLength);
 
       // If the URI passed the validation then convert the URI to URN
-      return getEPCMap(dlURI, gcpLength, lgtin);
+      return withCaptured(getEPCMap(plain, gcpLength, lgtin), dlURI);
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of LGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
@@ -160,15 +187,16 @@ public class LGTINConverter implements Converter {
 
   @Override
   public CompletionStage<Map<String, String>> convertToURNAsync(final String dlURI) {
-    final String lgtin = dlURI.substring(
-        dlURI.indexOf(LGTIN_AI_URI_PREFIX) + LGTIN_AI_URI_PREFIX.length(),
-        dlURI.indexOf(LGTIN_AI_BATCH_LOT_PREFIX));
+    final String plain = normalized(dlURI);
+    final String lgtin = plain.substring(
+        plain.indexOf(LGTIN_AI_URI_PREFIX) + LGTIN_AI_URI_PREFIX.length(),
+        plain.indexOf(LGTIN_AI_BATCH_LOT_PREFIX));
 
     return DefaultGCPLengthProvider.getInstance()
-        .getGcpLengthAsync(dlURI, lgtin, LGTIN_AI_URI_PREFIX)
+        .getGcpLengthAsync(plain, lgtin, LGTIN_AI_URI_PREFIX)
         .thenApply(gcpLength -> {
-          LGTIN_VALIDATOR.validate(dlURI, gcpLength);
-          return getEPCMap(dlURI, gcpLength, lgtin);
+          LGTIN_VALIDATOR.validate(plain, gcpLength);
+          return withCaptured(getEPCMap(plain, gcpLength, lgtin), dlURI);
         });
   }
 }

@@ -21,6 +21,25 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+/**
+ * Digital Link ⇄ EPC URN, instance level ({@link #toURN}) and class level
+ * ({@link #toURNForClassLevelIdentifier}).
+ *
+ * <p><b>A GTIN Digital Link that names BOTH a lot and a serial</b>
+ * ({@code /01/{gtin}/10/{lot}/21/{ser}}, valid per the URI syntax) has no single EPC:
+ * EPCIS knows the item as an SGTIN (GTIN + serial, {@code urn:epc:id:sgtin}) and the
+ * batch as an LGTIN (GTIN + lot, {@code urn:epc:class:lgtin}). The level the caller
+ * asks for decides, deliberately and in both directions:
+ * <ul>
+ *   <li>instance level → SGTIN. The lot is the instance's ATTRIBUTE and is reported as
+ *       {@code lot} in the result, the canonical Digital Link is the serial form
+ *       {@code /01/{gtin}/21/{ser}};</li>
+ *   <li>class level → LGTIN. The serial is dropped from the EPC and reported as
+ *       {@code serialNumber}, the canonical Digital Link is {@code /01/{gtin}/10/{lot}}.</li>
+ * </ul>
+ * This mirrors the resolver's rule that the identity of an instance is GTIN + serial
+ * and the lot an attribute of it (GS1 TDS: the serial is unique within the GTIN).
+ */
 public class Converter {
 
   private static final String INVALID_URI_MESSAGE =
