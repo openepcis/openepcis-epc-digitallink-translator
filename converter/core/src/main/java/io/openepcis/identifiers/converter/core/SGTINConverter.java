@@ -14,6 +14,7 @@ import io.openepcis.core.exception.ValidationException;
 import io.openepcis.digitallink.utils.DefaultGCPLengthProvider;
 import io.openepcis.identifiers.converter.constants.ConstantDigitalLinkTranslatorInfo;
 import io.openepcis.identifiers.converter.util.ConverterUtil;
+import io.openepcis.identifiers.converter.util.DigitalLinkQualifiers;
 import io.openepcis.identifiers.validator.core.epcis.compliant.SGTINValidator;
 
 import java.util.HashMap;
@@ -81,25 +82,54 @@ public class SGTINConverter implements Converter {
     }
   }
 
+  /**
+   * The Digital Link as the SGTIN rules read it: at instance level a lot segment
+   * ({@code /10/{lot}}) is cut out first, because an SGTIN is GTIN + serial and the
+   * lot is an attribute of the instance, not part of its identity. The plain form is
+   * what the validator and the parsing below were written for; the captured URI and
+   * the lot are put back into the result by {@link #withCaptured}.
+   */
+  private String normalized(final String dlURI) {
+    // The consumer product variant (/22/) never reaches an EPC: cut it out at both
+    // levels. At instance level the lot goes too — an SGTIN is GTIN + serial.
+    final String withoutCpv = DigitalLinkQualifiers.withoutSegment(dlURI, CPV_AI_URI_PREFIX);
+    return isClassLevel ? withoutCpv : DigitalLinkQualifiers.withoutSegment(withoutCpv, LGTIN_AI_BATCH_LOT_PREFIX);
+  }
+
+  /** Report the URI as captured and its lot and variant attributes on a result built from the normalized form. */
+  private static Map<String, String> withCaptured(final Map<String, String> result, final String dlURI) {
+    result.put(ConstantDigitalLinkTranslatorInfo.AS_CAPTURED, dlURI);
+    final String lot = DigitalLinkQualifiers.segmentValue(dlURI, LGTIN_AI_BATCH_LOT_PREFIX);
+    if (lot != null) {
+      result.put(ConstantDigitalLinkTranslatorInfo.LOT, lot);
+    }
+    final String cpv = DigitalLinkQualifiers.segmentValue(dlURI, CPV_AI_URI_PREFIX);
+    if (cpv != null) {
+      result.put(ConstantDigitalLinkTranslatorInfo.CPV, cpv);
+    }
+    return result;
+  }
+
   // Convert to SGTIN URN
   public Map<String, String> convertToURN(final String dlURI, final int gcpLength)
       throws ValidationException {
     try {
+      final String plain = normalized(dlURI);
       String sgtin;
 
       // Validate the URN to check if they match the SGTIN syntax
       if (isClassLevel) {
-        sgtin = dlURI.substring(dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length());
-        SGTIN_VALIDATOR.validate(dlURI, gcpLength);
+        sgtin = plain.substring(plain.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length());
+        SGTIN_VALIDATOR.validate(plain, gcpLength);
       } else {
         sgtin =
-            dlURI.substring(
-                dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length(),
-                dlURI.indexOf(SGTIN_AI_URI_SERIAL_PREFIX));
-        SGTIN_VALIDATOR.validate(dlURI, gcpLength);
+            plain.substring(
+                plain.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length(),
+                plain.indexOf(SGTIN_AI_URI_SERIAL_PREFIX));
+        SGTIN_VALIDATOR.validate(plain, gcpLength);
       }
 
-      return getEPCMap(dlURI, gcpLength, sgtin);
+      return withCaptured(getEPCMap(plain, gcpLength, sgtin), dlURI);
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of SGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
@@ -166,22 +196,23 @@ public class SGTINConverter implements Converter {
     int gcpLength = 0;
 
     try {
+      final String plain = normalized(dlURI);
       String sgtin;
       if (isClassLevel) {
-        sgtin = dlURI.substring(dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length());
+        sgtin = plain.substring(plain.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length());
       } else {
         sgtin =
-            dlURI.substring(
-                dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length(),
-                dlURI.indexOf(SGTIN_AI_URI_SERIAL_PREFIX));
+            plain.substring(
+                plain.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length(),
+                plain.indexOf(SGTIN_AI_URI_SERIAL_PREFIX));
       }
 
-      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(dlURI, sgtin, SGTIN_AI_URI_PREFIX);
+      gcpLength = DefaultGCPLengthProvider.getInstance().getGcpLength(plain, sgtin, SGTIN_AI_URI_PREFIX);
 
       // Validate the URN to check if they match the SGTIN syntax
-      SGTIN_VALIDATOR.validate(dlURI, gcpLength);
+      SGTIN_VALIDATOR.validate(plain, gcpLength);
 
-      return getEPCMap(dlURI, gcpLength, sgtin);
+      return withCaptured(getEPCMap(plain, gcpLength, sgtin), dlURI);
     } catch (Exception exception) {
       throw new ValidationException(
           "Exception occurred during the conversion of SGTIN identifier from digital link WebURI to URN,\nPlease check the provided identifier : "
@@ -195,20 +226,21 @@ public class SGTINConverter implements Converter {
 
   @Override
   public CompletionStage<Map<String, String>> convertToURNAsync(final String dlURI) {
+    final String plain = normalized(dlURI);
     final String sgtin;
     if (isClassLevel) {
-      sgtin = dlURI.substring(dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length());
+      sgtin = plain.substring(plain.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length());
     } else {
-      sgtin = dlURI.substring(
-          dlURI.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length(),
-          dlURI.indexOf(SGTIN_AI_URI_SERIAL_PREFIX));
+      sgtin = plain.substring(
+          plain.indexOf(SGTIN_AI_URI_PREFIX) + SGTIN_AI_URI_PREFIX.length(),
+          plain.indexOf(SGTIN_AI_URI_SERIAL_PREFIX));
     }
 
     return DefaultGCPLengthProvider.getInstance()
-        .getGcpLengthAsync(dlURI, sgtin, SGTIN_AI_URI_PREFIX)
+        .getGcpLengthAsync(plain, sgtin, SGTIN_AI_URI_PREFIX)
         .thenApply(gcpLength -> {
-          SGTIN_VALIDATOR.validate(dlURI, gcpLength);
-          return getEPCMap(dlURI, gcpLength, sgtin);
+          SGTIN_VALIDATOR.validate(plain, gcpLength);
+          return withCaptured(getEPCMap(plain, gcpLength, sgtin), dlURI);
         });
   }
 }
