@@ -28,6 +28,13 @@ public class ConstantDigitalLinkTranslatorInfo {
    * that the URI named an instance.
    */
   public static final String SERIAL_NUMBER = "serialNumber";
+  /**
+   * The consumer product variant (AI 22) a Digital Link carried. No EPC carries a CPV
+   * (CBV 2.0 §8): it is cut out of the URI before the SGTIN/LGTIN rules read it and
+   * reported here as the attribute {@code gs1:consumerProductVariant} of the class or
+   * instance the EPC names.
+   */
+  public static final String CPV = "cpv";
   public static final String GCP_LENGTH = " GCP Length : ";
 
   private ConstantDigitalLinkTranslatorInfo() {

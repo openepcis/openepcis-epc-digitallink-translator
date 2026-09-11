@@ -103,4 +103,35 @@ class LotSerialDigitalLinkTest {
     assertEquals("SER-1", DigitalLinkQualifiers.segmentValue(BOTH + "?17=261231", "/21/"));
     assertEquals("https://id.gs1.org/01/09521000020115/21/SER-1?17=261231", DigitalLinkQualifiers.withoutSegment(BOTH + "?17=261231", "/10/"));
   }
+  @Test
+  @DisplayName("A variant (/22/) never reaches the EPC; it is reported as an attribute at every level")
+  void variantIsAnAttributeAtEveryLevel() {
+    // GS1 order 22, 10, 21 (URI syntax §4.9); CBV 2.0 §8 knows no EPC with a CPV.
+    final String full = "https://id.gs1.org/01/09521000020115/22/2A/10/LOT-A/21/SER-1";
+    final Map<String, String> instance = converter.toURN(full, 7);
+    assertEquals("urn:epc:id:sgtin:9521000.002011.SER-1", instance.get("asURN"));
+    assertEquals("2A", instance.get("cpv"), "the variant travels as an attribute of the instance");
+    assertEquals("LOT-A", instance.get("lot"));
+    assertEquals("https://id.gs1.org/01/09521000020115/21/SER-1", instance.get("canonicalDL"));
+    assertEquals(full, instance.get("asCaptured"));
+
+    final Map<String, String> lotClass = converter.toURNForClassLevelIdentifier(full, 7);
+    assertEquals("urn:epc:class:lgtin:9521000.002011.LOT-A", lotClass.get("asURN"));
+    assertEquals("2A", lotClass.get("cpv"), "the variant travels as an attribute of the lot class");
+    assertEquals("SER-1", lotClass.get("serialNumber"));
+    assertEquals("https://id.gs1.org/01/09521000020115/10/LOT-A", lotClass.get("canonicalDL"));
+
+    final Map<String, String> variantOnly =
+        converter.toURNForClassLevelIdentifier("https://id.gs1.org/01/09521000020115/22/2A", 7);
+    assertEquals("urn:epc:idpat:sgtin:9521000.002011.*", variantOnly.get("asURN"),
+        "a variant alone is the model's class pattern — GS1 has no EPC for the variant");
+    assertEquals("2A", variantOnly.get("cpv"));
+    assertEquals("https://id.gs1.org/01/09521000020115", variantOnly.get("canonicalDL"));
+
+    final Map<String, String> variantSerial =
+        converter.toURN("https://id.gs1.org/01/09521000020115/22/2A/21/SER-1", 7);
+    assertEquals("urn:epc:id:sgtin:9521000.002011.SER-1", variantSerial.get("asURN"));
+    assertEquals("2A", variantSerial.get("cpv"));
+    assertNull(variantSerial.get("lot"));
+  }
 }

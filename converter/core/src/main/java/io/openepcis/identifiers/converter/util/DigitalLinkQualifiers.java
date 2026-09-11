@@ -20,7 +20,9 @@ package io.openepcis.identifiers.converter.util;
  * choosing the level — the INSTANCE conversion keeps the serial and treats the lot as
  * an attribute, the CLASS conversion keeps the lot and drops the serial — and these
  * helpers cut the other qualifier out of the URI so the per-key converters see the
- * plain form they were written for.
+ * plain form they were written for. The consumer product variant ({@code /22/}) is cut
+ * out at every level: no EPC carries it (CBV 2.0 §8), it is an attribute of the class
+ * or instance the EPC names.
  */
 public final class DigitalLinkQualifiers {
 

@@ -90,15 +90,22 @@ public class SGTINConverter implements Converter {
    * the lot are put back into the result by {@link #withCaptured}.
    */
   private String normalized(final String dlURI) {
-    return isClassLevel ? dlURI : DigitalLinkQualifiers.withoutSegment(dlURI, LGTIN_AI_BATCH_LOT_PREFIX);
+    // The consumer product variant (/22/) never reaches an EPC: cut it out at both
+    // levels. At instance level the lot goes too — an SGTIN is GTIN + serial.
+    final String withoutCpv = DigitalLinkQualifiers.withoutSegment(dlURI, CPV_AI_URI_PREFIX);
+    return isClassLevel ? withoutCpv : DigitalLinkQualifiers.withoutSegment(withoutCpv, LGTIN_AI_BATCH_LOT_PREFIX);
   }
 
-  /** Report the URI as captured and its lot attribute on a result built from the normalized form. */
+  /** Report the URI as captured and its lot and variant attributes on a result built from the normalized form. */
   private static Map<String, String> withCaptured(final Map<String, String> result, final String dlURI) {
     result.put(ConstantDigitalLinkTranslatorInfo.AS_CAPTURED, dlURI);
     final String lot = DigitalLinkQualifiers.segmentValue(dlURI, LGTIN_AI_BATCH_LOT_PREFIX);
     if (lot != null) {
       result.put(ConstantDigitalLinkTranslatorInfo.LOT, lot);
+    }
+    final String cpv = DigitalLinkQualifiers.segmentValue(dlURI, CPV_AI_URI_PREFIX);
+    if (cpv != null) {
+      result.put(ConstantDigitalLinkTranslatorInfo.CPV, cpv);
     }
     return result;
   }

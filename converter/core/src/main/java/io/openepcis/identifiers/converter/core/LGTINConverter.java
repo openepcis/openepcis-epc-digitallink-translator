@@ -73,16 +73,23 @@ public class LGTINConverter implements Converter {
    * {@link #withCaptured}.
    */
   private static String normalized(final String dlURI) {
-    return DigitalLinkQualifiers.withoutSegment(dlURI, SGTIN_AI_URI_SERIAL_PREFIX);
+    // The consumer product variant (/22/) never reaches an EPC either: an LGTIN is
+    // GTIN + lot, the variant is the lot's attribute.
+    return DigitalLinkQualifiers.withoutSegment(
+        DigitalLinkQualifiers.withoutSegment(dlURI, CPV_AI_URI_PREFIX), SGTIN_AI_URI_SERIAL_PREFIX);
   }
 
-  /** Report the URI as captured, the lot under its own key and a dropped serial. */
+  /** Report the URI as captured, the lot under its own key, a dropped serial and the variant. */
   private static Map<String, String> withCaptured(final Map<String, String> result, final String dlURI) {
     result.put(ConstantDigitalLinkTranslatorInfo.AS_CAPTURED, dlURI);
     result.put(ConstantDigitalLinkTranslatorInfo.LOT, result.get(ConstantDigitalLinkTranslatorInfo.SERIAL));
     final String serial = DigitalLinkQualifiers.segmentValue(dlURI, SGTIN_AI_URI_SERIAL_PREFIX);
     if (serial != null) {
       result.put(ConstantDigitalLinkTranslatorInfo.SERIAL_NUMBER, serial);
+    }
+    final String cpv = DigitalLinkQualifiers.segmentValue(dlURI, CPV_AI_URI_PREFIX);
+    if (cpv != null) {
+      result.put(ConstantDigitalLinkTranslatorInfo.CPV, cpv);
     }
     return result;
   }
