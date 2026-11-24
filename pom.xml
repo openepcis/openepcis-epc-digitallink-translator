@@ -180,17 +180,6 @@
     </dependencyManagement>
 
     <repositories>
-        <!-- GitLab Maven Package Registry -->
-        <repository>
-            <id>gitlab-maven</id>
-            <url>https://code.company-group.com/api/v4/projects/79/packages/maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
         <!-- Sonatype Central snapshots -->
         <repository>
             <id>central-snapshots</id>
